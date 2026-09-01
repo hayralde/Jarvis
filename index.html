@@ -78,10 +78,6 @@
 
   .wrap{max-width:980px;margin:0 auto;padding:44px 20px 80px;}
 
-  .eyebrow{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);margin:0 0 10px 0;}
-  .eyebrow::before{content:"// ";color:var(--text-dimmer);}
-  h1{font-size:clamp(28px,5vw,42px);font-weight:700;letter-spacing:0.01em;margin:0 0 24px 0;color:#12160d;font-family:'IBM Plex Mono',monospace;}
-
   /* tabs */
   .tabbar{display:flex;gap:24px;margin:0 0 32px 0;border-bottom:1px solid var(--border);}
   .tab-btn{
@@ -246,9 +242,6 @@
   </div>
 
   <div class="wrap">
-    <p class="eyebrow mono">PCM · sistema de gestão de tarefas</p>
-    <h1 id="viewTitle">Matriz de Prioridades</h1>
-
     <div class="tabbar mono" role="tablist">
       <button class="tab-btn active" type="button" data-tab="matrix" data-title="Matriz de Prioridades" role="tab" aria-selected="true">matriz</button>
       <button class="tab-btn" type="button" data-tab="kanban" data-title="Kanban" role="tab" aria-selected="false">kanban</button>
@@ -747,7 +740,6 @@
     tabPanels.forEach(function(p){
       p.classList.toggle("active", p.getAttribute("data-panel") === tabKey);
     });
-    document.getElementById("viewTitle").textContent = btnToActivate.getAttribute("data-title");
     try{ localStorage.setItem(TAB_KEY, tabKey); }catch(e){}
   }
   tabBtns.forEach(function(btn){
