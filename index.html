@@ -3,125 +3,237 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Relatório de Tarefas e Anotações</title>
+<title>Jarvis — Matriz de Prioridades</title>
 <style>
   * { box-sizing: border-box; }
   body {
     margin: 0;
-    padding: 40px 20px;
-    background: #faf8f3;
+    padding: 32px 20px 60px;
+    background: radial-gradient(circle at 10% 0%, #1b2333 0%, #0f1420 55%, #0a0d15 100%);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    color: #1a2332;
+    color: #e8ecf4;
+    min-height: 100vh;
   }
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  header { margin-bottom: 28px; }
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #7c8bb0;
+    font-weight: 700;
+    margin: 0 0 6px 0;
   }
   h1 {
-    font-size: 32px;
+    font-size: 30px;
     font-weight: 800;
-    margin: 0 0 8px 0;
-    color: #1a2332;
+    margin: 0 0 6px 0;
+    background: linear-gradient(90deg, #ffffff, #a9b8e8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
-  .subtitle {
-    font-size: 13px;
+  .subtitle { color: #9aa5c4; font-size: 14px; margin: 0; }
+
+  .axes {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 12px;
+    margin-top: 32px;
+  }
+  .y-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #6b7280;
-    margin: 0 0 20px 0;
-  }
-  hr.top {
-    border: none;
-    border-top: 2px solid #1a2332;
-    margin: 0 0 32px 0;
-  }
-  h2.section {
+    color: #7c8bb0;
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 20px;
+    justify-content: center;
+  }
+  .matrix-wrap { display: flex; flex-direction: column; gap: 12px; }
+  .x-labels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    padding: 0 2px;
+  }
+  .x-labels span {
+    font-size: 12px;
     font-weight: 700;
-    margin: 0 0 20px 0;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #7c8bb0;
+    text-align: center;
   }
-  h2.section::before {
+  .matrix {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 18px;
+    min-height: 560px;
+  }
+  .quadrant {
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    flex-direction: column;
+  }
+  .quadrant::before {
     content: "";
-    width: 4px;
-    height: 22px;
-    background: #e0503c;
-    display: inline-block;
-    border-radius: 2px;
+    position: absolute; inset: 0;
+    opacity: 0.14;
   }
-  .task-card {
-    background: #ffffff;
-    border-radius: 8px;
-    padding: 22px 24px;
-    margin-bottom: 18px;
-    border-left: 4px solid #3b82c4;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-  }
-  .task-card.urgent {
-    border-left-color: #e0503c;
-  }
-  .badge {
+  .q-do { background: #241522; }
+  .q-do::before { background: radial-gradient(circle at 100% 0%, #ff5c72, transparent 60%); }
+  .q-plan { background: #142127; }
+  .q-plan::before { background: radial-gradient(circle at 100% 0%, #34c9c9, transparent 60%); }
+  .q-delegate { background: #241f12; }
+  .q-delegate::before { background: radial-gradient(circle at 100% 0%, #ffb547, transparent 60%); }
+  .q-drop { background: #171a24; }
+  .q-drop::before { background: radial-gradient(circle at 100% 0%, #7c8bb0, transparent 60%); }
+
+  .q-head { position: relative; z-index: 1; margin-bottom: 14px; }
+  .q-tag {
     display: inline-block;
     font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: #fff;
-    background: #3b82c4;
     padding: 4px 10px;
-    border-radius: 4px;
-    margin-bottom: 12px;
+    border-radius: 20px;
+    margin-bottom: 8px;
   }
-  .badge.urgent {
-    background: #e0503c;
+  .q-do .q-tag { background: #ff5c72; color: #2a0f14; }
+  .q-plan .q-tag { background: #34c9c9; color: #0a2323; }
+  .q-delegate .q-tag { background: #ffb547; color: #2a1c05; }
+  .q-drop .q-tag { background: #7c8bb0; color: #12162a; }
+
+  .q-title { font-size: 18px; font-weight: 800; margin: 0; color: #fff; }
+  .q-desc { font-size: 12.5px; color: #a6afc9; margin: 4px 0 0 0; }
+
+  .q-body { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+
+  .task-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 10px;
+    padding: 14px 16px;
+    backdrop-filter: blur(2px);
   }
-  .task-title {
-    font-size: 17px;
-    font-weight: 700;
-    margin: 0 0 10px 0;
-    color: #1a2332;
+  .task-title { font-size: 14.5px; font-weight: 700; margin: 0 0 8px 0; color: #fff; }
+  .task-meta { font-size: 12.5px; color: #b7c0da; margin: 2px 0; }
+  .task-meta strong { color: #e8ecf4; }
+
+  .empty {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12.5px;
+    color: #5c6790;
+    font-style: italic;
+    border: 1px dashed rgba(255,255,255,0.12);
+    border-radius: 10px;
+    min-height: 70px;
   }
-  .task-meta {
-    font-size: 14px;
-    color: #3a4454;
-    margin: 4px 0;
-  }
-  .task-meta strong {
-    color: #1a2332;
-  }
+
   footer {
-    margin-top: 32px;
+    margin-top: 28px;
     padding-top: 16px;
-    border-top: 1px solid #e5e0d8;
+    border-top: 1px solid rgba(255,255,255,0.08);
     font-size: 12px;
-    color: #9ca3af;
+    color: #5c6790;
     text-align: center;
+  }
+
+  @media (max-width: 640px) {
+    .matrix { grid-template-columns: 1fr; grid-template-rows: none; min-height: unset; }
+    .x-labels { display: none; }
+    .axes { grid-template-columns: 1fr; }
+    .y-label { writing-mode: horizontal-tb; transform: none; }
   }
 </style>
 </head>
 <body>
   <div class="container">
-    <h1>Relatório de Tarefas e Anotações</h1>
-    <p class="subtitle">Agendamento para 1º de setembro de 2026</p>
-    <hr class="top">
+    <header>
+      <p class="eyebrow">Jarvis · Agendamento para 1º de setembro de 2026</p>
+      <h1>Matriz de Prioridades</h1>
+      <p class="subtitle">Tarefas organizadas por urgência × importância (Matriz de Eisenhower)</p>
+    </header>
 
-    <h2 class="section">Tarefas Agendadas</h2>
+    <div class="axes">
+      <div class="y-label">Importância ↑</div>
+      <div class="matrix-wrap">
+        <div class="x-labels">
+          <span>Urgente</span>
+          <span>Não urgente</span>
+        </div>
+        <div class="matrix">
 
-    <div class="task-card">
-      <span class="badge">Prioridade Normal</span>
-      <p class="task-title">1. Pedir acesso pro Thiago para ele criar requisição</p>
-      <p class="task-meta"><strong>Data de Execução:</strong> Terça-feira, 1 de setembro de 2026</p>
-      <p class="task-meta"><strong>Status:</strong> Adicionado às Tarefas</p>
-    </div>
+          <div class="quadrant q-do">
+            <div class="q-head">
+              <span class="q-tag">Fazer agora</span>
+              <p class="q-title">Urgente &amp; Importante</p>
+              <p class="q-desc">Ação imediata</p>
+            </div>
+            <div class="q-body">
+              <div class="task-card">
+                <p class="task-title">Pedir pro Rogério falar pro Josi aprovar o pedido (Motor LX na Decorfius)</p>
+                <p class="task-meta"><strong>Execução:</strong> Terça-feira, 1 de setembro de 2026</p>
+                <p class="task-meta"><strong>Contexto:</strong> Motores LX na Decorfius</p>
+                <p class="task-meta"><strong>Status:</strong> Alta prioridade</p>
+              </div>
+            </div>
+          </div>
 
-    <div class="task-card urgent">
-      <span class="badge urgent">Urgente, Urgentíssimo</span>
-      <p class="task-title">2. Pedir pro Rogério falar pro Josi aprovar o pedido (Motor LX na Decorfius)</p>
-      <p class="task-meta"><strong>Data de Execução:</strong> Terça-feira, 1 de setembro de 2026</p>
-      <p class="task-meta"><strong>Contexto/Projeto:</strong> Motores LX na Decorfius</p>
-      <p class="task-meta"><strong>Status:</strong> Adicionado às Tarefas (Alta Prioridade)</p>
+          <div class="quadrant q-plan">
+            <div class="q-head">
+              <span class="q-tag">Planejar</span>
+              <p class="q-title">Não Urgente &amp; Importante</p>
+              <p class="q-desc">Agendar tempo dedicado</p>
+            </div>
+            <div class="q-body">
+              <div class="task-card">
+                <p class="task-title">Pedir acesso pro Thiago para ele criar requisição</p>
+                <p class="task-meta"><strong>Execução:</strong> Terça-feira, 1 de setembro de 2026</p>
+                <p class="task-meta"><strong>Status:</strong> Adicionado às tarefas</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="quadrant q-delegate">
+            <div class="q-head">
+              <span class="q-tag">Delegar</span>
+              <p class="q-title">Urgente &amp; Não Importante</p>
+              <p class="q-desc">Repassar a alguém</p>
+            </div>
+            <div class="q-body">
+              <div class="empty">Nenhuma tarefa aqui</div>
+            </div>
+          </div>
+
+          <div class="quadrant q-drop">
+            <div class="q-head">
+              <span class="q-tag">Eliminar</span>
+              <p class="q-title">Não Urgente &amp; Não Importante</p>
+              <p class="q-desc">Baixo valor, cortar se possível</p>
+            </div>
+            <div class="q-body">
+              <div class="empty">Nenhuma tarefa aqui</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
 
     <footer>Documento gerado automaticamente com base no seu histórico de solicitações.</footer>
