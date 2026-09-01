@@ -1,1 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório de Tarefas e Anotações</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 40px 20px;
+    background: #faf8f3;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #1a2332;
+  }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 32px;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+    color: #1a2332;
+  }
+  .subtitle {
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin: 0 0 20px 0;
+  }
+  hr.top {
+    border: none;
+    border-top: 2px solid #1a2332;
+    margin: 0 0 32px 0;
+  }
+  h2.section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+  }
+  h2.section::before {
+    content: "";
+    width: 4px;
+    height: 22px;
+    background: #e0503c;
+    display: inline-block;
+    border-radius: 2px;
+  }
+  .task-card {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 22px 24px;
+    margin-bottom: 18px;
+    border-left: 4px solid #3b82c4;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .task-card.urgent {
+    border-left-color: #e0503c;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #fff;
+    background: #3b82c4;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+  }
+  .badge.urgent {
+    background: #e0503c;
+  }
+  .task-title {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    color: #1a2332;
+  }
+  .task-meta {
+    font-size: 14px;
+    color: #3a4454;
+    margin: 4px 0;
+  }
+  .task-meta strong {
+    color: #1a2332;
+  }
+  footer {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e0d8;
+    font-size: 12px;
+    color: #9ca3af;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Relatório de Tarefas e Anotações</h1>
+    <p class="subtitle">Agendamento para 1º de setembro de 2026</p>
+    <hr class="top">
 
+    <h2 class="section">Tarefas Agendadas</h2>
+
+    <div class="task-card">
+      <span class="badge">Prioridade Normal</span>
+      <p class="task-title">1. Pedir acesso pro Thiago para ele criar requisição</p>
+      <p class="task-meta"><strong>Data de Execução:</strong> Terça-feira, 1 de setembro de 2026</p>
+      <p class="task-meta"><strong>Status:</strong> Adicionado às Tarefas</p>
+    </div>
+
+    <div class="task-card urgent">
+      <span class="badge urgent">Urgente, Urgentíssimo</span>
+      <p class="task-title">2. Pedir pro Rogério falar pro Josi aprovar o pedido (Motor LX na Decorfius)</p>
+      <p class="task-meta"><strong>Data de Execução:</strong> Terça-feira, 1 de setembro de 2026</p>
+      <p class="task-meta"><strong>Contexto/Projeto:</strong> Motores LX na Decorfius</p>
+      <p class="task-meta"><strong>Status:</strong> Adicionado às Tarefas (Alta Prioridade)</p>
+    </div>
+
+    <footer>Documento gerado automaticamente com base no seu histórico de solicitações.</footer>
+  </div>
+</body>
+</html>
