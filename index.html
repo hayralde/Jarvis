@@ -4,239 +4,333 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jarvis — Matriz de Prioridades</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    padding: 32px 20px 60px;
-    background: radial-gradient(circle at 10% 0%, #1b2333 0%, #0f1420 55%, #0a0d15 100%);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    color: #e8ecf4;
-    min-height: 100vh;
+  :root{
+    --bg:#070907;
+    --panel:#0d100d;
+    --border:#232b23;
+    --border-bright:#3a463a;
+    --text:#dce6d6;
+    --text-dim:#6f7d6a;
+    --text-dimmer:#4a554a;
+    --red:#ff3b30;
+    --red-dim:#4a1712;
+    --green:#34c759;
+    --green-dim:#123018;
+    --amber:#ff9f0a;
+    --amber-dim:#3a2607;
+    --grey:#57624f;
+    --grey-dim:#181c17;
   }
-  .container { max-width: 1100px; margin: 0 auto; }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 40px),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 40px),
+      var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    min-height:100vh;
+    font-size:14px;
+  }
+  a{color:inherit;}
 
-  header { margin-bottom: 28px; }
-  .eyebrow {
-    font-size: 12px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: #7c8bb0;
-    font-weight: 700;
-    margin: 0 0 6px 0;
+  /* status bar */
+  .statusbar{
+    display:flex;
+    align-items:center;
+    gap:20px;
+    padding:10px 20px;
+    border-bottom:1px solid var(--border);
+    background:rgba(13,16,13,0.7);
+    font-size:11px;
+    letter-spacing:0.08em;
+    color:var(--text-dim);
+    flex-wrap:wrap;
   }
-  h1 {
-    font-size: 30px;
-    font-weight: 800;
-    margin: 0 0 6px 0;
-    background: linear-gradient(90deg, #ffffff, #a9b8e8);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+  .statusbar-brand{
+    color:var(--text);
+    font-weight:700;
+    letter-spacing:0.14em;
   }
-  .subtitle { color: #9aa5c4; font-size: 14px; margin: 0; }
+  .caret{
+    display:inline-block;
+    width:7px; height:12px;
+    background:var(--green);
+    margin-left:2px;
+    vertical-align:-1px;
+    animation:blink 1.1s steps(2,jump-none) infinite;
+  }
+  .statusbar-status{display:flex;align-items:center;gap:7px;text-transform:uppercase;}
+  .led{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 6px var(--green);
+    display:inline-block;
+    animation:pulse 2.2s ease-in-out infinite;
+  }
+  .statusbar-time{margin-left:auto;text-transform:uppercase;}
 
-  .axes {
-    display: grid;
-    grid-template-columns: 40px 1fr;
-    gap: 12px;
-    margin-top: 32px;
-  }
-  .y-label {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    text-align: center;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #7c8bb0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .matrix-wrap { display: flex; flex-direction: column; gap: 12px; }
-  .x-labels {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-    padding: 0 2px;
-  }
-  .x-labels span {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #7c8bb0;
-    text-align: center;
-  }
-  .matrix {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 18px;
-    min-height: 560px;
-  }
-  .quadrant {
-    border-radius: 16px;
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.08);
-    display: flex;
-    flex-direction: column;
-  }
-  .quadrant::before {
-    content: "";
-    position: absolute; inset: 0;
-    opacity: 0.14;
-  }
-  .q-do { background: #241522; }
-  .q-do::before { background: radial-gradient(circle at 100% 0%, #ff5c72, transparent 60%); }
-  .q-plan { background: #142127; }
-  .q-plan::before { background: radial-gradient(circle at 100% 0%, #34c9c9, transparent 60%); }
-  .q-delegate { background: #241f12; }
-  .q-delegate::before { background: radial-gradient(circle at 100% 0%, #ffb547, transparent 60%); }
-  .q-drop { background: #171a24; }
-  .q-drop::before { background: radial-gradient(circle at 100% 0%, #7c8bb0, transparent 60%); }
-
-  .q-head { position: relative; z-index: 1; margin-bottom: 14px; }
-  .q-tag {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 20px;
-    margin-bottom: 8px;
-  }
-  .q-do .q-tag { background: #ff5c72; color: #2a0f14; }
-  .q-plan .q-tag { background: #34c9c9; color: #0a2323; }
-  .q-delegate .q-tag { background: #ffb547; color: #2a1c05; }
-  .q-drop .q-tag { background: #7c8bb0; color: #12162a; }
-
-  .q-title { font-size: 18px; font-weight: 800; margin: 0; color: #fff; }
-  .q-desc { font-size: 12.5px; color: #a6afc9; margin: 4px 0 0 0; }
-
-  .q-body { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; flex: 1; }
-
-  .task-card {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.10);
-    border-radius: 10px;
-    padding: 14px 16px;
-    backdrop-filter: blur(2px);
-  }
-  .task-title { font-size: 14.5px; font-weight: 700; margin: 0 0 8px 0; color: #fff; }
-  .task-meta { font-size: 12.5px; color: #b7c0da; margin: 2px 0; }
-  .task-meta strong { color: #e8ecf4; }
-
-  .empty {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12.5px;
-    color: #5c6790;
-    font-style: italic;
-    border: 1px dashed rgba(255,255,255,0.12);
-    border-radius: 10px;
-    min-height: 70px;
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+  @keyframes blink{0%,49%{opacity:1;}50%,100%{opacity:0;}}
+  @media (prefers-reduced-motion: reduce){
+    .caret,.led{animation:none;}
   }
 
-  footer {
-    margin-top: 28px;
-    padding-top: 16px;
-    border-top: 1px solid rgba(255,255,255,0.08);
-    font-size: 12px;
-    color: #5c6790;
-    text-align: center;
+  .wrap{max-width:960px;margin:0 auto;padding:44px 20px 80px;}
+
+  .eyebrow{
+    font-size:11px;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    margin:0 0 10px 0;
+  }
+  .eyebrow::before{content:"// ";color:var(--text-dimmer);}
+  h1{
+    font-size:clamp(28px,5vw,42px);
+    font-weight:700;
+    letter-spacing:0.01em;
+    margin:0 0 12px 0;
+    color:#fff;
+  }
+  .lede{
+    color:var(--text-dim);
+    font-size:13px;
+    max-width:52ch;
+    line-height:1.6;
+    margin:0 0 40px 0;
+    padding-bottom:28px;
+    border-bottom:1px solid var(--border);
   }
 
-  @media (max-width: 640px) {
-    .matrix { grid-template-columns: 1fr; grid-template-rows: none; min-height: unset; }
-    .x-labels { display: none; }
-    .axes { grid-template-columns: 1fr; }
-    .y-label { writing-mode: horizontal-tb; transform: none; }
+  /* matrix */
+  .matrix-block{position:relative;}
+  .axis-top{
+    display:grid;
+    grid-template-columns:96px 1fr 1fr;
+    margin-bottom:6px;
+  }
+  .axis-top span{
+    font-size:10px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--text-dimmer);
+    text-align:center;
+    padding-bottom:6px;
+    border-bottom:1px solid var(--border);
+  }
+  .axis-top span:first-child{border-bottom:none;}
+
+  .matrix-row{
+    display:grid;
+    grid-template-columns:96px 1fr 1fr;
+    gap:0;
+  }
+  .axis-side{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    writing-mode:vertical-rl;
+    transform:rotate(180deg);
+    font-size:10px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--text-dimmer);
+  }
+
+  .quadrant{
+    position:relative;
+    background:var(--panel);
+    border:1px solid var(--border);
+    margin:-1px 0 0 -1px;
+    padding:20px;
+    min-height:230px;
+    display:flex;
+    flex-direction:column;
+  }
+  .quadrant::before,.quadrant::after{
+    content:"";
+    position:absolute;
+    width:10px;height:10px;
+    border-color:var(--border-bright);
+    border-style:solid;
+    opacity:0;
+    transition:opacity .2s;
+  }
+  .quadrant:hover::before,.quadrant:hover::after{opacity:1;}
+  .quadrant::before{top:-1px;left:-1px;border-width:1px 0 0 1px;}
+  .quadrant::after{bottom:-1px;right:-1px;border-width:0 1px 1px 0;}
+
+  .q-head{margin-bottom:16px;}
+  .q-code{
+    display:flex;align-items:center;gap:8px;
+    font-size:11px;letter-spacing:0.1em;color:var(--text-dim);
+    margin-bottom:6px;
+  }
+  .q-title{
+    font-size:16px;font-weight:700;color:var(--text);
+    text-transform:uppercase;letter-spacing:0.03em;
+    margin:0 0 4px 0;
+  }
+  .q-desc{font-size:11.5px;color:var(--text-dimmer);margin:0;}
+
+  .led-red{background:var(--red);box-shadow:0 0 6px var(--red);}
+  .led-green{background:var(--green);box-shadow:0 0 6px var(--green);}
+  .led-amber{background:var(--amber);box-shadow:0 0 6px var(--amber);}
+  .led-grey{background:var(--grey);box-shadow:none;animation:none;}
+
+  .q-body{display:flex;flex-direction:column;gap:10px;flex:1;}
+
+  .log-row{
+    border-left:2px solid var(--border-bright);
+    padding:10px 0 10px 14px;
+  }
+  .log-row.crit{border-left-color:var(--red);}
+  .log-row.normal{border-left-color:var(--green);}
+
+  .log-row-head{
+    display:flex;justify-content:space-between;align-items:baseline;
+    margin-bottom:6px;flex-wrap:wrap;gap:6px 10px;
+  }
+  .log-tag{
+    font-size:10px;font-weight:700;letter-spacing:0.08em;
+    padding:2px 7px;
+    text-transform:uppercase;
+  }
+  .log-tag.crit{color:var(--red);background:var(--red-dim);}
+  .log-tag.normal{color:var(--green);background:var(--green-dim);}
+  .log-time{font-size:10.5px;color:var(--text-dimmer);}
+
+  .log-title{font-size:13.5px;color:var(--text);line-height:1.5;margin:0 0 5px 0;}
+  .log-meta{font-size:11.5px;color:var(--text-dim);margin:0;}
+  .log-meta span{color:var(--text-dimmer);}
+
+  .empty-state{
+    flex:1;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--text-dimmer);
+    font-size:11.5px;
+    border:1px dashed var(--border);
+  }
+
+  footer{
+    margin-top:36px;
+    padding-top:18px;
+    border-top:1px solid var(--border);
+    font-size:11.5px;
+    color:var(--text-dimmer);
+  }
+  footer .prompt{color:var(--green);}
+
+  @media (max-width:680px){
+    .axis-top{display:none;}
+    .matrix-row{grid-template-columns:1fr;}
+    .axis-side{
+      writing-mode:horizontal-tb;transform:none;
+      justify-content:flex-start;
+      padding:14px 0 4px 2px;
+      font-size:10px;
+    }
+    .quadrant{margin:0 0 -1px 0;min-height:unset;}
   }
 </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <p class="eyebrow">Jarvis · Agendamento para 1º de setembro de 2026</p>
-      <h1>Matriz de Prioridades</h1>
-      <p class="subtitle">Tarefas organizadas por urgência × importância (Matriz de Eisenhower)</p>
-    </header>
 
-    <div class="axes">
-      <div class="y-label">Importância ↑</div>
-      <div class="matrix-wrap">
-        <div class="x-labels">
-          <span>Urgente</span>
-          <span>Não urgente</span>
+  <div class="statusbar">
+    <span class="statusbar-brand">JARVIS<span class="caret"></span></span>
+    <span class="statusbar-status"><span class="led led-green"></span>online</span>
+    <span>rrp energia · pcm</span>
+    <span class="statusbar-time">01.09.2026 · terça-feira</span>
+  </div>
+
+  <div class="wrap">
+    <p class="eyebrow">PCM · sistema de gestão de tarefas</p>
+    <h1>Matriz de Prioridades</h1>
+    <p class="lede">Cada solicitação recebida é classificada por urgência e importância — mesma lógica usada em gestão de alarmes de planta: vermelho é ação imediata, verde é rotina.</p>
+
+    <div class="matrix-block">
+      <div class="axis-top">
+        <span></span>
+        <span>urgente</span>
+        <span>não urgente</span>
+      </div>
+
+      <div class="matrix-row">
+        <div class="axis-side">importante</div>
+
+        <div class="quadrant">
+          <div class="q-head">
+            <div class="q-code"><span class="led led-red"></span>Q1 · crítico</div>
+            <p class="q-title">Fazer agora</p>
+            <p class="q-desc">Urgente e importante — ação imediata</p>
+          </div>
+          <div class="q-body">
+            <div class="log-row crit">
+              <div class="log-row-head">
+                <span class="log-tag crit">alta prioridade</span>
+                <span class="log-time">ter · 01/09</span>
+              </div>
+              <p class="log-title">Pedir pro Rogério falar pro Josi aprovar o pedido</p>
+              <p class="log-meta"><span>projeto ·</span> Motor LX · Decorfius</p>
+            </div>
+          </div>
         </div>
-        <div class="matrix">
 
-          <div class="quadrant q-do">
-            <div class="q-head">
-              <span class="q-tag">Fazer agora</span>
-              <p class="q-title">Urgente &amp; Importante</p>
-              <p class="q-desc">Ação imediata</p>
-            </div>
-            <div class="q-body">
-              <div class="task-card">
-                <p class="task-title">Pedir pro Rogério falar pro Josi aprovar o pedido (Motor LX na Decorfius)</p>
-                <p class="task-meta"><strong>Execução:</strong> Terça-feira, 1 de setembro de 2026</p>
-                <p class="task-meta"><strong>Contexto:</strong> Motores LX na Decorfius</p>
-                <p class="task-meta"><strong>Status:</strong> Alta prioridade</p>
+        <div class="quadrant">
+          <div class="q-head">
+            <div class="q-code"><span class="led led-green"></span>Q2 · rotina</div>
+            <p class="q-title">Planejar</p>
+            <p class="q-desc">Importante, não urgente — agendar</p>
+          </div>
+          <div class="q-body">
+            <div class="log-row normal">
+              <div class="log-row-head">
+                <span class="log-tag normal">prioridade normal</span>
+                <span class="log-time">ter · 01/09</span>
               </div>
+              <p class="log-title">Pedir acesso pro Thiago para ele criar requisição</p>
             </div>
           </div>
+        </div>
+      </div>
 
-          <div class="quadrant q-plan">
-            <div class="q-head">
-              <span class="q-tag">Planejar</span>
-              <p class="q-title">Não Urgente &amp; Importante</p>
-              <p class="q-desc">Agendar tempo dedicado</p>
-            </div>
-            <div class="q-body">
-              <div class="task-card">
-                <p class="task-title">Pedir acesso pro Thiago para ele criar requisição</p>
-                <p class="task-meta"><strong>Execução:</strong> Terça-feira, 1 de setembro de 2026</p>
-                <p class="task-meta"><strong>Status:</strong> Adicionado às tarefas</p>
-              </div>
-            </div>
+      <div class="matrix-row">
+        <div class="axis-side">não importante</div>
+
+        <div class="quadrant">
+          <div class="q-head">
+            <div class="q-code"><span class="led led-amber"></span>Q3 · atenção</div>
+            <p class="q-title">Delegar</p>
+            <p class="q-desc">Urgente, baixo impacto — repassar</p>
           </div>
-
-          <div class="quadrant q-delegate">
-            <div class="q-head">
-              <span class="q-tag">Delegar</span>
-              <p class="q-title">Urgente &amp; Não Importante</p>
-              <p class="q-desc">Repassar a alguém</p>
-            </div>
-            <div class="q-body">
-              <div class="empty">Nenhuma tarefa aqui</div>
-            </div>
+          <div class="q-body">
+            <div class="empty-state">— fila vazia —</div>
           </div>
+        </div>
 
-          <div class="quadrant q-drop">
-            <div class="q-head">
-              <span class="q-tag">Eliminar</span>
-              <p class="q-title">Não Urgente &amp; Não Importante</p>
-              <p class="q-desc">Baixo valor, cortar se possível</p>
-            </div>
-            <div class="q-body">
-              <div class="empty">Nenhuma tarefa aqui</div>
-            </div>
+        <div class="quadrant">
+          <div class="q-head">
+            <div class="q-code"><span class="led led-grey"></span>Q4 · baixo</div>
+            <p class="q-title">Eliminar</p>
+            <p class="q-desc">Baixo valor — cortar se possível</p>
           </div>
-
+          <div class="q-body">
+            <div class="empty-state">— fila vazia —</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <footer>Documento gerado automaticamente com base no seu histórico de solicitações.</footer>
+    <footer>
+      <span class="prompt">$</span> jarvis --log · gerado automaticamente com base no histórico de solicitações<span class="caret"></span>
+    </footer>
   </div>
+
 </body>
 </html>
