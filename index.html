@@ -146,7 +146,6 @@
   }
   .log-row:hover{background:rgba(35,41,34,0.05);}
   .log-row.dragging{opacity:.35;}
-  .log-row.removing{opacity:0;transform:translateX(10px) scale(.98);}
   .log-row[data-q="1"]{border-left-color:var(--red);}
   .log-row[data-q="2"]{border-left-color:var(--green);}
   .log-row[data-q="3"]{border-left-color:var(--amber);}
@@ -154,6 +153,8 @@
   .log-row[data-status="todo"]{border-left-color:var(--grey);}
   .log-row[data-status="doing"]{border-left-color:var(--amber);}
   .log-row[data-status="done"]{border-left-color:var(--green);}
+  .log-row.flagged{background:var(--red-dim);}
+  .log-row.flagged:hover{background:var(--red-dim);}
 
   .log-row-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;flex-wrap:wrap;gap:6px 10px;}
   .log-row-head-tags{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
@@ -186,12 +187,8 @@
   .move-btn[data-target="doing"]:disabled{background:var(--amber);border-color:var(--amber);}
   .move-btn[data-target="done"]:disabled{background:var(--green);border-color:var(--green);}
 
-  .done-btn{
-    margin-left:auto;border:1px solid var(--green);color:var(--green);background:transparent;
-    font-size:10.5px;padding:4px 10px;cursor:pointer;letter-spacing:.05em;text-transform:uppercase;
-    font-family:'IBM Plex Mono',monospace;
-  }
-  .done-btn:hover{background:var(--green);color:#fff;}
+  .flag-btn.active{background:var(--red);border-color:var(--red);color:#fff;}
+  .flag-btn.active:hover{color:#fff;border-color:var(--red);}
 
   .empty-state{flex:1;display:flex;align-items:center;justify-content:center;color:var(--text-dimmer);font-size:11.5px;border:1px dashed var(--border);font-family:'IBM Plex Mono',monospace;min-height:60px;}
 
@@ -319,7 +316,7 @@
           <div class="q-head">
             <div class="q-code mono"><span class="led led-green"></span>pronto</div>
             <p class="q-title">Concluído</p>
-            <p class="q-desc">Feita — arquive com "concluir"</p>
+            <p class="q-desc">Feita — fica guardada aqui</p>
           </div>
           <div class="q-body" data-kbody="done"></div>
         </div>
@@ -337,7 +334,6 @@
 
   var STORAGE_KEY = "jarvis_tasks_v1";
   var SEEN_KEY = "jarvis_seen_ids_v1";
-  var COUNT_KEY = "jarvis_completed_total";
   var TAB_KEY = "jarvis_active_tab";
 
   var QUADRANTS = {
@@ -406,13 +402,6 @@
   function saveSeen(seen){
     try{ localStorage.setItem(SEEN_KEY, JSON.stringify(seen)); }catch(e){}
   }
-  function loadCount(){
-    try{ return parseInt(localStorage.getItem(COUNT_KEY) || "0", 10) || 0; }catch(e){ return 0; }
-  }
-  function saveCount(n){
-    try{ localStorage.setItem(COUNT_KEY, String(n)); }catch(e){}
-  }
-
   function loadAndMergeTasks(){
     var tasks = loadRaw(STORAGE_KEY) || [];
     var seen = loadRaw(SEEN_KEY) || [];
@@ -436,13 +425,13 @@
     list.forEach(function(t){
       if(!t.status) t.status = "todo";
       if(!t.quadrant) t.quadrant = 4;
+      if(typeof t.flagged !== "boolean") t.flagged = false;
     });
     return list;
   }
 
   var tasks = normalizeTasks(loadAndMergeTasks());
-  var completedCount = loadCount();
-  document.getElementById("completedCount").textContent = completedCount;
+  var editingIds = {}; // task ids currently showing the Kanban edit form
 
   function todayLabel(){
     var d = new Date();
@@ -462,6 +451,8 @@
   function render(){
     renderMatrix();
     renderKanban();
+    var doneCount = tasks.filter(function(t){ return t.status === "done"; }).length;
+    document.getElementById("completedCount").textContent = doneCount;
   }
 
   function renderMatrix(){
@@ -498,7 +489,7 @@
 
   function renderCard(t, mode){
     var row = document.createElement("div");
-    row.className = "log-row";
+    row.className = "log-row" + (t.flagged ? " flagged" : "");
     row.draggable = true;
     row.setAttribute("data-id", t.id);
     if(mode === "matrix"){
@@ -544,6 +535,11 @@
 
     row.appendChild(head);
 
+    if(mode === "kanban" && editingIds[t.id]){
+      row.appendChild(renderEditForm(t));
+      return row;
+    }
+
     var title = document.createElement("p");
     title.className = "log-title";
     title.textContent = t.title;
@@ -583,17 +579,86 @@
         btn.addEventListener("click", function(){ moveTaskStatus(t.id, s); });
         controls.appendChild(btn);
       });
+
+      var editBtn = document.createElement("button");
+      editBtn.className = "move-btn";
+      editBtn.type = "button";
+      editBtn.textContent = "✎";
+      editBtn.setAttribute("aria-label", "Editar tarefa");
+      editBtn.addEventListener("click", function(){ editingIds[t.id] = true; render(); });
+      controls.appendChild(editBtn);
     }
 
-    var doneBtn = document.createElement("button");
-    doneBtn.className = "done-btn";
-    doneBtn.type = "button";
-    doneBtn.textContent = "✓ concluir";
-    doneBtn.addEventListener("click", function(){ completeTask(t.id, row); });
-    controls.appendChild(doneBtn);
+    var flagBtn = document.createElement("button");
+    flagBtn.className = "move-btn flag-btn" + (t.flagged ? " active" : "");
+    flagBtn.type = "button";
+    flagBtn.textContent = "⚑";
+    flagBtn.style.marginLeft = "auto";
+    flagBtn.setAttribute("aria-label", t.flagged ? "Remover destaque vermelho" : "Marcar com destaque vermelho");
+    flagBtn.addEventListener("click", function(){ toggleFlag(t.id); });
+    controls.appendChild(flagBtn);
 
     row.appendChild(controls);
     return row;
+  }
+
+  function renderEditForm(t){
+    var form = document.createElement("div");
+    form.className = "add-form open";
+
+    var titleInput = document.createElement("input");
+    titleInput.type = "text";
+    titleInput.value = t.title;
+    titleInput.maxLength = 140;
+    titleInput.placeholder = "descreva a tarefa...";
+
+    var metaInput = document.createElement("input");
+    metaInput.type = "text";
+    metaInput.value = t.meta || "";
+    metaInput.maxLength = 140;
+    metaInput.placeholder = "detalhe (opcional)";
+
+    var actions = document.createElement("div");
+    actions.className = "add-form-actions";
+
+    var saveBtn = document.createElement("button");
+    saveBtn.className = "primary";
+    saveBtn.type = "button";
+    saveBtn.textContent = "salvar";
+
+    var cancelBtn = document.createElement("button");
+    cancelBtn.type = "button";
+    cancelBtn.textContent = "cancelar";
+
+    actions.appendChild(saveBtn);
+    actions.appendChild(cancelBtn);
+    form.appendChild(titleInput);
+    form.appendChild(metaInput);
+    form.appendChild(actions);
+
+    function save(){
+      var val = titleInput.value.trim();
+      if(!val) return;
+      t.title = val;
+      t.meta = metaInput.value.trim();
+      saveTasks(tasks);
+      delete editingIds[t.id];
+      render();
+    }
+    function cancel(){
+      delete editingIds[t.id];
+      render();
+    }
+    saveBtn.addEventListener("click", save);
+    cancelBtn.addEventListener("click", cancel);
+    titleInput.addEventListener("keydown", function(e){
+      if(e.key === "Enter") save();
+      if(e.key === "Escape") cancel();
+    });
+
+    setTimeout(function(){ titleInput.focus(); titleInput.select(); }, 0);
+
+    return form;
   }
 
   function renderAddRow(kind, value){
@@ -665,6 +730,14 @@
     return wrap;
   }
 
+  function toggleFlag(id){
+    var t = tasks.find(function(x){ return x.id === id; });
+    if(!t) return;
+    t.flagged = !t.flagged;
+    saveTasks(tasks);
+    render();
+  }
+
   function moveTask(id, targetQ){
     var t = tasks.find(function(x){ return x.id === id; });
     if(!t || t.quadrant === targetQ) return;
@@ -681,17 +754,6 @@
     render();
   }
 
-  function completeTask(id, rowEl){
-    rowEl.classList.add("removing");
-    completedCount++;
-    saveCount(completedCount);
-    document.getElementById("completedCount").textContent = completedCount;
-    setTimeout(function(){
-      tasks = tasks.filter(function(x){ return x.id !== id; });
-      saveTasks(tasks);
-      render();
-    }, 220);
-  }
 
   // drag & drop on quadrants
   document.querySelectorAll(".quadrant").forEach(function(qEl){
