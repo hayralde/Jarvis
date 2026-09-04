@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jarvis — Matriz de Prioridades</title>
+<title>Jarvis — Kanban</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMxMjE2MGQiLz4KICA8dGV4dCB4PSIzMiIgeT0iNDYiIGZvbnQtZmFtaWx5PSInSUJNIFBsZXggTW9ubycsdWktbW9ub3NwYWNlLG1vbm9zcGFjZSIgZm9udC1zaXplPSIzNiIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzNkZGM3MyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+SjwvdGV4dD4KPC9zdmc+Cg==">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -78,44 +78,6 @@
 
   .wrap{max-width:980px;margin:0 auto;padding:44px 20px 80px;}
 
-  /* tabs */
-  .tabbar{display:flex;gap:24px;margin:0 0 32px 0;border-bottom:1px solid var(--border);}
-  .tab-btn{
-    background:transparent;border:none;border-bottom:2px solid transparent;
-    color:var(--text-dimmer);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
-    padding:0 0 10px 0;margin-bottom:-1px;cursor:pointer;font-family:'IBM Plex Mono',monospace;
-  }
-  .tab-btn:hover{color:var(--text-dim);}
-  .tab-btn.active{color:var(--text);border-bottom-color:var(--focus);}
-  .tab-panel{display:none;}
-  .tab-panel.active{display:block;}
-
-  /* matrix */
-  .axis-top{display:grid;grid-template-columns:70px 1fr 1fr;margin-bottom:6px;}
-  .axis-top span{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dimmer);text-align:center;padding-bottom:6px;border-bottom:1px solid var(--border);}
-  .axis-top span:first-child{border-bottom:none;}
-
-  .matrix-row{display:grid;grid-template-columns:70px 1fr 1fr;gap:0;}
-  .axis-side{
-    display:flex;align-items:center;justify-content:center;
-    writing-mode:vertical-rl;transform:rotate(180deg);
-    font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dimmer);
-  }
-
-  .quadrant{
-    position:relative;background:var(--panel);border:1px solid var(--border);
-    margin:-1px 0 0 -1px;padding:20px;min-height:200px;
-    display:flex;flex-direction:column;transition:background .15s, border-color .15s;
-  }
-  .quadrant::before,.quadrant::after,.kanban-col::before,.kanban-col::after{
-    content:"";position:absolute;width:10px;height:10px;
-    border-color:var(--border-bright);border-style:solid;opacity:0;transition:opacity .2s;
-  }
-  .quadrant:hover::before,.quadrant:hover::after,.kanban-col:hover::before,.kanban-col:hover::after{opacity:1;}
-  .quadrant::before,.kanban-col::before{top:-1px;left:-1px;border-width:1px 0 0 1px;}
-  .quadrant::after,.kanban-col::after{bottom:-1px;right:-1px;border-width:0 1px 1px 0;}
-  .quadrant.drag-over,.kanban-col.drag-over{background:var(--panel-hi);border-color:var(--focus);}
-
   .q-head{margin-bottom:14px;}
   .q-code{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:6px;}
   .q-title{font-size:16px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.03em;margin:0 0 4px 0;font-family:'IBM Plex Mono',monospace;}
@@ -136,6 +98,14 @@
     display:flex;flex-direction:column;transition:background .15s, border-color .15s;
   }
   .kanban-col:first-child{margin-left:0;}
+  .kanban-col::before,.kanban-col::after{
+    content:"";position:absolute;width:10px;height:10px;
+    border-color:var(--border-bright);border-style:solid;opacity:0;transition:opacity .2s;
+  }
+  .kanban-col:hover::before,.kanban-col:hover::after{opacity:1;}
+  .kanban-col::before{top:-1px;left:-1px;border-width:1px 0 0 1px;}
+  .kanban-col::after{bottom:-1px;right:-1px;border-width:0 1px 1px 0;}
+  .kanban-col.drag-over{background:var(--panel-hi);border-color:var(--focus);}
 
   .log-row{
     border-left:2px solid var(--border-bright);
@@ -146,10 +116,6 @@
   }
   .log-row:hover{background:rgba(35,41,34,0.05);}
   .log-row.dragging{opacity:.35;}
-  .log-row[data-q="1"]{border-left-color:var(--red);}
-  .log-row[data-q="2"]{border-left-color:var(--green);}
-  .log-row[data-q="3"]{border-left-color:var(--amber);}
-  .log-row[data-q="4"]{border-left-color:var(--grey);}
   .log-row[data-status="todo"]{border-left-color:var(--grey);}
   .log-row[data-status="doing"]{border-left-color:var(--amber);}
   .log-row[data-status="done"]{border-left-color:var(--green);}
@@ -159,10 +125,6 @@
   .log-row-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;flex-wrap:wrap;gap:6px 10px;}
   .log-row-head-tags{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
   .log-tag{font-size:10px;font-weight:700;letter-spacing:0.08em;padding:2px 7px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;}
-  .log-row[data-q="1"] .log-tag{color:var(--red);background:var(--red-dim);}
-  .log-row[data-q="2"] .log-tag{color:var(--green);background:var(--green-dim);}
-  .log-row[data-q="3"] .log-tag{color:var(--amber);background:var(--amber-dim);}
-  .log-row[data-q="4"] .log-tag{color:var(--grey);background:var(--grey-dim);}
   .log-row[data-status="todo"] .status-tag{color:var(--grey);background:var(--grey-dim);}
   .log-row[data-status="doing"] .status-tag{color:var(--amber);background:var(--amber-dim);}
   .log-row[data-status="done"] .status-tag{color:var(--green);background:var(--green-dim);}
@@ -179,10 +141,6 @@
   }
   .move-btn:hover:not(:disabled){border-color:var(--text);color:var(--text);}
   .move-btn:disabled{cursor:default;color:#fff;font-weight:700;}
-  .move-btn[data-target="1"]:disabled{background:var(--red);border-color:var(--red);}
-  .move-btn[data-target="2"]:disabled{background:var(--green);border-color:var(--green);}
-  .move-btn[data-target="3"]:disabled{background:var(--amber);border-color:var(--amber);}
-  .move-btn[data-target="4"]:disabled{background:var(--grey);border-color:var(--grey);}
   .move-btn[data-target="todo"]:disabled{background:var(--grey);border-color:var(--grey);}
   .move-btn[data-target="doing"]:disabled{background:var(--amber);border-color:var(--amber);}
   .move-btn[data-target="done"]:disabled{background:var(--green);border-color:var(--green);}
@@ -219,10 +177,6 @@
   footer .prompt{color:var(--green);}
 
   @media (max-width:680px){
-    .axis-top{display:none;}
-    .matrix-row{grid-template-columns:1fr;}
-    .axis-side{writing-mode:horizontal-tb;transform:none;justify-content:flex-start;padding:14px 0 4px 2px;font-size:10px;}
-    .quadrant{margin:0 0 -1px 0;min-height:unset;}
     .kanban-board{grid-template-columns:1fr;}
     .kanban-col{margin:0 0 -1px 0;}
   }
@@ -239,87 +193,30 @@
   </div>
 
   <div class="wrap">
-    <div class="tabbar mono" role="tablist">
-      <button class="tab-btn active" type="button" data-tab="matrix" data-title="Matriz de Prioridades" role="tab" aria-selected="true">matriz</button>
-      <button class="tab-btn" type="button" data-tab="kanban" data-title="Kanban" role="tab" aria-selected="false">kanban</button>
-    </div>
-
-    <div class="tab-panel active" id="panel-matrix" data-panel="matrix">
-      <div class="matrix-block">
-        <div class="axis-top mono">
-          <span></span>
-          <span>urgente</span>
-          <span>não urgente</span>
+    <div class="kanban-board">
+      <div class="kanban-col" data-status="todo">
+        <div class="q-head">
+          <div class="q-code mono"><span class="led led-grey"></span>backlog</div>
+          <p class="q-title">A fazer</p>
+          <p class="q-desc">Ainda não iniciada</p>
         </div>
-
-        <div class="matrix-row">
-          <div class="axis-side mono">importante</div>
-          <div class="quadrant" data-quadrant="1">
-            <div class="q-head">
-              <div class="q-code mono"><span class="led led-red"></span>Q1 · crítico</div>
-              <p class="q-title">Fazer agora</p>
-              <p class="q-desc">Urgente e importante — ação imediata</p>
-            </div>
-            <div class="q-body" data-body="1"></div>
-          </div>
-          <div class="quadrant" data-quadrant="2">
-            <div class="q-head">
-              <div class="q-code mono"><span class="led led-green"></span>Q2 · rotina</div>
-              <p class="q-title">Planejar</p>
-              <p class="q-desc">Importante, não urgente — agendar</p>
-            </div>
-            <div class="q-body" data-body="2"></div>
-          </div>
-        </div>
-
-        <div class="matrix-row">
-          <div class="axis-side mono">não importante</div>
-          <div class="quadrant" data-quadrant="3">
-            <div class="q-head">
-              <div class="q-code mono"><span class="led led-amber"></span>Q3 · atenção</div>
-              <p class="q-title">Delegar</p>
-              <p class="q-desc">Urgente, baixo impacto — repassar</p>
-            </div>
-            <div class="q-body" data-body="3"></div>
-          </div>
-          <div class="quadrant" data-quadrant="4">
-            <div class="q-head">
-              <div class="q-code mono"><span class="led led-grey"></span>Q4 · baixo</div>
-              <p class="q-title">Eliminar</p>
-              <p class="q-desc">Baixo valor — cortar se possível</p>
-            </div>
-            <div class="q-body" data-body="4"></div>
-          </div>
-        </div>
+        <div class="q-body" data-kbody="todo"></div>
       </div>
-    </div>
-
-    <div class="tab-panel" id="panel-kanban" data-panel="kanban">
-      <div class="kanban-board">
-        <div class="kanban-col" data-status="todo">
-          <div class="q-head">
-            <div class="q-code mono"><span class="led led-grey"></span>backlog</div>
-            <p class="q-title">A fazer</p>
-            <p class="q-desc">Ainda não iniciada</p>
-          </div>
-          <div class="q-body" data-kbody="todo"></div>
+      <div class="kanban-col" data-status="doing">
+        <div class="q-head">
+          <div class="q-code mono"><span class="led led-amber"></span>em curso</div>
+          <p class="q-title">Em andamento</p>
+          <p class="q-desc">Está sendo executada agora</p>
         </div>
-        <div class="kanban-col" data-status="doing">
-          <div class="q-head">
-            <div class="q-code mono"><span class="led led-amber"></span>em curso</div>
-            <p class="q-title">Em andamento</p>
-            <p class="q-desc">Está sendo executada agora</p>
-          </div>
-          <div class="q-body" data-kbody="doing"></div>
+        <div class="q-body" data-kbody="doing"></div>
+      </div>
+      <div class="kanban-col" data-status="done">
+        <div class="q-head">
+          <div class="q-code mono"><span class="led led-green"></span>pronto</div>
+          <p class="q-title">Concluído</p>
+          <p class="q-desc">Feita — fica guardada aqui</p>
         </div>
-        <div class="kanban-col" data-status="done">
-          <div class="q-head">
-            <div class="q-code mono"><span class="led led-green"></span>pronto</div>
-            <p class="q-title">Concluído</p>
-            <p class="q-desc">Feita — fica guardada aqui</p>
-          </div>
-          <div class="q-body" data-kbody="done"></div>
-        </div>
+        <div class="q-body" data-kbody="done"></div>
       </div>
     </div>
 
@@ -334,20 +231,7 @@
 
   var STORAGE_KEY = "jarvis_tasks_v1";
   var SEEN_KEY = "jarvis_seen_ids_v1";
-  var TAB_KEY = "jarvis_active_tab";
 
-  var QUADRANTS = {
-    1: {tag:"alta prioridade"},
-    2: {tag:"prioridade normal"},
-    3: {tag:"atenção"},
-    4: {tag:"baixa prioridade"}
-  };
-  var QUADRANT_META = {
-    1: {label:"Q1", color:"var(--red)", bg:"var(--red-dim)"},
-    2: {label:"Q2", color:"var(--green)", bg:"var(--green-dim)"},
-    3: {label:"Q3", color:"var(--amber)", bg:"var(--amber-dim)"},
-    4: {label:"Q4", color:"var(--grey)", bg:"var(--grey-dim)"}
-  };
   var STATUSES = {
     todo:  {label:"a fazer",      title:"A fazer",       letter:"F"},
     doing: {label:"em andamento", title:"Em andamento",  letter:"A"},
@@ -362,28 +246,24 @@
   var SEED_TASKS = [
     {
       id: "t1",
-      quadrant: 1,
       title: "Pedir pro Rogério falar pro Josi aprovar o pedido",
       meta: "Motor LX · Decorfius",
       date: "ter · 01/09"
     },
     {
       id: "t2",
-      quadrant: 2,
       title: "Pedir acesso pro Thiago para ele criar requisição",
       meta: "",
       date: "ter · 01/09"
     },
     {
       id: "seed-bruno-engates",
-      quadrant: 1,
       title: "Falar com Bruno do almoxarifado: trocar os engates rápidos comprados errado e pedir os certos",
       meta: "Primeira coisa ao chegar na empresa",
       date: "qua · 02/09"
     },
     {
       id: "seed-rc-rogerio",
-      quadrant: 1,
       title: "Buscar no sistema CS o número das 2 RC dos motores da Decorfios e enviar pro Rogério",
       meta: "",
       date: "qua · 02/09"
@@ -408,7 +288,7 @@
     var changed = false;
     SEED_TASKS.forEach(function(seed){
       var alreadySeen = seen.indexOf(seed.id) !== -1;
-      if(alreadySeen) return; // already merged before (may since have been moved/completed by the user)
+      if(alreadySeen) return; // already merged before (may since have been moved by the user)
       seen.push(seed.id);
       changed = true;
       var alreadyInTasks = tasks.some(function(t){ return t.id === seed.id; });
@@ -418,20 +298,18 @@
     return tasks;
   }
 
-  // Older tasks (or ones created before the Kanban tab existed) may be
-  // missing quadrant/status — default them so both views always have
-  // somewhere to render every card.
+  // Older tasks (from before the flag/status fields existed) may be missing
+  // them — default so every card always has somewhere to render.
   function normalizeTasks(list){
     list.forEach(function(t){
       if(!t.status) t.status = "todo";
-      if(!t.quadrant) t.quadrant = 4;
       if(typeof t.flagged !== "boolean") t.flagged = false;
     });
     return list;
   }
 
   var tasks = normalizeTasks(loadAndMergeTasks());
-  var editingIds = {}; // task ids currently showing the Kanban edit form
+  var editingIds = {}; // task ids currently showing the edit form
 
   function todayLabel(){
     var d = new Date();
@@ -449,29 +327,6 @@
   }
 
   function render(){
-    renderMatrix();
-    renderKanban();
-    var doneCount = tasks.filter(function(t){ return t.status === "done"; }).length;
-    document.getElementById("completedCount").textContent = doneCount;
-  }
-
-  function renderMatrix(){
-    for(var q=1; q<=4; q++){
-      var body = document.querySelector('[data-body="'+q+'"]');
-      body.innerHTML = "";
-      var items = tasks.filter(function(t){ return t.quadrant === q; });
-
-      if(items.length === 0){
-        body.appendChild(emptyState());
-      } else {
-        items.forEach(function(t){ body.appendChild(renderCard(t, "matrix")); });
-      }
-
-      body.appendChild(renderAddRow("quadrant", q));
-    }
-  }
-
-  function renderKanban(){
     STATUS_ORDER.forEach(function(s){
       var body = document.querySelector('[data-kbody="'+s+'"]');
       body.innerHTML = "";
@@ -480,23 +335,22 @@
       if(items.length === 0){
         body.appendChild(emptyState());
       } else {
-        items.forEach(function(t){ body.appendChild(renderCard(t, "kanban")); });
+        items.forEach(function(t){ body.appendChild(renderCard(t)); });
       }
 
-      body.appendChild(renderAddRow("status", s));
+      body.appendChild(renderAddRow(s));
     });
+
+    var doneCount = tasks.filter(function(t){ return t.status === "done"; }).length;
+    document.getElementById("completedCount").textContent = doneCount;
   }
 
-  function renderCard(t, mode){
+  function renderCard(t){
     var row = document.createElement("div");
     row.className = "log-row" + (t.flagged ? " flagged" : "");
     row.draggable = true;
     row.setAttribute("data-id", t.id);
-    if(mode === "matrix"){
-      row.setAttribute("data-q", t.quadrant);
-    } else {
-      row.setAttribute("data-status", t.status);
-    }
+    row.setAttribute("data-status", t.status);
 
     row.addEventListener("dragstart", function(e){
       row.classList.add("dragging");
@@ -511,19 +365,9 @@
     var tags = document.createElement("div");
     tags.className = "log-row-head-tags";
 
-    if(mode === "kanban"){
-      var qMeta = QUADRANT_META[t.quadrant] || QUADRANT_META[4];
-      var qChip = document.createElement("span");
-      qChip.className = "log-tag";
-      qChip.textContent = qMeta.label;
-      qChip.style.color = qMeta.color;
-      qChip.style.background = qMeta.bg;
-      tags.appendChild(qChip);
-    }
-
     var tag = document.createElement("span");
-    tag.className = mode === "matrix" ? "log-tag" : "log-tag status-tag";
-    tag.textContent = mode === "matrix" ? QUADRANTS[t.quadrant].tag : STATUSES[t.status].label;
+    tag.className = "log-tag status-tag";
+    tag.textContent = STATUSES[t.status].label;
     tags.appendChild(tag);
 
     head.appendChild(tags);
@@ -535,7 +379,7 @@
 
     row.appendChild(head);
 
-    if(mode === "kanban" && editingIds[t.id]){
+    if(editingIds[t.id]){
       row.appendChild(renderEditForm(t));
       return row;
     }
@@ -555,39 +399,25 @@
     var controls = document.createElement("div");
     controls.className = "card-controls";
 
-    if(mode === "matrix"){
-      [1,2,3,4].forEach(function(q){
-        var btn = document.createElement("button");
-        btn.className = "move-btn";
-        btn.type = "button";
-        btn.textContent = q;
-        btn.setAttribute("data-target", q);
-        btn.setAttribute("aria-label", "Mover para quadrante " + q);
-        if(q === t.quadrant){ btn.disabled = true; }
-        btn.addEventListener("click", function(){ moveTask(t.id, q); });
-        controls.appendChild(btn);
-      });
-    } else {
-      STATUS_ORDER.forEach(function(s){
-        var btn = document.createElement("button");
-        btn.className = "move-btn";
-        btn.type = "button";
-        btn.textContent = STATUSES[s].letter;
-        btn.setAttribute("data-target", s);
-        btn.setAttribute("aria-label", "Mover para " + STATUSES[s].title);
-        if(s === t.status){ btn.disabled = true; }
-        btn.addEventListener("click", function(){ moveTaskStatus(t.id, s); });
-        controls.appendChild(btn);
-      });
+    STATUS_ORDER.forEach(function(s){
+      var btn = document.createElement("button");
+      btn.className = "move-btn";
+      btn.type = "button";
+      btn.textContent = STATUSES[s].letter;
+      btn.setAttribute("data-target", s);
+      btn.setAttribute("aria-label", "Mover para " + STATUSES[s].title);
+      if(s === t.status){ btn.disabled = true; }
+      btn.addEventListener("click", function(){ moveTaskStatus(t.id, s); });
+      controls.appendChild(btn);
+    });
 
-      var editBtn = document.createElement("button");
-      editBtn.className = "move-btn";
-      editBtn.type = "button";
-      editBtn.textContent = "✎";
-      editBtn.setAttribute("aria-label", "Editar tarefa");
-      editBtn.addEventListener("click", function(){ editingIds[t.id] = true; render(); });
-      controls.appendChild(editBtn);
-    }
+    var editBtn = document.createElement("button");
+    editBtn.className = "move-btn";
+    editBtn.type = "button";
+    editBtn.textContent = "✎";
+    editBtn.setAttribute("aria-label", "Editar tarefa");
+    editBtn.addEventListener("click", function(){ editingIds[t.id] = true; render(); });
+    controls.appendChild(editBtn);
 
     var flagBtn = document.createElement("button");
     flagBtn.className = "move-btn flag-btn" + (t.flagged ? " active" : "");
@@ -661,7 +491,7 @@
     return form;
   }
 
-  function renderAddRow(kind, value){
+  function renderAddRow(status){
     var wrap = document.createElement("div");
     wrap.className = "add-row";
 
@@ -710,8 +540,7 @@
       if(!val) return;
       tasks.push({
         id: "t" + Date.now(),
-        quadrant: kind === "quadrant" ? value : 4,
-        status: kind === "status" ? value : "todo",
+        status: status,
         title: val,
         meta: "",
         date: todayLabel()
@@ -738,14 +567,6 @@
     render();
   }
 
-  function moveTask(id, targetQ){
-    var t = tasks.find(function(x){ return x.id === id; });
-    if(!t || t.quadrant === targetQ) return;
-    t.quadrant = targetQ;
-    saveTasks(tasks);
-    render();
-  }
-
   function moveTaskStatus(id, targetStatus){
     var t = tasks.find(function(x){ return x.id === id; });
     if(!t || t.status === targetStatus) return;
@@ -753,23 +574,6 @@
     saveTasks(tasks);
     render();
   }
-
-
-  // drag & drop on quadrants
-  document.querySelectorAll(".quadrant").forEach(function(qEl){
-    qEl.addEventListener("dragover", function(e){
-      e.preventDefault();
-      qEl.classList.add("drag-over");
-    });
-    qEl.addEventListener("dragleave", function(){ qEl.classList.remove("drag-over"); });
-    qEl.addEventListener("drop", function(e){
-      e.preventDefault();
-      qEl.classList.remove("drag-over");
-      var id = e.dataTransfer.getData("text/plain");
-      var targetQ = parseInt(qEl.getAttribute("data-quadrant"), 10);
-      moveTask(id, targetQ);
-    });
-  });
 
   // drag & drop on kanban columns
   document.querySelectorAll(".kanban-col").forEach(function(cEl){
@@ -786,29 +590,6 @@
       moveTaskStatus(id, targetStatus);
     });
   });
-
-  // tab switching
-  var tabBtns = document.querySelectorAll(".tab-btn");
-  var tabPanels = document.querySelectorAll(".tab-panel");
-  function activateTab(tabKey){
-    var btnToActivate = null;
-    tabBtns.forEach(function(b){
-      var isMatch = b.getAttribute("data-tab") === tabKey;
-      b.classList.toggle("active", isMatch);
-      b.setAttribute("aria-selected", isMatch ? "true" : "false");
-      if(isMatch) btnToActivate = b;
-    });
-    if(!btnToActivate) return;
-    tabPanels.forEach(function(p){
-      p.classList.toggle("active", p.getAttribute("data-panel") === tabKey);
-    });
-    try{ localStorage.setItem(TAB_KEY, tabKey); }catch(e){}
-  }
-  tabBtns.forEach(function(btn){
-    btn.addEventListener("click", function(){ activateTab(btn.getAttribute("data-tab")); });
-  });
-  var savedTab = loadRaw(TAB_KEY) || (function(){ try{ return localStorage.getItem(TAB_KEY); }catch(e){ return null; } })();
-  if(savedTab && (savedTab === "matrix" || savedTab === "kanban")){ activateTab(savedTab); }
 
   function tickClock(){
     var d = new Date();
