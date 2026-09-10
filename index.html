@@ -76,6 +76,10 @@
     box-shadow:0 0 6px var(--green);display:inline-block;
     animation:pulse 2.2s ease-in-out infinite;
   }
+  .led-red{background:var(--red);box-shadow:0 0 6px var(--red);}
+  .led-green{background:var(--green);box-shadow:0 0 6px var(--green);}
+  .led-amber{background:var(--amber);box-shadow:0 0 6px var(--amber);}
+  .led-grey{background:var(--grey);box-shadow:none;animation:none;}
   #completedCount{color:var(--text);font-weight:600;}
   .statusbar-time{margin-left:auto;text-transform:uppercase;}
 
@@ -101,11 +105,6 @@
   .q-code{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:6px;}
   .q-title{font-size:16px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.03em;margin:0 0 4px 0;font-family:'IBM Plex Mono',monospace;}
   .q-desc{font-size:11.5px;color:var(--text-dimmer);margin:0;}
-
-  .led-red{background:var(--red);box-shadow:0 0 6px var(--red);}
-  .led-green{background:var(--green);box-shadow:0 0 6px var(--green);}
-  .led-amber{background:var(--amber);box-shadow:0 0 6px var(--amber);}
-  .led-grey{background:var(--grey);box-shadow:none;animation:none;}
 
   .q-body{display:flex;flex-direction:column;gap:10px;flex:1;}
 
@@ -261,7 +260,7 @@
 
   <div class="statusbar mono">
     <span class="statusbar-brand">JARVIS<span class="caret"></span></span>
-    <span class="statusbar-status"><span class="led led-green"></span>online</span>
+    <span class="statusbar-status"><span class="led led-amber" id="syncLed"></span><span id="syncLabel">conectando...</span></span>
     <span>rrp energia · pcm</span>
     <span>concluídas: <span id="completedCount">0</span></span>
     <span class="statusbar-time" id="clock"></span>
@@ -323,17 +322,24 @@
     </div>
 
     <footer class="no-print">
-      <span class="prompt">$</span> jarvis --log · alterações salvas neste navegador (local)<span class="caret"></span>
+      <span class="prompt">$</span> jarvis --log · sincronizado em nuvem, entre dispositivos<span class="caret"></span>
     </footer>
   </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 (function(){
   "use strict";
 
-  var STORAGE_KEY = "jarvis_tasks_v1";
-  var SEEN_KEY = "jarvis_seen_ids_v1";
+  var SUPABASE_URL = "https://rsqbbcsaqmxfriwwbamv.supabase.co";
+  var SUPABASE_KEY = "sb_publishable_yCxFBZus6N2UHxY2W8Xdmw_Jo7SCFIx";
+  var TABLE = "jarvis_tasks";
+  var db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
   var TAB_KEY = "jarvis_active_tab";
+  var LEGACY_STORAGE_KEY = "jarvis_tasks_v1"; // pre-sync per-browser data, read once to migrate
+  var MIGRATED_KEY = "jarvis_migrated_supabase_v1";
+  var CACHE_KEY = "jarvis_cache_v1"; // last known-good snapshot, used if offline on load
 
   var STATUSES = {
     todo:  {label:"a fazer",      title:"A fazer",       letter:"F"},
@@ -342,91 +348,76 @@
   };
   var STATUS_ORDER = ["todo","doing","done"];
 
-  // SEED_TASKS is the master list Claude appends to from chat. Each task has a
-  // stable id. On every load, any seed id not yet seen in this browser gets
-  // merged in once — new tasks show up automatically without duplicating or
-  // reviving ones the user already moved/completed.
-  var SEED_TASKS = [
-    {
-      id: "t1",
-      title: "Pedir pro Rogério falar pro Josi aprovar o pedido",
-      meta: "Motor LX · Decorfius",
-      date: "ter · 01/09"
-    },
-    {
-      id: "t2",
-      title: "Pedir acesso pro Thiago para ele criar requisição",
-      meta: "",
-      date: "ter · 01/09"
-    },
-    {
-      id: "seed-bruno-engates",
-      title: "Falar com Bruno do almoxarifado: trocar os engates rápidos comprados errado e pedir os certos",
-      meta: "Primeira coisa ao chegar na empresa",
-      date: "qua · 02/09"
-    },
-    {
-      id: "seed-rc-rogerio",
-      title: "Buscar no sistema CS o número das 2 RC dos motores da Decorfios e enviar pro Rogério",
-      meta: "",
-      date: "qua · 02/09"
-    },
-    {
-      id: "seed-tanque-liquefacao",
-      title: "Cadastrar o tanque novo da liquefação + os equipamentos no sistema, e instalar os TAGs",
-      meta: "Pendência urgente",
-      date: "sex · 04/09",
-      status: "todo",
-      flagged: true
-    },
-    {
-      id: "seed-dreno-supertech",
-      title: "Dreno Supertech",
-      meta: "",
-      date: "qui · 10/09"
-    }
-  ];
-
-  function loadRaw(key){
-    try{
-      var raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : null;
-    }catch(e){ return null; }
-  }
-  function saveTasks(tasks){
-    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)); }catch(e){}
-  }
-  function saveSeen(seen){
-    try{ localStorage.setItem(SEEN_KEY, JSON.stringify(seen)); }catch(e){}
-  }
-  function loadAndMergeTasks(){
-    var tasks = loadRaw(STORAGE_KEY) || [];
-    var seen = loadRaw(SEEN_KEY) || [];
-    var changed = false;
-    SEED_TASKS.forEach(function(seed){
-      var alreadySeen = seen.indexOf(seed.id) !== -1;
-      if(alreadySeen) return; // already merged before (may since have been moved by the user)
-      seen.push(seed.id);
-      changed = true;
-      var alreadyInTasks = tasks.some(function(t){ return t.id === seed.id; });
-      if(!alreadyInTasks){ tasks.push(Object.assign({}, seed)); }
-    });
-    if(changed){ saveTasks(tasks); saveSeen(seen); }
-    return tasks;
-  }
-
-  // Older tasks (from before the flag/status fields existed) may be missing
-  // them — default so every card always has somewhere to render.
-  function normalizeTasks(list){
-    list.forEach(function(t){
-      if(!t.status) t.status = "todo";
-      if(typeof t.flagged !== "boolean") t.flagged = false;
-    });
-    return list;
-  }
-
-  var tasks = normalizeTasks(loadAndMergeTasks());
+  var tasks = [];
   var editingIds = {}; // task ids currently showing the edit form
+  var dataLoaded = false;
+
+  function rowToTask(row){
+    return {
+      id: row.id,
+      title: row.title,
+      meta: row.meta || "",
+      date: row.date || "",
+      status: row.status || "todo",
+      flagged: !!row.flagged,
+      completedAt: row.completed_at || null
+    };
+  }
+  function taskToRow(t){
+    return {
+      id: t.id,
+      title: t.title,
+      meta: t.meta || "",
+      date: t.date || "",
+      status: t.status || "todo",
+      flagged: !!t.flagged,
+      completed_at: t.completedAt || null
+    };
+  }
+
+  function cacheTasks(list){
+    try{ localStorage.setItem(CACHE_KEY, JSON.stringify(list)); }catch(e){}
+  }
+  function loadCache(){
+    try{
+      var raw = localStorage.getItem(CACHE_KEY);
+      var list = raw ? JSON.parse(raw) : [];
+      return Array.isArray(list) ? list : [];
+    }catch(e){ return []; }
+  }
+
+  function fetchTasks(){
+    return db.from(TABLE).select("*").order("seq", {ascending: true}).then(function(res){
+      if(res.error){ throw res.error; }
+      var list = res.data.map(rowToTask);
+      cacheTasks(list);
+      return list;
+    });
+  }
+
+  // One-time migration: if this browser still has the old per-device
+  // localStorage task list (from before cloud sync existed) and hasn't
+  // pushed it up yet, upsert it into Supabase so nothing already
+  // allocated in the columns gets lost when this device switches over.
+  function migrateLocalOnce(){
+    try{
+      if(localStorage.getItem(MIGRATED_KEY)) return Promise.resolve();
+      var raw = localStorage.getItem(LEGACY_STORAGE_KEY);
+      if(!raw){ localStorage.setItem(MIGRATED_KEY, "1"); return Promise.resolve(); }
+      var localTasks = JSON.parse(raw);
+      if(!Array.isArray(localTasks) || localTasks.length === 0){
+        localStorage.setItem(MIGRATED_KEY, "1");
+        return Promise.resolve();
+      }
+      var rows = localTasks.map(taskToRow);
+      return db.from(TABLE).upsert(rows).then(function(res){
+        if(res.error){ console.error("migração local->supabase falhou", res.error); return; }
+        localStorage.setItem(MIGRATED_KEY, "1");
+      });
+    }catch(e){
+      return Promise.resolve();
+    }
+  }
 
   function todayLabel(){
     var d = new Date();
@@ -443,11 +434,15 @@
     return dd + "/" + mm + "/" + d.getFullYear();
   }
 
-  function emptyState(){
+  function emptyState(text){
     var empty = document.createElement("div");
     empty.className = "empty-state";
-    empty.textContent = "— fila vazia —";
+    empty.textContent = text || "— fila vazia —";
     return empty;
+  }
+
+  function hasOpenForm(){
+    return !!document.querySelector(".add-form.open") || Object.keys(editingIds).length > 0;
   }
 
   function render(){
@@ -458,7 +453,7 @@
       items.sort(function(a, b){ return (b.flagged ? 1 : 0) - (a.flagged ? 1 : 0); });
 
       if(items.length === 0){
-        body.appendChild(emptyState());
+        body.appendChild(emptyState(dataLoaded ? undefined : "— carregando... —"));
       } else {
         items.forEach(function(t){ body.appendChild(renderCard(t)); });
       }
@@ -470,6 +465,39 @@
     document.getElementById("completedCount").textContent = doneCount;
 
     renderAcabativas();
+  }
+
+  // Called when data changes on the server (our own writes, or another
+  // device's). Refetches and re-renders — but skips the render if a form
+  // is open right now, so a remote change from the phone doesn't wipe out
+  // something being typed on the computer mid-keystroke. The task list
+  // itself still gets updated in memory either way.
+  function refreshFromServer(){
+    fetchTasks().then(function(list){
+      tasks = list;
+      dataLoaded = true;
+      setSyncStatus("online");
+      if(hasOpenForm()) return;
+      render();
+    }).catch(function(err){
+      console.error("refresh falhou", err);
+      setSyncStatus("offline");
+    });
+  }
+
+  function setSyncStatus(state){
+    var led = document.getElementById("syncLed");
+    var label = document.getElementById("syncLabel");
+    if(state === "online"){
+      led.className = "led led-green";
+      label.textContent = "sincronizado";
+    } else if(state === "connecting"){
+      led.className = "led led-amber";
+      label.textContent = "conectando...";
+    } else {
+      led.className = "led led-red";
+      label.textContent = "offline";
+    }
   }
 
   function renderCard(t){
@@ -606,9 +634,11 @@
       if(!val) return;
       t.title = val;
       t.meta = metaInput.value.trim();
-      saveTasks(tasks);
       delete editingIds[t.id];
       render();
+      db.from(TABLE).update({title: t.title, meta: t.meta}).eq("id", t.id).then(function(res){
+        if(res.error) console.error("salvar edição falhou", res.error);
+      });
     }
     function cancel(){
       delete editingIds[t.id];
@@ -681,15 +711,20 @@
     function submit(){
       var val = input.value.trim();
       if(!val) return;
-      tasks.push({
+      var newTask = {
         id: "t" + Date.now(),
         status: status,
         title: val,
         meta: "",
-        date: todayLabel()
-      });
-      saveTasks(tasks);
+        date: todayLabel(),
+        flagged: false,
+        completedAt: null
+      };
+      tasks.push(newTask);
       render();
+      db.from(TABLE).insert(taskToRow(newTask)).then(function(res){
+        if(res.error) console.error("adicionar tarefa falhou", res.error);
+      });
     }
     confirmBtn.addEventListener("click", submit);
     input.addEventListener("input", function(){ autosize(input); });
@@ -707,21 +742,21 @@
     var t = tasks.find(function(x){ return x.id === id; });
     if(!t) return;
     t.flagged = !t.flagged;
-    saveTasks(tasks);
     render();
+    db.from(TABLE).update({flagged: t.flagged}).eq("id", id).then(function(res){
+      if(res.error) console.error("marcar destaque falhou", res.error);
+    });
   }
 
   function moveTaskStatus(id, targetStatus){
     var t = tasks.find(function(x){ return x.id === id; });
     if(!t || t.status === targetStatus) return;
     t.status = targetStatus;
-    if(targetStatus === "done"){
-      t.completedAt = Date.now();
-    } else {
-      delete t.completedAt;
-    }
-    saveTasks(tasks);
+    t.completedAt = targetStatus === "done" ? Date.now() : null;
     render();
+    db.from(TABLE).update({status: t.status, completed_at: t.completedAt}).eq("id", id).then(function(res){
+      if(res.error) console.error("mover tarefa falhou", res.error);
+    });
   }
 
   // Acabativas: read-only weekly report built from whatever sits in the
@@ -760,7 +795,7 @@
     body.innerHTML = "";
 
     if(done.length === 0){
-      body.appendChild(emptyState());
+      body.appendChild(emptyState(dataLoaded ? undefined : "— carregando... —"));
     } else {
       done.forEach(function(t){
         var item = document.createElement("div");
@@ -870,7 +905,6 @@
 
   function tickClock(){
     var d = new Date();
-    var dias = ["domingo","segunda-feira","terça-feira","quarta-feira","quinta-feira","sexta-feira","sábado"];
     var dd = String(d.getDate()).padStart(2,"0");
     var mm = String(d.getMonth()+1).padStart(2,"0");
     var hh = String(d.getHours()).padStart(2,"0");
@@ -898,10 +932,6 @@
         .catch(function(){ return null; });
     }
 
-    function hasOpenForm(){
-      return !!document.querySelector(".add-form.open");
-    }
-
     function showReloadToast(){
       var toast = document.createElement("div");
       toast.className = "update-toast mono no-print";
@@ -926,7 +956,39 @@
     setInterval(checkForUpdate, CHECK_INTERVAL_MS);
   })();
 
-  render();
+  // Realtime sync: any insert/update/delete on jarvis_tasks (from this
+  // device or any other) triggers a refetch + re-render, so the phone and
+  // the computer converge on the same board without a manual refresh.
+  function subscribeRealtime(){
+    db.channel("jarvis-tasks-changes")
+      .on("postgres_changes", { event: "*", schema: "public", table: TABLE }, function(){
+        refreshFromServer();
+      })
+      .subscribe(function(status){
+        if(status === "SUBSCRIBED"){
+          setSyncStatus("online");
+        } else if(status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED"){
+          setSyncStatus("offline");
+        }
+      });
+  }
+
+  setSyncStatus("connecting");
+  migrateLocalOnce().then(function(){
+    return fetchTasks();
+  }).then(function(list){
+    tasks = list;
+    dataLoaded = true;
+    render();
+    setSyncStatus("online");
+    subscribeRealtime();
+  }).catch(function(err){
+    console.error("carregamento inicial falhou, usando cache local", err);
+    tasks = loadCache();
+    dataLoaded = true;
+    render();
+    setSyncStatus("offline");
+  });
 })();
 
 // Instalar como app: captura o beforeinstallprompt (Chrome/Edge/Android) e
