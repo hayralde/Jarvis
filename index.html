@@ -455,6 +455,7 @@
       var body = document.querySelector('[data-kbody="'+s+'"]');
       body.innerHTML = "";
       var items = tasks.filter(function(t){ return t.status === s; });
+      items.sort(function(a, b){ return (b.flagged ? 1 : 0) - (a.flagged ? 1 : 0); });
 
       if(items.length === 0){
         body.appendChild(emptyState());
