@@ -4,7 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jarvis — Kanban</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMxMjE2MGQiLz4KICA8dGV4dCB4PSIzMiIgeT0iNDYiIGZvbnQtZmFtaWx5PSInSUJNIFBsZXggTW9ubycsdWktbW9ub3NwYWNlLG1vbm9zcGFjZSIgZm9udC1zaXplPSIzNiIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzNkZGM3MyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+SjwvdGV4dD4KPC9zdmc+Cg==">
+<meta name="theme-color" content="#12160d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Jarvis">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -219,6 +226,23 @@
     animation:toastIn .2s ease-out;
   }
   @keyframes toastIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+  .install-toast{
+    position:fixed;bottom:20px;right:20px;z-index:9999;max-width:280px;
+    background:var(--panel);border:1px solid var(--border-bright);color:var(--text);
+    padding:14px 16px;box-shadow:0 4px 16px rgba(0,0,0,.12);
+    animation:toastIn .2s ease-out;
+  }
+  .install-toast p{margin:0 0 12px 0;font-size:12px;line-height:1.5;color:var(--text-dim);}
+  .install-toast .install-actions{display:flex;gap:6px;}
+  .install-toast button{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;
+    padding:7px 12px;cursor:pointer;border:1px solid var(--border-bright);background:transparent;color:var(--text-dim);
+  }
+  .install-toast button.primary{border-color:var(--green);color:var(--green);}
+  .install-toast button.primary:hover{background:var(--green);color:#fff;}
+  .install-toast button:hover{color:var(--text);}
+  @media (max-width:680px){.install-toast{left:20px;right:20px;max-width:none;}}
 
   @media (max-width:680px){
     .kanban-board{grid-template-columns:1fr;}
@@ -902,6 +926,79 @@
   })();
 
   render();
+})();
+
+// Instalar como app: captura o beforeinstallprompt (Chrome/Edge/Android) e
+// mostra um aviso pedindo pra instalar, em vez de esperar o usuário achar a
+// opção sozinho no menu do navegador. iOS Safari não dispara esse evento —
+// lá a instalação continua sendo manual via Compartilhar > Adicionar à Tela
+// de Início, então o aviso simplesmente nunca aparece nesse caso.
+(function(){
+  "use strict";
+  var DISMISS_KEY = "jarvis_install_dismissed_v1";
+  var deferredPrompt = null;
+
+  function wasDismissed(){
+    try{ return localStorage.getItem(DISMISS_KEY) === "1"; }catch(e){ return false; }
+  }
+  function setDismissed(v){
+    try{
+      if(v) localStorage.setItem(DISMISS_KEY, "1");
+      else localStorage.removeItem(DISMISS_KEY);
+    }catch(e){}
+  }
+
+  function showInstallToast(){
+    if(document.getElementById("installToast")) return;
+
+    var toast = document.createElement("div");
+    toast.className = "install-toast mono no-print";
+    toast.id = "installToast";
+
+    var text = document.createElement("p");
+    text.textContent = "instalar o Jarvis como app? abre mais rápido, direto da tela inicial, sem a barra do navegador.";
+    toast.appendChild(text);
+
+    var actions = document.createElement("div");
+    actions.className = "install-actions";
+
+    var installBtn = document.createElement("button");
+    installBtn.type = "button";
+    installBtn.className = "primary";
+    installBtn.textContent = "instalar";
+    installBtn.addEventListener("click", function(){
+      toast.remove();
+      if(!deferredPrompt) return;
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.finally(function(){ deferredPrompt = null; });
+    });
+
+    var laterBtn = document.createElement("button");
+    laterBtn.type = "button";
+    laterBtn.textContent = "agora não";
+    laterBtn.addEventListener("click", function(){
+      toast.remove();
+      setDismissed(true);
+    });
+
+    actions.appendChild(installBtn);
+    actions.appendChild(laterBtn);
+    toast.appendChild(actions);
+    document.body.appendChild(toast);
+  }
+
+  window.addEventListener("beforeinstallprompt", function(e){
+    e.preventDefault();
+    deferredPrompt = e;
+    if(!wasDismissed()) showInstallToast();
+  });
+
+  window.addEventListener("appinstalled", function(){
+    deferredPrompt = null;
+    var toast = document.getElementById("installToast");
+    if(toast) toast.remove();
+    setDismissed(false);
+  });
 })();
 </script>
 </body>
