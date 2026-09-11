@@ -262,11 +262,55 @@
     .kanban-col{margin:0 0 -1px 0;}
   }
 
+  .print-only{display:none;}
+
+  /* Printed/PDF output is a formal document for the supervisor, not a
+     screenshot of the app — drop the terminal/console look entirely
+     (mono font, colored cards, LED dots) in favor of plain black-on-white
+     corporate-report typography. Everything below this point only takes
+     effect on paper or when saving to PDF via the print dialog. */
   @media print{
     .statusbar,.tabbar,.no-print{display:none !important;}
-    body{background:#fff;}
-    .wrap{padding:20px;max-width:100%;}
-    .report-card{border:none;padding:0;}
+    .print-only{display:block;}
+    body{background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;}
+    .wrap{padding:0;max-width:100%;}
+    .report-card{border:none;padding:0;background:#fff;}
+
+    .report-print-letterhead{margin-bottom:14px;}
+    .report-print-letterhead p{margin:0 0 2px 0;font-size:10.5px;color:#000;}
+
+    .report-header{border:none;padding:0;margin:0 0 14px 0;}
+    .report-header .q-code{display:none;}
+    .report-header .q-title{
+      font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;
+      color:#000;text-transform:none;letter-spacing:0;margin:0 0 4px 0;
+    }
+    .report-header .q-desc{font-size:10.5px;color:#333;}
+
+    .report-meta{
+      font-family:Arial,Helvetica,sans-serif;
+      border-top:1px solid #000;border-bottom:1px solid #000;padding:6px 0;
+      margin-bottom:22px;color:#000;text-transform:none;letter-spacing:0;font-size:10px;
+    }
+
+    .report-section{break-inside:avoid;margin-bottom:20px;}
+    .report-section-head{font-family:Arial,Helvetica,sans-serif;border-bottom:1.5px solid #000;padding-bottom:4px;}
+    .report-section-head .led{display:none;}
+    .report-section-label{color:#000;font-size:12px;}
+    .report-section-count{color:#000;}
+
+    .report-item{
+      border-left:none;border-bottom:1px solid #ddd;background:#fff !important;
+      padding:6px 0;break-inside:avoid;
+    }
+    .report-item-date{font-family:Arial,Helvetica,sans-serif;}
+    .report-item:last-child{border-bottom:none;}
+    .report-item-title{color:#000;font-size:11px;}
+    .report-item.flagged .report-item-title::before{content:"[URGENTE]  ";font-weight:700;}
+    .report-item-date{color:#333;}
+    .report-item-meta{color:#333;}
+
+    .report-print-footer{margin-top:28px;padding-top:10px;border-top:1px solid #000;font-size:10px;color:#000;}
   }
 </style>
 </head>
@@ -319,6 +363,9 @@
       <div class="report-card">
         <div class="report-header">
           <div class="q-code mono"><span class="led led-green"></span>relatório executivo</div>
+          <div class="report-print-letterhead print-only">
+            <p><strong>RRP ENERGIA</strong> — Planejamento e Controle de Manutenção (PCM)</p>
+          </div>
           <p class="q-title">Relatório de Atividades</p>
           <p class="q-desc">RRP Energia · PCM — panorama do que está a fazer, em andamento e concluído, pronto para o supervisor</p>
         </div>
@@ -358,6 +405,10 @@
           <button type="button" class="primary" id="copyReportBtn">copiar relatório</button>
           <button type="button" id="printReportBtn">imprimir / salvar pdf</button>
           <span id="copyStatus" class="mono"></span>
+        </div>
+
+        <div class="report-print-footer print-only">
+          <p>Elaborado por: José Cordeiro — PCM</p>
         </div>
       </div>
     </div>
