@@ -196,58 +196,172 @@
   .add-form-actions button.primary:hover{background:var(--green);color:#fff;}
   .add-form-actions button:hover{color:var(--text);}
 
-  /* acabativas (report) */
-  .report-card{background:var(--panel);border:1px solid var(--border);padding:24px;}
-  .report-header{margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border);}
-  .report-doc-intro{font-size:11.5px;color:var(--text-dimmer);line-height:1.5;margin:6px 0 0 0;max-width:70ch;}
-  .report-header-fields{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:10.5px;color:var(--text-dim);margin-top:8px;}
-  .report-header-fields strong{color:var(--text);font-weight:700;}
-  .report-intro{font-size:12px;color:var(--text-dim);line-height:1.6;margin:0;max-width:70ch;}
-
-  .report-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-bottom:20px;margin-bottom:24px;border-bottom:1px dashed var(--border);}
-  .report-actions button{
-    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em;text-transform:uppercase;
-    padding:8px 14px;cursor:pointer;border:1px solid var(--border-bright);background:transparent;color:var(--text-dim);
+  /* ===== acabativas: executive report — visual design matched to a
+     reference mockup the user provided, populated with only real data
+     (no fabricated %-complete, assignee, theme-grouping or risk stats —
+     see memory / commit log for that decision). Scoped under .exec-*
+     with hardcoded hex colors (its own design language, deliberately
+     not reusing the console theme's --tokens). ===== */
+  .exec-outer{background:#E9EEF5;padding:16px;border-radius:14px;}
+  .exec-doc{
+    background:#fff;border-radius:14px;overflow:hidden;border:1px solid #e2e8f0;
+    box-shadow:0 20px 60px -20px rgba(15,35,64,0.25);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    color:#1e293b;
   }
-  .report-actions button:hover{border-color:var(--text);color:var(--text);}
-  .report-actions button.primary{border-color:var(--green);color:var(--green);}
-  .report-actions button.primary:hover{background:var(--green);color:#fff;}
-  #copyStatus{font-size:11px;color:var(--green);}
 
-  .report-block{margin-bottom:24px;break-inside:avoid;}
-  .report-block:last-of-type{margin-bottom:0;}
-  .report-block-head{
-    display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:6px;
-    border-bottom:1px solid var(--border);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
-    font-weight:700;color:var(--text);
+  .exec-hero{position:relative;overflow:hidden;background:#0E2342;color:#fff;padding:22px 26px 20px;}
+  .exec-hero-circle{position:absolute;top:0;right:0;width:280px;height:280px;background:#1B3A6B;border-radius:50%;opacity:.4;transform:translate(90px,-140px);}
+  .exec-hero-line{position:absolute;bottom:0;left:200px;width:220px;height:2px;background:linear-gradient(to right, rgba(46,134,222,0), rgba(46,134,222,.6), transparent);}
+  .exec-hero-top{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;}
+  .exec-hero-brand{display:flex;align-items:center;gap:12px;}
+  .exec-hero-logo{width:38px;height:38px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .exec-hero-logo svg{width:20px;height:20px;color:#0E2342;}
+  .exec-hero-company{font-size:15px;font-weight:800;letter-spacing:.02em;margin:0;line-height:1;}
+  .exec-hero-company span{font-weight:500;color:rgba(255,255,255,.7);margin-left:8px;font-size:13px;letter-spacing:.08em;}
+  .exec-hero-dept{font-size:11px;font-weight:600;letter-spacing:.12em;color:rgba(255,255,255,.6);margin:5px 0 0 0;text-transform:uppercase;}
+  .exec-hero-title{margin:16px 0 0 0;font-size:20px;font-weight:700;letter-spacing:-.01em;line-height:1.15;}
+  .exec-hero-chips{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;font-size:11px;color:rgba(255,255,255,.75);}
+  .exec-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:5px 12px;}
+  .exec-chip svg{width:13px;height:13px;flex-shrink:0;}
+
+  .exec-hero-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0;}
+  .exec-hero-badge{font-size:10px;font-weight:700;letter-spacing:.1em;background:#fff;color:#0E2342;border-radius:999px;padding:6px 12px;text-transform:uppercase;white-space:nowrap;}
+  .exec-eff-card{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:12px 14px;min-width:160px;}
+  .exec-eff-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .exec-eff-label{font-size:9px;letter-spacing:.12em;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;margin:0;}
+  .exec-eff-value{font-size:22px;font-weight:800;line-height:1;margin:4px 0 0 0;}
+  .exec-eff-sub{font-size:10px;color:rgba(255,255,255,.6);margin:4px 0 0 0;font-weight:500;}
+  .exec-eff-ring{position:relative;width:52px;height:52px;flex-shrink:0;}
+  .exec-eff-svg{width:52px;height:52px;transform:rotate(-90deg);}
+  .exec-eff-seg{transition:stroke-dasharray .3s ease;}
+  .exec-eff-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+  .exec-eff-icon svg{width:16px;height:16px;color:#27AE60;}
+  .exec-eff-bar{margin-top:10px;height:4px;width:100%;background:rgba(255,255,255,.15);border-radius:999px;overflow:hidden;display:flex;}
+  .exec-eff-bar-seg{height:100%;transition:width .3s ease;}
+
+  .exec-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:14px 26px;border-bottom:1px solid #e2e8f0;background:#fafbfd;}
+  .exec-actions button{
+    font-family:inherit;font-size:11.5px;font-weight:600;
+    padding:8px 14px;cursor:pointer;border:1px solid #cbd5e1;background:#fff;color:#475569;border-radius:8px;
   }
-  .report-body{display:flex;flex-direction:column;gap:10px;}
-  .report-item{border-left:2px solid var(--border-bright);padding:8px 12px;background:rgba(35,41,34,0.02);break-inside:avoid;}
-  .report-item[data-status="todo"]{border-left-color:var(--grey);}
-  .report-item[data-status="doing"]{border-left-color:var(--amber);}
-  .report-item[data-status="done"]{border-left-color:var(--green);}
-  .report-item.flagged{background:var(--red-dim);}
-  .report-item-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;}
-  .report-item-title{font-size:13.5px;color:var(--text);margin:0;line-height:1.5;white-space:pre-wrap;word-break:break-word;}
-  .report-item-date{font-size:10.5px;color:var(--text-dimmer);white-space:nowrap;}
-  .report-item-meta{font-size:11.5px;color:var(--text-dim);margin:4px 0 0 0;white-space:pre-wrap;word-break:break-word;}
-  .report-remaining-note{font-size:11px;color:var(--text-dimmer);margin:8px 0 0 0;font-style:italic;}
+  .exec-actions button:hover{border-color:#94a3b8;color:#1e293b;}
+  .exec-actions button.primary{border-color:#27AE60;color:#27AE60;}
+  .exec-actions button.primary:hover{background:#27AE60;color:#fff;}
+  .exec-copy-status{font-size:11px;color:#27AE60;}
 
-  .report-priority-groups{display:grid;grid-template-columns:1fr 1fr;gap:0 20px;}
-  .report-subgroup-label{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-dim);margin:0 0 8px 0;}
+  .exec-body{padding:16px 26px 20px;}
 
-  .report-dashboard{display:flex;align-items:center;gap:28px;flex-wrap:wrap;}
-  .report-donut{flex-shrink:0;}
-  .donut-seg{transition:stroke-dasharray .3s ease, stroke-dashoffset .3s ease;}
-  .donut-total-num{font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:700;fill:var(--text);}
-  .donut-total-label{font-family:'IBM Plex Mono',monospace;font-size:2.6px;letter-spacing:.05em;fill:var(--text-dimmer);text-transform:uppercase;}
+  .exec-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+  @media (min-width:680px){.exec-stats{grid-template-columns:repeat(4,1fr);}}
+  .exec-stat-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;}
+  .exec-stat-card::before{content:"";position:absolute;top:0;left:0;width:100%;height:3px;background:transparent;}
+  .exec-stat-card-orange::before{background:#E67E22;}
+  .exec-stat-card-blue::before{background:#2E86DE;}
+  .exec-stat-card-green::before{background:#27AE60;}
+  .exec-stat-card-orange{border-color:rgba(245,194,138,.6);}
+  .exec-stat-card-blue{border-color:rgba(155,196,240,.6);}
+  .exec-stat-card-green{background:#F0FAF4;border-color:#A9DFC0;}
+  .exec-stat-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+  .exec-stat-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#64748b;}
+  .exec-stat-card-orange .exec-stat-label{color:#C46A1B;}
+  .exec-stat-card-blue .exec-stat-label{color:#2E86DE;}
+  .exec-stat-card-green .exec-stat-label{color:#1E8A4C;}
+  .exec-stat-icon{width:28px;height:28px;border-radius:999px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .exec-stat-icon svg{width:15px;height:15px;color:#475569;}
+  .exec-stat-icon-orange{background:#FEF2E6;}
+  .exec-stat-icon-orange svg{color:#E67E22;}
+  .exec-stat-icon-blue{background:#EBF3FD;}
+  .exec-stat-icon-blue svg{color:#2E86DE;}
+  .exec-stat-icon-green{background:#fff;border:1px solid #A9DFC0;}
+  .exec-stat-icon-green svg{color:#27AE60;}
+  .exec-stat-num-row{display:flex;align-items:baseline;gap:8px;margin-top:8px;}
+  .exec-stat-num{font-size:26px;font-weight:800;color:#0f172a;line-height:1;margin:0;}
+  .exec-stat-card-green .exec-stat-num{color:#1E8A4C;}
+  .exec-stat-pct{font-size:12px;font-weight:700;border-radius:999px;padding:2px 8px;}
+  .exec-pct-orange{color:#E67E22;background:#FEF2E6;}
+  .exec-pct-blue{color:#2E86DE;background:#EBF3FD;}
+  .exec-pct-green{color:#fff;background:#27AE60;}
+  .exec-stat-sub{font-size:11px;color:#64748b;font-weight:500;margin:4px 0 0 0;}
+  .exec-stat-card-green .exec-stat-sub{color:rgba(30,138,76,.8);}
 
-  .report-table{border-collapse:collapse;font-size:12px;flex:1;min-width:200px;}
-  .report-table th,.report-table td{text-align:left;padding:6px 16px 6px 0;}
-  .report-table th{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dimmer);border-bottom:1px solid var(--border);font-weight:700;}
-  .report-table td{border-bottom:1px solid var(--border);color:var(--text);}
-  .report-table td:nth-child(2),.report-table td:nth-child(3),.report-table th:nth-child(2),.report-table th:nth-child(3){text-align:right;padding-right:0;}
-  .report-table tfoot td{border-bottom:none;border-top:1.5px solid var(--border-bright);font-weight:700;padding-top:8px;}
+  .exec-cols{display:grid;grid-template-columns:1fr;gap:16px;margin-top:16px;}
+  @media (min-width:820px){.exec-cols{grid-template-columns:1.3fr 1fr;}}
+
+  .exec-section{border-radius:12px;overflow:hidden;border:1px solid;display:flex;flex-direction:column;}
+  .exec-section-green{background:#F4FBF7;border-color:#BFE8CD;}
+  .exec-section-amber{background:#FFFBEB;border-color:#F9E4A0;}
+  .exec-section-head{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid;flex-wrap:wrap;}
+  .exec-section-green .exec-section-head{background:#E8F6EE;border-color:#BFE8CD;}
+  .exec-section-amber .exec-section-head{background:#FFF6D1;border-color:#F9E4A0;}
+  .exec-section-head-left{display:flex;align-items:center;gap:8px;}
+  .exec-section-head h3{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;margin:0;}
+  .exec-section-green h3{color:#1A6B3A;}
+  .exec-section-amber h3{color:#7A5A00;}
+  .exec-section-icon{width:24px;height:24px;border-radius:999px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .exec-section-icon svg{width:14px;height:14px;color:#fff;}
+  .exec-icon-green{background:#27AE60;}
+  .exec-icon-amber{background:#F1C40F;}
+  .exec-icon-amber svg{color:#7A5A00;}
+  .exec-section-badge{margin-left:auto;font-size:10px;font-weight:700;border-radius:999px;padding:4px 10px;background:#fff;border:1px solid;}
+  .exec-section-green .exec-section-badge{color:#1A6B3A;border-color:#BFE8CD;}
+  .exec-section-sub{margin-left:auto;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(122,90,0,.7);}
+  .exec-section-body{padding:14px;display:flex;flex-direction:column;gap:9px;}
+
+  .exec-done-item{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid #D6EEDF;border-radius:9px;padding:10px 12px;}
+  .exec-done-num{flex-shrink:0;width:24px;height:24px;border-radius:999px;background:#27AE60;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .exec-done-title{flex:1;min-width:0;font-size:11.5px;line-height:1.4;font-weight:600;color:#1A3A2A;margin:0;white-space:pre-wrap;word-break:break-word;}
+  .exec-done-date{flex-shrink:0;font-size:10px;color:#5f9e79;font-weight:600;white-space:nowrap;margin-top:2px;}
+
+  .exec-doing-item{background:#fff;border:1px solid #F9E4A0;border-radius:10px;padding:11px 14px;}
+  .exec-doing-title{font-size:11.5px;font-weight:600;color:#5A4100;line-height:1.35;margin:0;white-space:pre-wrap;word-break:break-word;}
+  .exec-doing-date{font-size:10px;color:#8A6D00;font-weight:600;margin-top:3px;}
+  .exec-doing-meta{font-size:10px;color:#9A7D1A;margin-top:4px;font-weight:500;white-space:pre-wrap;word-break:break-word;}
+
+  .exec-priority-block{margin-top:16px;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;}
+  .exec-priority-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 16px;background:#F8FAFC;border-bottom:1px solid #e2e8f0;}
+  .exec-priority-head h3{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#1e293b;margin:0;}
+  .exec-priority-sub{margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;}
+  .exec-priority-icon{width:24px;height:24px;border-radius:999px;background:#E67E22;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .exec-priority-icon svg{width:14px;height:14px;color:#fff;}
+  .exec-priority-groups2{padding:14px;display:grid;grid-template-columns:1fr;gap:12px;background:#fff;}
+  @media (min-width:680px){.exec-priority-groups2{grid-template-columns:1fr 1fr;}}
+  .exec-group{border-radius:10px;padding:12px;border:1px solid;}
+  .exec-group-orange{background:#FFFBF6;border-color:#FAD9B5;}
+  .exec-group-blue{background:#FBFDFF;border-color:#e2e8f0;}
+  .exec-group-head{display:flex;align-items:center;gap:6px;margin-bottom:10px;}
+  .exec-group-head svg{width:14px;height:14px;flex-shrink:0;}
+  .exec-group-orange svg{color:#E67E22;}
+  .exec-group-blue svg{color:#2E86DE;}
+  .exec-group-head h4{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;margin:0;}
+  .exec-group-orange h4{color:#8A4A14;}
+  .exec-group-blue h4{color:#0E2342;}
+  .exec-group-count{margin-left:auto;font-size:10px;font-weight:700;border-radius:999px;padding:2px 8px;}
+  .exec-count-orange{background:#FEF2E6;color:#E67E22;}
+  .exec-count-blue{background:#EBF3FD;color:#2E86DE;}
+  .exec-group ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+  .exec-group li{display:flex;gap:8px;font-size:11px;line-height:1.35;color:#334155;}
+  .exec-group li::before{content:"";width:4px;height:4px;border-radius:999px;margin-top:6px;flex-shrink:0;}
+  .exec-group-orange li::before{background:#E67E22;}
+  .exec-group-blue li::before{background:#2E86DE;}
+  .exec-group-remaining{font-size:10.5px;color:#64748b;font-style:italic;margin:6px 0 0 0;}
+
+  .exec-empty{font-size:11px;color:#94a3b8;padding:8px 0;}
+
+  .exec-footer{
+    padding:14px 26px;background:#F8FAFC;border-top:1px solid #e2e8f0;
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;
+  }
+  .exec-footer-left{display:flex;flex-wrap:wrap;align-items:center;font-size:11px;}
+  .exec-footer-author{font-weight:700;color:#1e293b;}
+  .exec-footer-dot{width:4px;height:4px;border-radius:999px;background:#cbd5e1;margin:0 8px;display:inline-block;}
+  .exec-footer-summary{color:#64748b;font-weight:500;}
+  .exec-footer-link{
+    display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#2E86DE;
+    background:#fff;border:1px solid #e2e8f0;border-radius:999px;padding:5px 12px;text-decoration:none;
+  }
+  .exec-footer-link svg{width:13px;height:13px;}
+  .exec-footer-link:hover{background:#EBF3FD;}
 
   footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text-dimmer);font-family:'IBM Plex Mono',monospace;}
   footer .prompt{color:var(--green);}
@@ -283,80 +397,26 @@
     .kanban-col{margin:0 0 -1px 0;}
   }
 
-  .print-only{display:none;}
-
-  /* Printed/PDF output is a one-page executive summary for the supervisor
-     — brief, visual, scannable in seconds — not a screenshot of the app
-     and not a raw task dump. Drop the terminal/console look entirely
-     (mono font, colored cards, LED dots) for plain black-on-white
-     corporate-report typography. Content itself is already curated to
-     stay short (curated highlights, not every completed task; pendências
-     grouped by criticality instead of a raw list — see renderAcabativas),
-     so it comfortably fits one sheet without needing a special print-only
-     layout trick. Everything below this point only takes effect on paper
-     or when saving to PDF via the print dialog. */
+  /* Printed/PDF output reuses the exact same colored design as the screen
+     view (the reference mockup this was matched to was itself built
+     print-aware — light card backgrounds, no heavy dark fills except the
+     hero header). Only the outer page chrome (gray backdrop, shadow,
+     rounded corners, action buttons) is stripped for paper. */
   @media print{
-    @page{size:A4;margin:12mm;}
-
+    @page{size:A4;margin:10mm;}
     .statusbar,.tabbar,.no-print{display:none !important;}
-    .print-only{display:block;}
-    body{background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;font-size:13px;}
+    body{background:#fff;}
     .wrap{padding:0;max-width:100%;}
-    .report-card{border:none;padding:0;background:#fff;}
-
-    .report-print-letterhead{margin-bottom:10px;}
-    .report-print-letterhead p{margin:0;font-size:12px;color:#000;}
-
-    .report-header{border:none;padding:0;margin:0 0 12px 0;}
-    .report-header .q-code{display:none;}
-    .report-header .q-title{
-      font-family:Georgia,'Times New Roman',serif;font-size:25px;font-weight:700;
-      color:#000;text-transform:none;letter-spacing:0;margin:0 0 5px 0;
-    }
-    .report-header .q-desc{display:none;}
-    .report-doc-intro{font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.5;color:#333;margin:6px 0 0 0;max-width:none;}
-    .report-header-fields{
-      font-family:Arial,Helvetica,sans-serif;
-      border-top:1px solid #000;border-bottom:1px solid #000;padding:6px 0;
-      margin-top:8px;color:#000;font-size:12px;gap:5px 16px;
-    }
-    .report-header-fields strong{color:#000;}
-    .report-intro{font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.55;color:#222;margin:0;max-width:none;}
-
-    .report-block{break-inside:avoid;margin-bottom:13px;}
-    .report-block-head{
-      font-family:Arial,Helvetica,sans-serif;border-bottom:1.5px solid #000;
-      padding-bottom:5px;margin-bottom:8px;font-size:12.5px;color:#000;
-    }
-    .report-block-head .led{display:none;}
-    .report-body{gap:6px;}
-    .report-remaining-note{font-size:11.5px;color:#333;margin-top:6px;}
-
-    .report-priority-groups{gap:0 18px;}
-    .report-subgroup-label{font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#000;margin-bottom:6px;}
-
-    .report-dashboard{gap:18px;}
-    .report-donut{width:92px;height:92px;}
-    .donut-total-num,.donut-total-label{fill:#000;}
-    .donut-ring{stroke:#ccc;}
-
-    .report-table{font-family:Arial,Helvetica,sans-serif;font-size:12.5px;}
-    .report-table th{color:#000;border-bottom:1px solid #000;}
-    .report-table td{color:#000;border-bottom:1px solid #ddd;}
-    .report-table tfoot td{border-top:1.5px solid #000;}
-
-    .report-item{
-      border-left:none;border-bottom:1px solid #eee;background:#fff !important;
-      padding:5px 0;break-inside:avoid;
-    }
-    .report-item:last-child{border-bottom:none;}
-    .report-item-head{gap:8px;}
-    .report-item-title{color:#000;font-size:12.5px;line-height:1.4;}
-    .report-item.flagged .report-item-title::before{content:"! ";font-weight:700;}
-    .report-item-date{font-family:Arial,Helvetica,sans-serif;color:#555;font-size:11px;}
-    .report-item-meta{font-family:Arial,Helvetica,sans-serif;color:#555;font-size:11px;}
-
-    .report-print-footer{margin-top:12px;padding-top:7px;border-top:1px solid #000;font-size:9.5px;color:#000;}
+    .exec-outer{background:#fff;padding:0;border-radius:0;}
+    .exec-doc{box-shadow:none;border-radius:0;border:none;}
+    .exec-section,.exec-priority-block,.exec-stat-card{break-inside:avoid;}
+    .exec-done-item,.exec-doing-item{break-inside:avoid;}
+    /* A4's printable width (~718px after @page margins) is narrower than
+       the 820px/680px min-width breakpoints these two grids use on
+       screen, so without a print-specific override they'd fall back to a
+       single column and print far taller than necessary. */
+    .exec-cols{grid-template-columns:1.3fr 1fr !important;}
+    .exec-priority-groups2{grid-template-columns:1fr 1fr !important;}
   }
 </style>
 </head>
@@ -406,90 +466,156 @@
     </div>
 
     <div class="tab-panel" id="panel-acabativas" data-panel="acabativas">
-      <div class="report-card">
-        <!-- 1. Cabeçalho institucional -->
-        <div class="report-header">
-          <div class="q-code mono"><span class="led led-green"></span>relatório executivo</div>
-          <div class="report-print-letterhead print-only">
-            <p><strong>RRP ENERGIA</strong> — Planejamento e Controle de Manutenção (PCM)</p>
-          </div>
-          <p class="q-title">Relatório de Atividades</p>
-          <p class="report-doc-intro">Documento de acompanhamento das atividades de Planejamento e Controle de Manutenção (PCM), com panorama consolidado das tarefas pendentes, em execução e concluídas, para acompanhamento da supervisão.</p>
-          <div class="report-header-fields mono">
-            <span><strong>Empresa:</strong> RRP Energia · PCM</span>
-            <span><strong>Responsável:</strong> José Cordeiro</span>
-            <span id="reportGenerated"></span>
-          </div>
-        </div>
-
-        <div class="report-actions no-print">
-          <button type="button" class="primary" id="copyReportBtn">copiar relatório</button>
-          <button type="button" id="printReportBtn">imprimir / salvar pdf</button>
-          <span id="copyStatus" class="mono"></span>
-        </div>
-
-        <!-- 2. Resumo executivo -->
-        <div class="report-block">
-          <div class="report-block-head mono">resumo executivo</div>
-          <p class="report-intro" id="reportIntro"></p>
-        </div>
-
-        <!-- 3. Indicadores de desempenho -->
-        <div class="report-block">
-          <div class="report-block-head mono">indicadores de desempenho</div>
-          <div class="report-dashboard">
-            <svg class="report-donut" viewBox="0 0 42 42" width="110" height="110" role="img" aria-label="Distribuição das tarefas por status">
-              <circle class="donut-ring" cx="21" cy="21" r="15.9155" fill="transparent" stroke="var(--border)" stroke-width="5"/>
-              <circle class="donut-seg" data-seg="todo" cx="21" cy="21" r="15.9155" fill="transparent" stroke="var(--grey)" stroke-width="5" stroke-dasharray="0 100" stroke-dashoffset="25"/>
-              <circle class="donut-seg" data-seg="doing" cx="21" cy="21" r="15.9155" fill="transparent" stroke="var(--amber)" stroke-width="5" stroke-dasharray="0 100" stroke-dashoffset="25"/>
-              <circle class="donut-seg" data-seg="done" cx="21" cy="21" r="15.9155" fill="transparent" stroke="var(--green)" stroke-width="5" stroke-dasharray="0 100" stroke-dashoffset="25"/>
-              <text x="21" y="19.5" text-anchor="middle" class="donut-total-num" id="donutTotal">0</text>
-              <text x="21" y="25" text-anchor="middle" class="donut-total-label">tarefas</text>
-            </svg>
-
-            <table class="report-table mono">
-              <thead>
-                <tr><th>Status</th><th>Total</th><th>%</th></tr>
-              </thead>
-              <tbody id="indicatorsTableBody"></tbody>
-              <tfoot>
-                <tr><td>Total geral</td><td id="indicatorsTotal">0</td><td>100%</td></tr>
-              </tfoot>
-            </table>
-          </div>
-        </div>
-
-        <!-- 4. Principais conquistas -->
-        <div class="report-block">
-          <div class="report-block-head mono"><span class="led led-green"></span>principais conquistas</div>
-          <div class="report-body" data-report-body="highlights"></div>
-          <p class="report-remaining-note" id="highlightsRemaining"></p>
-        </div>
-
-        <!-- 5. Atividades em andamento -->
-        <div class="report-block">
-          <div class="report-block-head mono"><span class="led led-amber"></span>atividades em andamento</div>
-          <div class="report-body" data-report-body="doing"></div>
-        </div>
-
-        <!-- 6. Pendências prioritárias -->
-        <div class="report-block">
-          <div class="report-block-head mono"><span class="led led-red"></span>pendências prioritárias</div>
-          <div class="report-priority-groups">
-            <div class="report-priority-group">
-              <p class="report-subgroup-label">Alta prioridade</p>
-              <div class="report-body" data-report-body="todo-high"></div>
+      <div class="exec-outer">
+        <div class="exec-doc">
+          <header class="exec-hero">
+            <div class="exec-hero-circle"></div>
+            <div class="exec-hero-line"></div>
+            <div class="exec-hero-top">
+              <div>
+                <div class="exec-hero-brand">
+                  <div class="exec-hero-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></div>
+                  <div>
+                    <h1 class="exec-hero-company">RRP ENERGIA<span>| PCM</span></h1>
+                    <p class="exec-hero-dept">Planejamento e Controle de Manutenção</p>
+                  </div>
+                </div>
+                <h2 class="exec-hero-title">Relatório Executivo</h2>
+                <div class="exec-hero-chips">
+                  <span class="exec-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>José Cordeiro - PCM</span>
+                  <span class="exec-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16.5 12"/></svg><span id="execGenerated"></span></span>
+                </div>
+              </div>
+              <div class="exec-hero-right">
+                <span class="exec-hero-badge" id="execSyncBadge">Sincronizado</span>
+                <div class="exec-eff-card">
+                  <div class="exec-eff-row">
+                    <div>
+                      <p class="exec-eff-label">Eficiência</p>
+                      <p class="exec-eff-value" id="execEffValue">0%</p>
+                      <p class="exec-eff-sub" id="execEffSub"></p>
+                    </div>
+                    <div class="exec-eff-ring">
+                      <svg viewBox="0 0 44 44" class="exec-eff-svg">
+                        <circle cx="22" cy="22" r="16" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="5"/>
+                        <circle id="execEffCircle" class="exec-eff-seg" cx="22" cy="22" r="16" fill="none" stroke="#27AE60" stroke-width="5" stroke-linecap="round" stroke-dasharray="0 100.5"/>
+                      </svg>
+                      <div class="exec-eff-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></div>
+                    </div>
+                  </div>
+                  <div class="exec-eff-bar">
+                    <div class="exec-eff-bar-seg" id="execBarTodo" style="background:#E67E22;width:0%"></div>
+                    <div class="exec-eff-bar-seg" id="execBarDoing" style="background:#2E86DE;width:0%"></div>
+                    <div class="exec-eff-bar-seg" id="execBarDone" style="background:#27AE60;width:0%"></div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="report-priority-group">
-              <p class="report-subgroup-label">Prioridade normal</p>
-              <div class="report-body" data-report-body="todo-normal"></div>
-              <p class="report-remaining-note" id="pendingNormalRemaining"></p>
+          </header>
+
+          <div class="exec-actions no-print">
+            <button type="button" class="primary" id="copyReportBtn">copiar relatório</button>
+            <button type="button" id="printReportBtn">imprimir / salvar pdf</button>
+            <span id="copyStatus" class="exec-copy-status"></span>
+          </div>
+
+          <div class="exec-body">
+            <div class="exec-stats">
+              <div class="exec-stat-card">
+                <div class="exec-stat-top">
+                  <span class="exec-stat-label">Total</span>
+                  <div class="exec-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg></div>
+                </div>
+                <p class="exec-stat-num" id="execStatTotal">0</p>
+                <p class="exec-stat-sub">atividades registradas</p>
+              </div>
+              <div class="exec-stat-card exec-stat-card-orange">
+                <div class="exec-stat-top">
+                  <span class="exec-stat-label">A Fazer</span>
+                  <div class="exec-stat-icon exec-stat-icon-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
+                </div>
+                <div class="exec-stat-num-row"><p class="exec-stat-num" id="execStatTodo">0</p><span class="exec-stat-pct exec-pct-orange" id="execStatTodoPct">0%</span></div>
+                <p class="exec-stat-sub">pendências</p>
+              </div>
+              <div class="exec-stat-card exec-stat-card-blue">
+                <div class="exec-stat-top">
+                  <span class="exec-stat-label">Em Andamento</span>
+                  <div class="exec-stat-icon exec-stat-icon-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16.5 12"/></svg></div>
+                </div>
+                <div class="exec-stat-num-row"><p class="exec-stat-num" id="execStatDoing">0</p><span class="exec-stat-pct exec-pct-blue" id="execStatDoingPct">0%</span></div>
+                <p class="exec-stat-sub">em execução agora</p>
+              </div>
+              <div class="exec-stat-card exec-stat-card-green">
+                <div class="exec-stat-top">
+                  <span class="exec-stat-label">Concluídas</span>
+                  <div class="exec-stat-icon exec-stat-icon-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+                </div>
+                <div class="exec-stat-num-row"><p class="exec-stat-num" id="execStatDone">0</p><span class="exec-stat-pct exec-pct-green" id="execStatDonePct">0%</span></div>
+                <p class="exec-stat-sub">tarefas finalizadas</p>
+              </div>
+            </div>
+
+            <div class="exec-cols">
+              <div class="exec-section exec-section-green">
+                <div class="exec-section-head">
+                  <div class="exec-section-head-left">
+                    <div class="exec-section-icon exec-icon-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+                    <h3>Concluídas (<span id="execDoneCount">0</span>) — Destaque</h3>
+                  </div>
+                  <span class="exec-section-badge" id="execDoneBadge">0% do total</span>
+                </div>
+                <div class="exec-section-body" id="execDoneList"></div>
+              </div>
+
+              <div class="exec-section exec-section-amber">
+                <div class="exec-section-head">
+                  <div class="exec-section-head-left">
+                    <div class="exec-section-icon exec-icon-amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16.5 12"/></svg></div>
+                    <h3>Em Andamento (<span id="execDoingCount">0</span>)</h3>
+                  </div>
+                </div>
+                <div class="exec-section-body" id="execDoingList"></div>
+              </div>
+            </div>
+
+            <div class="exec-priority-block">
+              <div class="exec-priority-head">
+                <div class="exec-section-head-left">
+                  <div class="exec-priority-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
+                  <h3>A Fazer (<span id="execTodoCount">0</span>) — Pendências Prioritárias</h3>
+                </div>
+                <span class="exec-priority-sub">2 grupos por criticidade</span>
+              </div>
+              <div class="exec-priority-groups2">
+                <div class="exec-group exec-group-orange">
+                  <div class="exec-group-head">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                    <h4>Alta Prioridade</h4>
+                    <span class="exec-group-count exec-count-orange" id="execHighCount">0</span>
+                  </div>
+                  <ul id="execHighList"></ul>
+                </div>
+                <div class="exec-group exec-group-blue">
+                  <div class="exec-group-head">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg>
+                    <h4>Prioridade Normal</h4>
+                    <span class="exec-group-count exec-count-blue" id="execNormalCount">0</span>
+                  </div>
+                  <ul id="execNormalList"></ul>
+                  <p class="exec-group-remaining" id="execNormalRemaining"></p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="report-print-footer print-only">
-          <p>Elaborado por: José Cordeiro — PCM</p>
+          <footer class="exec-footer">
+            <div class="exec-footer-left">
+              <span class="exec-footer-author">Elaborado por José Cordeiro — PCM</span>
+              <span class="exec-footer-dot"></span>
+              <span class="exec-footer-summary" id="execFooterSummary"></span>
+            </div>
+            <a class="exec-footer-link" href="https://hayralde.github.io/Jarvis/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m9 15 2 2 4-4"/></svg>hayralde.github.io/Jarvis/</a>
+          </footer>
         </div>
       </div>
     </div>
@@ -661,15 +787,19 @@
   function setSyncStatus(state){
     var led = document.getElementById("syncLed");
     var label = document.getElementById("syncLabel");
+    var execBadge = document.getElementById("execSyncBadge");
     if(state === "online"){
       led.className = "led led-green";
       label.textContent = "sincronizado";
+      if(execBadge) execBadge.textContent = "Sincronizado";
     } else if(state === "connecting"){
       led.className = "led led-amber";
       label.textContent = "conectando...";
+      if(execBadge) execBadge.textContent = "Conectando...";
     } else {
       led.className = "led led-red";
       label.textContent = "offline";
+      if(execBadge) execBadge.textContent = "Offline";
     }
   }
 
@@ -1022,7 +1152,7 @@
     var doing = getTasksForReport("doing");
 
     var lines = [];
-    lines.push("RELATÓRIO DE ATIVIDADES — RRP ENERGIA · PCM");
+    lines.push("RELATÓRIO EXECUTIVO — RRP ENERGIA · PCM");
     lines.push("Responsável: José Cordeiro");
     lines.push("Gerado em " + formatDate(Date.now()));
     lines.push("");
@@ -1088,29 +1218,52 @@
     return lines.join("\n").replace(/\n+$/, "\n");
   }
 
-  function renderReportItem(t, status, showMeta){
-    var item = document.createElement("div");
-    item.className = "report-item" + (t.flagged ? " flagged" : "");
-    item.setAttribute("data-status", status);
+  function execEmpty(text){
+    var el = document.createElement("p");
+    el.className = "exec-empty";
+    el.textContent = text;
+    return el;
+  }
 
-    var head = document.createElement("div");
-    head.className = "report-item-head";
+  function renderExecDoneItem(t, index){
+    var item = document.createElement("div");
+    item.className = "exec-done-item";
+
+    var num = document.createElement("span");
+    num.className = "exec-done-num";
+    num.textContent = String(index + 1).padStart(2, "0");
+    item.appendChild(num);
 
     var titleEl = document.createElement("p");
-    titleEl.className = "report-item-title";
+    titleEl.className = "exec-done-title";
     titleEl.textContent = t.title;
-    head.appendChild(titleEl);
+    item.appendChild(titleEl);
 
     var dateEl = document.createElement("span");
-    dateEl.className = "report-item-date mono";
-    dateEl.textContent = reportDateLabel(t, status);
-    head.appendChild(dateEl);
+    dateEl.className = "exec-done-date";
+    dateEl.textContent = reportDateLabel(t, "done");
+    item.appendChild(dateEl);
 
-    item.appendChild(head);
+    return item;
+  }
 
-    if(showMeta && t.meta){
+  function renderExecDoingItem(t){
+    var item = document.createElement("div");
+    item.className = "exec-doing-item";
+
+    var titleEl = document.createElement("p");
+    titleEl.className = "exec-doing-title";
+    titleEl.textContent = t.title;
+    item.appendChild(titleEl);
+
+    var dateEl = document.createElement("p");
+    dateEl.className = "exec-doing-date";
+    dateEl.textContent = reportDateLabel(t, "doing");
+    item.appendChild(dateEl);
+
+    if(t.meta){
       var metaEl = document.createElement("p");
-      metaEl.className = "report-item-meta";
+      metaEl.className = "exec-doing-meta";
       metaEl.textContent = t.meta;
       item.appendChild(metaEl);
     }
@@ -1118,16 +1271,18 @@
     return item;
   }
 
-  function fillReportBody(key, items, status, showMeta, emptyText){
-    var body = document.querySelector('[data-report-body="' + key + '"]');
-    body.innerHTML = "";
-    if(items.length === 0){
-      body.appendChild(emptyState(dataLoaded ? emptyText : "— carregando... —"));
-    } else {
-      items.forEach(function(t){ body.appendChild(renderReportItem(t, status, showMeta)); });
-    }
+  function renderExecGroupItem(t){
+    var li = document.createElement("li");
+    li.textContent = t.title;
+    return li;
   }
 
+  // Renders the Acabativas executive report — visual design matched to a
+  // reference mockup the user supplied, populated with only real task
+  // data. Fields the mockup showed but Jarvis has no data for (%-complete
+  // per task, an assignee, thematic grouping, a computed "risk"
+  // statistic) were deliberately left out rather than fabricated — see
+  // the user's own choice on this when asked.
   function renderAcabativas(){
     var counts = {};
     STATUS_ORDER.forEach(function(s){ counts[s] = tasks.filter(function(t){ return t.status === s; }).length; });
@@ -1135,63 +1290,81 @@
     var prioritized = getPrioritizedTodo();
     var highlighted = getHighlightedDone();
     var doing = getTasksForReport("doing");
+    var todoPct = total > 0 ? Math.round(counts.todo / total * 100) : 0;
+    var doingPct = total > 0 ? Math.round(counts.doing / total * 100) : 0;
+    var donePct = total > 0 ? Math.round(counts.done / total * 100) : 0;
 
-    // 1. cabeçalho
-    document.getElementById("reportGenerated").textContent = "gerado em " + formatDate(Date.now());
+    // hero
+    document.getElementById("execGenerated").textContent = "Gerado em " + formatDate(Date.now());
+    document.getElementById("execEffValue").textContent = donePct + "%";
+    document.getElementById("execEffSub").textContent = counts.done + " de " + total + " concluídas";
+    var circumference = 2 * Math.PI * 16;
+    document.getElementById("execEffCircle").setAttribute("stroke-dasharray", (donePct / 100 * circumference) + " " + circumference);
+    document.getElementById("execBarTodo").style.width = todoPct + "%";
+    document.getElementById("execBarDoing").style.width = doingPct + "%";
+    document.getElementById("execBarDone").style.width = donePct + "%";
 
-    // 2. resumo executivo
-    document.getElementById("reportIntro").textContent = buildExecutiveSummary(counts, prioritized.high.length);
+    // stat cards
+    document.getElementById("execStatTotal").textContent = total;
+    document.getElementById("execStatTodo").textContent = counts.todo;
+    document.getElementById("execStatTodoPct").textContent = todoPct + "%";
+    document.getElementById("execStatDoing").textContent = counts.doing;
+    document.getElementById("execStatDoingPct").textContent = doingPct + "%";
+    document.getElementById("execStatDone").textContent = counts.done;
+    document.getElementById("execStatDonePct").textContent = donePct + "%";
 
-    // 3. indicadores de desempenho
-    var tbody = document.getElementById("indicatorsTableBody");
-    tbody.innerHTML = "";
-    STATUS_ORDER.forEach(function(s){
-      var pct = total > 0 ? Math.round(counts[s] / total * 100) : 0;
-      var tr = document.createElement("tr");
-      var tdLabel = document.createElement("td");
-      tdLabel.textContent = STATUSES[s].title;
-      var tdCount = document.createElement("td");
-      tdCount.textContent = counts[s];
-      var tdPct = document.createElement("td");
-      tdPct.textContent = pct + "%";
-      tr.appendChild(tdLabel);
-      tr.appendChild(tdCount);
-      tr.appendChild(tdPct);
-      tbody.appendChild(tr);
-    });
-    document.getElementById("indicatorsTotal").textContent = total;
-    updateReportDonut(counts);
+    // concluídas — destaque
+    document.getElementById("execDoneCount").textContent = counts.done;
+    document.getElementById("execDoneBadge").textContent = donePct + "% do total";
+    var doneList = document.getElementById("execDoneList");
+    doneList.innerHTML = "";
+    if(highlighted.items.length === 0){
+      doneList.appendChild(execEmpty(dataLoaded ? "Nenhuma tarefa concluída ainda." : "Carregando..."));
+    } else {
+      highlighted.items.forEach(function(t, i){ doneList.appendChild(renderExecDoneItem(t, i)); });
+      if(highlighted.remaining > 0){
+        var moreDone = document.createElement("p");
+        moreDone.className = "exec-group-remaining";
+        moreDone.textContent = "+ " + highlighted.remaining + " outra(s) tarefa(s) concluída(s).";
+        doneList.appendChild(moreDone);
+      }
+    }
 
-    // 4. principais conquistas
-    fillReportBody("highlights", highlighted.items, "done", false, "— nenhuma tarefa concluída —");
-    document.getElementById("highlightsRemaining").textContent =
-      highlighted.remaining > 0 ? "+ " + highlighted.remaining + " outra(s) tarefa(s) concluída(s)." : "";
+    // em andamento
+    document.getElementById("execDoingCount").textContent = counts.doing;
+    var doingList = document.getElementById("execDoingList");
+    doingList.innerHTML = "";
+    if(doing.length === 0){
+      doingList.appendChild(execEmpty(dataLoaded ? "Nenhuma atividade em execução." : "Carregando..."));
+    } else {
+      doing.forEach(function(t){ doingList.appendChild(renderExecDoingItem(t)); });
+    }
 
-    // 5. atividades em andamento
-    fillReportBody("doing", doing, "doing", true, "— nenhuma atividade em execução —");
+    // pendências prioritárias
+    document.getElementById("execTodoCount").textContent = counts.todo;
+    document.getElementById("execHighCount").textContent = prioritized.high.length;
+    var highList = document.getElementById("execHighList");
+    highList.innerHTML = "";
+    if(prioritized.high.length === 0){
+      highList.appendChild(execEmpty("Nenhuma pendência de alta prioridade."));
+    } else {
+      prioritized.high.forEach(function(t){ highList.appendChild(renderExecGroupItem(t)); });
+    }
 
-    // 6. pendências prioritárias
-    fillReportBody("todo-high", prioritized.high, "todo", false, "— nenhuma pendência de alta prioridade —");
-    fillReportBody("todo-normal", prioritized.normal, "todo", false, "— nenhuma pendência de prioridade normal —");
-    document.getElementById("pendingNormalRemaining").textContent =
+    document.getElementById("execNormalCount").textContent = prioritized.normal.length + prioritized.normalRemaining;
+    var normalList = document.getElementById("execNormalList");
+    normalList.innerHTML = "";
+    if(prioritized.normal.length === 0){
+      normalList.appendChild(execEmpty("Nenhuma pendência de prioridade normal."));
+    } else {
+      prioritized.normal.forEach(function(t){ normalList.appendChild(renderExecGroupItem(t)); });
+    }
+    document.getElementById("execNormalRemaining").textContent =
       prioritized.normalRemaining > 0 ? "+ " + prioritized.normalRemaining + " outra(s) pendência(s) de prioridade normal." : "";
-  }
 
-  // Simple CSS/SVG donut chart, no library: a circle with r=15.9155 has a
-  // circumference of ~100, so each segment's stroke-dasharray can just be
-  // "percentage 100-percentage" and dashoffset is 25 (rotates the start to
-  // 12 o'clock) minus the cumulative percentage of segments before it.
-  function updateReportDonut(counts){
-    var total = STATUS_ORDER.reduce(function(sum, s){ return sum + counts[s]; }, 0);
-    var cumulative = 0;
-    STATUS_ORDER.forEach(function(s){
-      var pct = total > 0 ? (counts[s] / total * 100) : 0;
-      var seg = document.querySelector('.donut-seg[data-seg="' + s + '"]');
-      seg.setAttribute("stroke-dasharray", pct + " " + (100 - pct));
-      seg.setAttribute("stroke-dashoffset", String(25 - cumulative));
-      cumulative += pct;
-    });
-    document.getElementById("donutTotal").textContent = total;
+    // footer
+    document.getElementById("execFooterSummary").textContent =
+      counts.todo + " a fazer · " + counts.doing + " em andamento · " + counts.done + " concluídas";
   }
 
   var copyStatusTimer = null;
