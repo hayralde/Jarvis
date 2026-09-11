@@ -199,9 +199,21 @@
   /* acabativas (report) */
   .report-card{background:var(--panel);border:1px solid var(--border);padding:24px;}
   .report-header{margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border);}
-  .report-meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 12px;font-size:10.5px;color:var(--text-dimmer);margin-bottom:18px;text-transform:uppercase;letter-spacing:.08em;}
-  .report-body{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
-  .report-item{border-left:2px solid var(--green);padding:8px 12px;background:rgba(35,41,34,0.02);}
+  .report-meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 12px;font-size:10.5px;color:var(--text-dimmer);margin-bottom:24px;text-transform:uppercase;letter-spacing:.08em;}
+  .report-section{margin-bottom:24px;break-inside:avoid;}
+  .report-section:last-of-type{margin-bottom:0;}
+  .report-section-head{
+    display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:6px;
+    border-bottom:1px solid var(--border);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  }
+  .report-section-label{flex:1;font-weight:700;color:var(--text);}
+  .report-section-count{color:var(--text-dimmer);}
+  .report-body{display:flex;flex-direction:column;gap:10px;}
+  .report-item{border-left:2px solid var(--border-bright);padding:8px 12px;background:rgba(35,41,34,0.02);break-inside:avoid;}
+  .report-item[data-status="todo"]{border-left-color:var(--grey);}
+  .report-item[data-status="doing"]{border-left-color:var(--amber);}
+  .report-item[data-status="done"]{border-left-color:var(--green);}
+  .report-item.flagged{background:var(--red-dim);}
   .report-item-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;}
   .report-item-title{font-size:13.5px;color:var(--text);margin:0;line-height:1.5;white-space:pre-wrap;word-break:break-word;}
   .report-item-date{font-size:10.5px;color:var(--text-dimmer);white-space:nowrap;}
@@ -306,15 +318,42 @@
     <div class="tab-panel" id="panel-acabativas" data-panel="acabativas">
       <div class="report-card">
         <div class="report-header">
-          <div class="q-code mono"><span class="led led-green"></span>relatório</div>
-          <p class="q-title">Acabativas</p>
-          <p class="q-desc">Atividades concluídas — pronto para enviar ao chefe</p>
+          <div class="q-code mono"><span class="led led-green"></span>relatório executivo</div>
+          <p class="q-title">Relatório de Atividades</p>
+          <p class="q-desc">RRP Energia · PCM — panorama do que está a fazer, em andamento e concluído, pronto para o supervisor</p>
         </div>
         <div class="report-meta mono">
-          <span id="reportCount">0 tarefas concluídas</span>
-          <span id="reportPeriod"></span>
+          <span id="reportGenerated"></span>
+          <span id="reportSummary"></span>
         </div>
-        <div class="report-body" data-report-body></div>
+
+        <div class="report-section">
+          <div class="report-section-head mono">
+            <span class="led led-grey"></span>
+            <span class="report-section-label">A fazer</span>
+            <span class="report-section-count" data-count-for="todo">0</span>
+          </div>
+          <div class="report-body" data-report-body="todo"></div>
+        </div>
+
+        <div class="report-section">
+          <div class="report-section-head mono">
+            <span class="led led-amber"></span>
+            <span class="report-section-label">Em andamento</span>
+            <span class="report-section-count" data-count-for="doing">0</span>
+          </div>
+          <div class="report-body" data-report-body="doing"></div>
+        </div>
+
+        <div class="report-section">
+          <div class="report-section-head mono">
+            <span class="led led-green"></span>
+            <span class="report-section-label">Concluído</span>
+            <span class="report-section-count" data-count-for="done">0</span>
+          </div>
+          <div class="report-body" data-report-body="done"></div>
+        </div>
+
         <div class="report-actions no-print">
           <button type="button" class="primary" id="copyReportBtn">copiar relatório</button>
           <button type="button" id="printReportBtn">imprimir / salvar pdf</button>
@@ -780,85 +819,103 @@
     });
   }
 
-  // Acabativas: read-only weekly report built from whatever sits in the
-  // "Concluído" column right now, meant to be copied/printed and sent to
-  // the boss. completedAt is stamped the moment a card is moved to "done"
-  // (see moveTaskStatus); older done cards from before that existed fall
-  // back to their original `date` field.
-  function getDoneTasksSorted(){
-    return tasks.filter(function(t){ return t.status === "done"; })
-      .slice()
-      .sort(function(a, b){ return (b.completedAt || 0) - (a.completedAt || 0); });
+  // Acabativas: executive-style status report covering all three columns
+  // (not just Concluído), meant to be copied/printed and sent to the
+  // supervisor as evidence of work in progress. completedAt is stamped the
+  // moment a card is moved to "done" (see moveTaskStatus); older done cards
+  // from before that existed fall back to their original `date` field.
+  function getTasksForReport(status){
+    var list = tasks.filter(function(t){ return t.status === status; }).slice();
+    if(status === "done"){
+      list.sort(function(a, b){ return (b.completedAt || 0) - (a.completedAt || 0); });
+    } else {
+      list.sort(function(a, b){ return (b.flagged ? 1 : 0) - (a.flagged ? 1 : 0); });
+    }
+    return list;
+  }
+
+  function reportDateLabel(t, status){
+    return status === "done" && t.completedAt ? formatDate(t.completedAt) : (t.date || "—");
   }
 
   function buildReportText(){
-    var done = getDoneTasksSorted();
     var lines = [];
-    lines.push("RELATÓRIO SEMANAL DE ATIVIDADES — RRP ENERGIA · PCM");
+    lines.push("RELATÓRIO DE ATIVIDADES — RRP ENERGIA · PCM");
     lines.push("Gerado em " + formatDate(Date.now()));
-    lines.push("Total de tarefas concluídas: " + done.length);
+
+    var counts = {};
+    STATUS_ORDER.forEach(function(s){ counts[s] = tasks.filter(function(t){ return t.status === s; }).length; });
+    lines.push("Resumo: " + counts.todo + " a fazer · " + counts.doing + " em andamento · " + counts.done + " concluídas");
     lines.push("");
-    if(done.length === 0){
-      lines.push("Nenhuma tarefa concluída no momento.");
-    } else {
-      done.forEach(function(t, i){
-        var dateLabel = t.completedAt ? formatDate(t.completedAt) : (t.date || "—");
-        lines.push((i + 1) + ". " + t.title + " (" + dateLabel + ")");
-        if(t.meta){ lines.push("   " + t.meta); }
-      });
+
+    STATUS_ORDER.forEach(function(s){
+      var list = getTasksForReport(s);
+      lines.push("=== " + STATUSES[s].title.toUpperCase() + " (" + list.length + ") ===");
+      if(list.length === 0){
+        lines.push("Nenhuma tarefa nesta categoria.");
+      } else {
+        list.forEach(function(t, i){
+          lines.push((i + 1) + ". " + t.title + " (" + reportDateLabel(t, s) + ")" + (t.flagged ? " [URGENTE]" : ""));
+          if(t.meta){ lines.push("   " + t.meta); }
+        });
+      }
+      lines.push("");
+    });
+
+    return lines.join("\n").replace(/\n+$/, "\n");
+  }
+
+  function renderReportItem(t, status){
+    var item = document.createElement("div");
+    item.className = "report-item" + (t.flagged ? " flagged" : "");
+    item.setAttribute("data-status", status);
+
+    var head = document.createElement("div");
+    head.className = "report-item-head";
+
+    var titleEl = document.createElement("p");
+    titleEl.className = "report-item-title";
+    titleEl.textContent = t.title;
+    head.appendChild(titleEl);
+
+    var dateEl = document.createElement("span");
+    dateEl.className = "report-item-date mono";
+    dateEl.textContent = reportDateLabel(t, status);
+    head.appendChild(dateEl);
+
+    item.appendChild(head);
+
+    if(t.meta){
+      var metaEl = document.createElement("p");
+      metaEl.className = "report-item-meta";
+      metaEl.textContent = t.meta;
+      item.appendChild(metaEl);
     }
-    return lines.join("\n");
+
+    return item;
   }
 
   function renderAcabativas(){
-    var done = getDoneTasksSorted();
-    var body = document.querySelector("[data-report-body]");
-    body.innerHTML = "";
+    var counts = {};
 
-    if(done.length === 0){
-      body.appendChild(emptyState(dataLoaded ? undefined : "— carregando... —"));
-    } else {
-      done.forEach(function(t){
-        var item = document.createElement("div");
-        item.className = "report-item";
+    STATUS_ORDER.forEach(function(s){
+      var list = getTasksForReport(s);
+      counts[s] = list.length;
 
-        var head = document.createElement("div");
-        head.className = "report-item-head";
+      var body = document.querySelector('[data-report-body="' + s + '"]');
+      body.innerHTML = "";
+      if(list.length === 0){
+        body.appendChild(emptyState(dataLoaded ? "— nenhuma tarefa nesta categoria —" : "— carregando... —"));
+      } else {
+        list.forEach(function(t){ body.appendChild(renderReportItem(t, s)); });
+      }
 
-        var titleEl = document.createElement("p");
-        titleEl.className = "report-item-title";
-        titleEl.textContent = t.title;
-        head.appendChild(titleEl);
+      document.querySelector('[data-count-for="' + s + '"]').textContent = counts[s];
+    });
 
-        var dateEl = document.createElement("span");
-        dateEl.className = "report-item-date mono";
-        dateEl.textContent = t.completedAt ? formatDate(t.completedAt) : (t.date || "");
-        head.appendChild(dateEl);
-
-        item.appendChild(head);
-
-        if(t.meta){
-          var metaEl = document.createElement("p");
-          metaEl.className = "report-item-meta";
-          metaEl.textContent = t.meta;
-          item.appendChild(metaEl);
-        }
-
-        body.appendChild(item);
-      });
-    }
-
-    document.getElementById("reportCount").textContent = done.length + (done.length === 1 ? " tarefa concluída" : " tarefas concluídas");
-
-    var stamped = done.filter(function(t){ return t.completedAt; });
-    var periodEl = document.getElementById("reportPeriod");
-    if(stamped.length > 0){
-      var oldest = stamped[stamped.length - 1].completedAt;
-      var newest = stamped[0].completedAt;
-      periodEl.textContent = "período: " + formatDate(oldest) + " a " + formatDate(newest);
-    } else {
-      periodEl.textContent = "";
-    }
+    document.getElementById("reportGenerated").textContent = "gerado em " + formatDate(Date.now());
+    document.getElementById("reportSummary").textContent =
+      counts.todo + " a fazer · " + counts.doing + " em andamento · " + counts.done + " concluídas";
   }
 
   var copyStatusTimer = null;
