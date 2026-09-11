@@ -300,61 +300,61 @@
 
     .statusbar,.tabbar,.no-print{display:none !important;}
     .print-only{display:block;}
-    body{background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;font-size:11px;}
+    body{background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;font-size:13px;}
     .wrap{padding:0;max-width:100%;}
     .report-card{border:none;padding:0;background:#fff;}
 
-    .report-print-letterhead{margin-bottom:8px;}
-    .report-print-letterhead p{margin:0;font-size:10.5px;color:#000;}
+    .report-print-letterhead{margin-bottom:10px;}
+    .report-print-letterhead p{margin:0;font-size:12px;color:#000;}
 
-    .report-header{border:none;padding:0;margin:0 0 10px 0;}
+    .report-header{border:none;padding:0;margin:0 0 12px 0;}
     .report-header .q-code{display:none;}
     .report-header .q-title{
-      font-family:Georgia,'Times New Roman',serif;font-size:20px;font-weight:700;
-      color:#000;text-transform:none;letter-spacing:0;margin:0 0 4px 0;
+      font-family:Georgia,'Times New Roman',serif;font-size:25px;font-weight:700;
+      color:#000;text-transform:none;letter-spacing:0;margin:0 0 5px 0;
     }
     .report-header .q-desc{display:none;}
-    .report-doc-intro{font-family:Arial,Helvetica,sans-serif;font-size:9.5px;color:#333;margin:5px 0 0 0;max-width:none;}
+    .report-doc-intro{font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.5;color:#333;margin:6px 0 0 0;max-width:none;}
     .report-header-fields{
       font-family:Arial,Helvetica,sans-serif;
-      border-top:1px solid #000;border-bottom:1px solid #000;padding:5px 0;
-      margin-top:6px;color:#000;font-size:10px;gap:4px 14px;
+      border-top:1px solid #000;border-bottom:1px solid #000;padding:6px 0;
+      margin-top:8px;color:#000;font-size:12px;gap:5px 16px;
     }
     .report-header-fields strong{color:#000;}
-    .report-intro{font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.5;color:#222;margin:0;max-width:none;}
+    .report-intro{font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.55;color:#222;margin:0;max-width:none;}
 
-    .report-block{break-inside:avoid;margin-bottom:11px;}
+    .report-block{break-inside:avoid;margin-bottom:13px;}
     .report-block-head{
       font-family:Arial,Helvetica,sans-serif;border-bottom:1.5px solid #000;
-      padding-bottom:4px;margin-bottom:7px;font-size:10.5px;color:#000;
+      padding-bottom:5px;margin-bottom:8px;font-size:12.5px;color:#000;
     }
     .report-block-head .led{display:none;}
-    .report-body{gap:5px;}
-    .report-remaining-note{font-size:9.5px;color:#333;margin-top:5px;}
+    .report-body{gap:6px;}
+    .report-remaining-note{font-size:11.5px;color:#333;margin-top:6px;}
 
-    .report-priority-groups{gap:0 16px;}
-    .report-subgroup-label{font-family:Arial,Helvetica,sans-serif;font-size:10px;color:#000;margin-bottom:5px;}
+    .report-priority-groups{gap:0 18px;}
+    .report-subgroup-label{font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#000;margin-bottom:6px;}
 
-    .report-dashboard{gap:16px;}
-    .report-donut{width:80px;height:80px;}
+    .report-dashboard{gap:18px;}
+    .report-donut{width:92px;height:92px;}
     .donut-total-num,.donut-total-label{fill:#000;}
     .donut-ring{stroke:#ccc;}
 
-    .report-table{font-family:Arial,Helvetica,sans-serif;font-size:10.5px;}
+    .report-table{font-family:Arial,Helvetica,sans-serif;font-size:12.5px;}
     .report-table th{color:#000;border-bottom:1px solid #000;}
     .report-table td{color:#000;border-bottom:1px solid #ddd;}
     .report-table tfoot td{border-top:1.5px solid #000;}
 
     .report-item{
       border-left:none;border-bottom:1px solid #eee;background:#fff !important;
-      padding:4px 0;break-inside:avoid;
+      padding:5px 0;break-inside:avoid;
     }
     .report-item:last-child{border-bottom:none;}
-    .report-item-head{gap:6px;}
-    .report-item-title{color:#000;font-size:10.5px;line-height:1.35;}
+    .report-item-head{gap:8px;}
+    .report-item-title{color:#000;font-size:12.5px;line-height:1.4;}
     .report-item.flagged .report-item-title::before{content:"! ";font-weight:700;}
-    .report-item-date{font-family:Arial,Helvetica,sans-serif;color:#555;font-size:9.5px;}
-    .report-item-meta{font-family:Arial,Helvetica,sans-serif;color:#555;font-size:9.5px;}
+    .report-item-date{font-family:Arial,Helvetica,sans-serif;color:#555;font-size:11px;}
+    .report-item-meta{font-family:Arial,Helvetica,sans-serif;color:#555;font-size:11px;}
 
     .report-print-footer{margin-top:12px;padding-top:7px;border-top:1px solid #000;font-size:9.5px;color:#000;}
   }
@@ -990,7 +990,7 @@
 
   // "Pendências prioritárias" grouped by criticality instead of one raw
   // list — flagged tasks are "alta prioridade", everything else "normal".
-  var PENDING_NORMAL_CAP = 5;
+  var PENDING_NORMAL_CAP = 8;
 
   function getPrioritizedTodo(){
     var todo = getTasksForReport("todo");
