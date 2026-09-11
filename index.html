@@ -404,6 +404,12 @@
      rounded corners, action buttons) is stripped for paper. */
   @media print{
     @page{size:A4;margin:10mm;}
+    /* Chrome/Edge strip background colors on print by default unless told
+       otherwise — without this, every colored card/badge/header in the
+       report above turns white-with-black-text on paper/PDF regardless of
+       the "Background graphics" print-dialog checkbox. Forcing it here
+       makes the exact colors print every time, checkbox or not. */
+    *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;}
     .statusbar,.tabbar,.no-print{display:none !important;}
     body{background:#fff;}
     .wrap{padding:0;max-width:100%;}
@@ -417,6 +423,22 @@
        single column and print far taller than necessary. */
     .exec-cols{grid-template-columns:1.3fr 1fr !important;}
     .exec-priority-groups2{grid-template-columns:1fr 1fr !important;}
+    /* Tighten vertical spacing (padding/gaps only, never font-size) so the
+       report fits one A4 sheet — screen view keeps the roomier mockup
+       spacing untouched. */
+    .exec-hero{padding:12px 26px 10px !important;}
+    .exec-body{padding:8px 26px 6px !important;}
+    .exec-cols{gap:8px !important;margin-top:8px !important;}
+    .exec-priority-block{margin-top:8px !important;}
+    .exec-section-head{padding:7px 14px !important;}
+    .exec-section-body{padding:9px !important;gap:5px !important;}
+    .exec-stat-card{padding:9px !important;}
+    .exec-priority-head{padding:7px 16px !important;}
+    .exec-priority-groups2{padding:9px !important;gap:7px !important;}
+    .exec-group{padding:7px 10px !important;}
+    .exec-group-head{margin-bottom:5px !important;}
+    .exec-group ul{gap:5px !important;}
+    .exec-footer{padding:6px 26px !important;}
   }
 </style>
 </head>
@@ -1088,7 +1110,8 @@
   // list). completedAt is stamped the moment a card is moved to "done"
   // (see moveTaskStatus); older done cards from before that existed fall
   // back to their original `date` field.
-  var HIGHLIGHTS_CAP = 5;
+  var HIGHLIGHTS_CAP = 4;
+  var DOING_CAP = 4;
 
   function getTasksForReport(status){
     var list = tasks.filter(function(t){ return t.status === status; }).slice();
@@ -1120,7 +1143,7 @@
 
   // "Pendências prioritárias" grouped by criticality instead of one raw
   // list — flagged tasks are "alta prioridade", everything else "normal".
-  var PENDING_NORMAL_CAP = 8;
+  var PENDING_NORMAL_CAP = 5;
 
   function getPrioritizedTodo(){
     var todo = getTasksForReport("todo");
@@ -1128,6 +1151,15 @@
     var normalAll = todo.filter(function(t){ return !t.flagged; });
     var normal = normalAll.slice(0, PENDING_NORMAL_CAP);
     return { high: high, normal: normal, normalRemaining: normalAll.length - normal.length };
+  }
+
+  // "Em andamento" also gets capped for the same one-page reason — the
+  // flagged-first ordering keeps whatever's most urgent visible, the rest
+  // are just counted.
+  function getLimitedDoing(){
+    var doing = getTasksForReport("doing");
+    var limited = doing.slice(0, DOING_CAP);
+    return { items: limited, remaining: doing.length - limited.length };
   }
 
   function buildExecutiveSummary(counts, urgentCount){
@@ -1289,7 +1321,7 @@
     var total = counts.todo + counts.doing + counts.done;
     var prioritized = getPrioritizedTodo();
     var highlighted = getHighlightedDone();
-    var doing = getTasksForReport("doing");
+    var limitedDoing = getLimitedDoing();
     var todoPct = total > 0 ? Math.round(counts.todo / total * 100) : 0;
     var doingPct = total > 0 ? Math.round(counts.doing / total * 100) : 0;
     var donePct = total > 0 ? Math.round(counts.done / total * 100) : 0;
@@ -1334,10 +1366,16 @@
     document.getElementById("execDoingCount").textContent = counts.doing;
     var doingList = document.getElementById("execDoingList");
     doingList.innerHTML = "";
-    if(doing.length === 0){
+    if(limitedDoing.items.length === 0){
       doingList.appendChild(execEmpty(dataLoaded ? "Nenhuma atividade em execução." : "Carregando..."));
     } else {
-      doing.forEach(function(t){ doingList.appendChild(renderExecDoingItem(t)); });
+      limitedDoing.items.forEach(function(t){ doingList.appendChild(renderExecDoingItem(t)); });
+      if(limitedDoing.remaining > 0){
+        var moreDoing = document.createElement("p");
+        moreDoing.className = "exec-group-remaining";
+        moreDoing.textContent = "+ " + limitedDoing.remaining + " outra(s) atividade(s) em andamento.";
+        doingList.appendChild(moreDoing);
+      }
     }
 
     // pendências prioritárias
