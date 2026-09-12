@@ -326,6 +326,7 @@
   .exec-priority-icon{width:24px;height:24px;border-radius:999px;background:#E67E22;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   .exec-priority-icon svg{width:14px;height:14px;color:#fff;}
   .exec-priority-groups2{padding:14px;display:grid;grid-template-columns:1fr;gap:12px;background:#fff;}
+  .exec-priority-insight{grid-column:1/-1;margin:0;font-size:10.5px;color:#475569;font-style:italic;}
   @media (min-width:680px){.exec-priority-groups2{grid-template-columns:repeat(auto-fit,minmax(160px,1fr));}}
   .exec-group{border-radius:10px;padding:12px;border:1px solid;}
   .exec-group-orange{background:#FFFBF6;border-color:#FAD9B5;}
@@ -1225,6 +1226,27 @@
     });
   }
 
+  // Real (non-fabricated) concentration insight — "X e Y concentram Z%
+  // das pendências [categorizadas]" — only computable now that categories
+  // are real data, not the mockup's invented "CS + Compras concentram
+  // 83%". Needs at least 2 real categories to say anything meaningful;
+  // returns null otherwise (nothing rendered, nothing implied).
+  function getCategoryConcentration(categoryGroups){
+    var real = categoryGroups.filter(function(g){ return g.name !== UNCATEGORIZED_LABEL; });
+    if(real.length < 2) return null;
+    var categorizedTotal = real.reduce(function(sum, g){ return sum + g.total; }, 0);
+    if(categorizedTotal === 0) return null;
+    var sorted = real.slice().sort(function(a, b){ return b.total - a.total; });
+    var top2 = sorted.slice(0, 2);
+    var pct = Math.round((top2[0].total + top2[1].total) / categorizedTotal * 100);
+    var hasUncategorized = categoryGroups.some(function(g){ return g.name === UNCATEGORIZED_LABEL; });
+    return {
+      names: [top2[0].name, top2[1].name],
+      pct: pct,
+      scopeLabel: hasUncategorized ? "das pendências categorizadas" : "das pendências"
+    };
+  }
+
   // "Em andamento" also gets capped for the same one-page reason — the
   // flagged-first ordering keeps whatever's most urgent visible, the rest
   // are just counted.
@@ -1234,7 +1256,7 @@
     return { items: limited, remaining: doing.length - limited.length };
   }
 
-  function buildExecutiveSummary(counts, urgentCount){
+  function buildExecutiveSummary(counts, urgentCount, concentration){
     var sentences = [];
     sentences.push(
       "Há " + counts.todo + (counts.todo === 1 ? " tarefa pendente" : " tarefas pendentes") +
@@ -1245,6 +1267,12 @@
       counts.done + (counts.done === 1 ? " atividade concluída recentemente" : " atividades concluídas recentemente") +
       ", refletindo o andamento dos trabalhos de PCM sob responsabilidade de José Cordeiro."
     );
+    if(concentration){
+      sentences.push(
+        concentration.names[0] + " e " + concentration.names[1] + " concentram " +
+        concentration.pct + "% " + concentration.scopeLabel + "."
+      );
+    }
     return sentences.join(" ");
   }
 
@@ -1263,7 +1291,7 @@
     lines.push("");
 
     lines.push("RESUMO EXECUTIVO");
-    lines.push(buildExecutiveSummary(counts, urgentCount));
+    lines.push(buildExecutiveSummary(counts, urgentCount, getCategoryConcentration(categoryGroups)));
     lines.push("");
 
     lines.push("INDICADORES DE DESEMPENHO");
@@ -1490,6 +1518,14 @@
       categoryGroups.length === 1 ? "1 grupo por categoria" : categoryGroups.length + " grupos por categoria";
     var groupsWrap = document.getElementById("execPriorityGroups");
     groupsWrap.innerHTML = "";
+    var concentration = getCategoryConcentration(categoryGroups);
+    if(concentration){
+      var insight = document.createElement("p");
+      insight.className = "exec-priority-insight";
+      insight.textContent = concentration.names[0] + " e " + concentration.names[1] + " concentram " +
+        concentration.pct + "% " + concentration.scopeLabel + ".";
+      groupsWrap.appendChild(insight);
+    }
     if(categoryGroups.length === 0){
       groupsWrap.appendChild(execEmpty("Nenhuma pendência no momento."));
     } else {
