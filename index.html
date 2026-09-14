@@ -170,6 +170,34 @@
 
   .empty-state{flex:1;display:flex;align-items:center;justify-content:center;color:var(--text-dimmer);font-size:11.5px;border:1px dashed var(--border);font-family:'IBM Plex Mono',monospace;min-height:60px;}
 
+  /* histórico */
+  .history-head{margin-bottom:20px;}
+  .history-head-title{font-size:16px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.03em;margin:0 0 6px 0;font-family:'IBM Plex Mono',monospace;}
+  .history-head-desc{font-size:11.5px;color:var(--text-dimmer);margin:0;max-width:60ch;}
+
+  .history-week{margin-bottom:24px;}
+  .history-week:last-child{margin-bottom:0;}
+  .history-week-title{
+    display:flex;align-items:baseline;gap:8px;
+    font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);
+    font-family:'IBM Plex Mono',monospace;margin:0 0 10px 0;padding-bottom:6px;border-bottom:1px solid var(--border);
+  }
+  .history-week-count{color:var(--text-dimmer);font-weight:500;text-transform:none;letter-spacing:normal;}
+  .history-list{display:flex;flex-direction:column;gap:8px;}
+  .history-item{
+    border-left:2px solid var(--green);padding:9px 12px 10px 14px;background:rgba(35,41,34,0.02);
+    display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+  }
+  .history-item.flagged{background:var(--red-dim);border-left-color:var(--red);}
+  .history-item-body{flex:1;min-width:0;}
+  .history-item-title{font-size:13px;color:var(--text);line-height:1.45;margin:0 0 3px 0;white-space:pre-wrap;word-break:break-word;}
+  .history-item-meta{font-size:11px;color:var(--text-dim);margin:0;font-family:'IBM Plex Mono',monospace;}
+  .history-item-del{
+    width:22px;height:22px;border:1px solid var(--border-bright);background:transparent;color:var(--text-dim);
+    cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;margin-top:1px;
+  }
+  .history-item-del:hover{border-color:var(--red);color:var(--red);}
+
   .add-row{margin-top:2px;}
   .add-trigger{
     width:100%;background:transparent;border:1px dashed var(--border-bright);color:var(--text-dimmer);
@@ -487,6 +515,7 @@
     <div class="tabbar mono" role="tablist">
       <button class="tab-btn active" type="button" data-tab="kanban" role="tab" aria-selected="true">kanban</button>
       <button class="tab-btn" type="button" data-tab="acabativas" role="tab" aria-selected="false">acabativas</button>
+      <button class="tab-btn" type="button" data-tab="historico" role="tab" aria-selected="false">histórico</button>
     </div>
 
     <div class="tab-panel active" id="panel-kanban" data-panel="kanban">
@@ -655,6 +684,14 @@
       </div>
     </div>
 
+    <div class="tab-panel" id="panel-historico" data-panel="historico">
+      <div class="history-head">
+        <p class="history-head-title">Histórico</p>
+        <p class="history-head-desc">Toda semana começa com "Concluído" vazio — o que foi finalizado em semanas anteriores fica guardado aqui, agrupado por semana (domingo a sábado).</p>
+      </div>
+      <div id="historicoBody"></div>
+    </div>
+
     <footer class="no-print">
       <span class="prompt">$</span> jarvis --log · sincronizado em nuvem, entre dispositivos<span class="caret"></span>
     </footer>
@@ -695,7 +732,8 @@
       status: row.status || "todo",
       flagged: !!row.flagged,
       completedAt: row.completed_at || null,
-      category: row.category || ""
+      category: row.category || "",
+      archivedAt: row.archived_at || null
     };
   }
   function taskToRow(t){
@@ -707,7 +745,8 @@
       status: t.status || "todo",
       flagged: !!t.flagged,
       completed_at: t.completedAt || null,
-      category: t.category || ""
+      category: t.category || "",
+      archived_at: t.archivedAt || null
     };
   }
 
@@ -770,6 +809,44 @@
     return dd + "/" + mm + "/" + d.getFullYear();
   }
 
+  // Midnight (local time) of the most recent Sunday — if today IS Sunday,
+  // that's today. This is the boundary between "this week's Concluído"
+  // and "Histórico": stateless and self-healing (no "did we already
+  // archive today" flag needed across devices), because it's recomputed
+  // fresh every time from the calendar instead of relying on a sweep
+  // having actually run on the right day.
+  function getCurrentWeekStartMs(){
+    var now = new Date();
+    var d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    d.setDate(d.getDate() - d.getDay());
+    return d.getTime();
+  }
+
+  // Every Sunday, "Concluído" should empty out into Histórico so the new
+  // week starts fresh (user's own spec). Rather than a scheduled job, any
+  // "done" task whose completion predates the current week's Sunday is
+  // simply treated as history — so this just needs to run whenever tasks
+  // are loaded/refreshed, no cron and no cross-device coordination.
+  // Legacy done tasks with no completedAt (from before that field
+  // existed) count as always-old and get swept in on first run.
+  function archiveOldDoneTasks(){
+    var cutoff = getCurrentWeekStartMs();
+    var toArchive = tasks.filter(function(t){
+      return t.status === "done" && (t.completedAt || 0) < cutoff;
+    });
+    if(toArchive.length === 0) return false;
+    var now = Date.now();
+    var ids = toArchive.map(function(t){
+      t.status = "history";
+      t.archivedAt = now;
+      return t.id;
+    });
+    db.from(TABLE).update({status: "history", archived_at: now}).in("id", ids).then(function(res){
+      if(res.error) console.error("arquivar para histórico falhou", res.error);
+    });
+    return true;
+  }
+
   function emptyState(text){
     var empty = document.createElement("div");
     empty.className = "empty-state";
@@ -802,6 +879,7 @@
 
     updateCategoryOptions();
     renderAcabativas();
+    renderHistorico();
   }
 
   function updateCategoryOptions(){
@@ -830,6 +908,7 @@
       tasks = list;
       dataLoaded = true;
       setSyncStatus("online");
+      archiveOldDoneTasks();
       if(hasOpenForm()) return;
       render();
     }).catch(function(err){
@@ -1537,6 +1616,92 @@
       counts.todo + " a fazer · " + counts.doing + " em andamento · " + counts.done + " concluídas";
   }
 
+  // Groups archived ("history") tasks by the Sunday-to-Saturday week they
+  // were completed in — same week boundary archiveOldDoneTasks() uses —
+  // so the label matches the week the task actually lived in "Concluído".
+  function weekRangeLabel(ts){
+    var d = new Date(ts);
+    var sunday = new Date(d.getFullYear(), d.getMonth(), d.getDate() - d.getDay());
+    var saturday = new Date(sunday.getFullYear(), sunday.getMonth(), sunday.getDate() + 6);
+    var fmt = function(x){ return String(x.getDate()).padStart(2,"0") + "/" + String(x.getMonth()+1).padStart(2,"0"); };
+    return { key: sunday.getTime(), label: "Semana de " + fmt(sunday) + " a " + fmt(saturday) };
+  }
+
+  function renderHistoryItem(t){
+    var row = document.createElement("div");
+    row.className = "history-item" + (t.flagged ? " flagged" : "");
+
+    var body = document.createElement("div");
+    body.className = "history-item-body";
+
+    var title = document.createElement("p");
+    title.className = "history-item-title";
+    title.textContent = t.title;
+    body.appendChild(title);
+
+    var metaBits = [];
+    if(t.category) metaBits.push(t.category);
+    metaBits.push("concluída em " + formatDate(t.completedAt || t.archivedAt));
+    var metaLine = document.createElement("p");
+    metaLine.className = "history-item-meta";
+    metaLine.textContent = metaBits.join(" · ");
+    body.appendChild(metaLine);
+
+    row.appendChild(body);
+
+    var delBtn = document.createElement("button");
+    delBtn.className = "history-item-del";
+    delBtn.type = "button";
+    delBtn.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>';
+    delBtn.setAttribute("aria-label", "Excluir tarefa do histórico");
+    delBtn.addEventListener("click", function(){ deleteTask(t.id); });
+    row.appendChild(delBtn);
+
+    return row;
+  }
+
+  function renderHistorico(){
+    var body = document.getElementById("historicoBody");
+    if(!body) return;
+    body.innerHTML = "";
+
+    var history = tasks.filter(function(t){ return t.status === "history"; });
+    if(history.length === 0){
+      body.appendChild(emptyState(dataLoaded ? "— nada no histórico ainda —" : "— carregando... —"));
+      return;
+    }
+
+    var groups = {};
+    var order = [];
+    history.forEach(function(t){
+      var w = weekRangeLabel(t.completedAt || t.archivedAt || 0);
+      if(!groups[w.key]){ groups[w.key] = { label: w.label, items: [] }; order.push(w.key); }
+      groups[w.key].items.push(t);
+    });
+    order.sort(function(a, b){ return b - a; });
+
+    order.forEach(function(key){
+      var g = groups[key];
+      g.items.sort(function(a, b){ return (b.completedAt || 0) - (a.completedAt || 0); });
+
+      var weekEl = document.createElement("div");
+      weekEl.className = "history-week";
+
+      var title = document.createElement("p");
+      title.className = "history-week-title";
+      title.innerHTML = g.label + ' <span class="history-week-count">' +
+        g.items.length + (g.items.length === 1 ? " tarefa" : " tarefas") + "</span>";
+      weekEl.appendChild(title);
+
+      var list = document.createElement("div");
+      list.className = "history-list";
+      g.items.forEach(function(t){ list.appendChild(renderHistoryItem(t)); });
+      weekEl.appendChild(list);
+
+      body.appendChild(weekEl);
+    });
+  }
+
   var copyStatusTimer = null;
   document.getElementById("copyReportBtn").addEventListener("click", function(){
     var text = buildReportText();
@@ -1676,9 +1841,17 @@
   }).then(function(list){
     tasks = list;
     dataLoaded = true;
+    archiveOldDoneTasks();
     render();
     setSyncStatus("online");
     subscribeRealtime();
+    // Safety net for a tab left open across the Sunday boundary with no
+    // realtime event to trigger a refetch — re-checks the in-memory list
+    // periodically. archiveOldDoneTasks() is a no-op (returns false) once
+    // there's nothing left to sweep, so this is cheap most of the time.
+    setInterval(function(){
+      if(archiveOldDoneTasks()) render();
+    }, 15 * 60 * 1000);
   }).catch(function(err){
     console.error("carregamento inicial falhou, usando cache local", err);
     tasks = loadCache();
