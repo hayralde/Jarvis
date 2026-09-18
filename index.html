@@ -1234,7 +1234,6 @@
   // list). completedAt is stamped the moment a card is moved to "done"
   // (see moveTaskStatus); older done cards from before that existed fall
   // back to their original `date` field.
-  var HIGHLIGHTS_CAP = 4;
   var DOING_CAP = 4;
 
   function getTasksForReport(status){
@@ -1251,18 +1250,15 @@
     return status === "done" && t.completedAt ? formatDate(t.completedAt) : (t.date || "—");
   }
 
-  // "Principais conquistas": flagged (higher-stakes) completions first,
-  // topped up with the most recent others, capped so the report stays
-  // brief — the rest are just counted, not listed.
+  // "Principais conquistas": every completion from the current week (the
+  // weekly Histórico sweep already keeps this list bounded to a week's
+  // worth — see archiveOldDoneTasks()), flagged (higher-stakes) ones
+  // first so they still stand out even though nothing gets hidden.
   function getHighlightedDone(){
     var done = getTasksForReport("done");
     var flagged = done.filter(function(t){ return t.flagged; });
     var rest = done.filter(function(t){ return !t.flagged; });
-    var items = flagged.slice(0, HIGHLIGHTS_CAP);
-    if(items.length < HIGHLIGHTS_CAP){
-      items = items.concat(rest.slice(0, HIGHLIGHTS_CAP - items.length));
-    }
-    return { items: items, remaining: done.length - items.length };
+    return { items: flagged.concat(rest), remaining: 0 };
   }
 
   // "Pendências prioritárias" grouped by real category (Sistemas/CS,
