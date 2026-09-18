@@ -585,6 +585,7 @@
           <div class="exec-actions no-print">
             <button type="button" class="primary" id="copyReportBtn">copiar relatório</button>
             <button type="button" id="printReportBtn">imprimir / salvar pdf</button>
+            <button type="button" id="downloadHtmlBtn">baixar html</button>
             <span id="copyStatus" class="exec-copy-status"></span>
           </div>
 
@@ -1702,6 +1703,41 @@
   });
   document.getElementById("printReportBtn").addEventListener("click", function(){
     window.print();
+  });
+
+  // Standalone snapshot of just the Acabativas report — a self-contained
+  // .html file (inline styles, Google Fonts link, no app JS/Supabase dep)
+  // that opens correctly anywhere, for when the boss wants a file instead
+  // of a pasted-text or printed report. It's a point-in-time snapshot of
+  // whatever's on screen right now, not a live view.
+  function buildStandaloneReportHtml(){
+    var styleText = document.querySelector("style").textContent;
+    var fontLink = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
+    var execOuter = document.querySelector("#panel-acabativas .exec-outer").cloneNode(true);
+    var actions = execOuter.querySelector(".exec-actions");
+    if(actions) actions.remove();
+
+    return "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n" +
+      "<meta charset=\"UTF-8\">\n" +
+      "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+      "<title>Relatório Executivo — RRP Energia · PCM</title>\n" +
+      (fontLink ? fontLink.outerHTML + "\n" : "") +
+      "<style>" + styleText + "</style>\n" +
+      "<style>body{background:#E9EEF5;padding:24px;margin:0;}</style>\n" +
+      "</head>\n<body>\n" + execOuter.outerHTML + "\n</body>\n</html>";
+  }
+
+  document.getElementById("downloadHtmlBtn").addEventListener("click", function(){
+    var html = buildStandaloneReportHtml();
+    var blob = new Blob([html], {type: "text/html;charset=utf-8"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "relatorio-executivo-" + formatDate(Date.now()).split("/").join("-") + ".html";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
   });
 
   // drag & drop on kanban columns
