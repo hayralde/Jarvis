@@ -470,19 +470,24 @@
     .wrap{padding:0;max-width:100%;}
     .exec-outer{background:#fff;padding:0;border-radius:0;}
     .exec-doc{box-shadow:none;border-radius:0;border:none;}
-    .exec-section,.exec-priority-block,.exec-stat-card{break-inside:avoid;}
-    .exec-done-item,.exec-doing-item{break-inside:avoid;}
-    /* A4's printable width (~718px after @page margins) is narrower than
-       the 820px/680px min-width breakpoints these two grids use on
-       screen, so without a print-specific override they'd fall back to a
-       single column and print far taller than necessary. */
-    .exec-cols{grid-template-columns:1.3fr 1fr !important;}
-    /* .exec-priority-groups2's own min-width:680px breakpoint already
-       kicks in at A4's ~718px printable width, auto-fitting however many
-       category groups exist — no fixed column count to force here. */
-    /* No one-page requirement anymore (user explicitly dropped it) — print
-       spacing intentionally matches the on-screen mockup spacing 1:1, so
-       the report just flows onto as many pages as it needs. */
+    /* break-inside:avoid only on small, bounded units — never on
+       .exec-section/.exec-priority-block themselves. Those wrap an
+       unbounded, uncapped list (Concluídas can be dozens of items) and
+       "avoid break inside" on something taller than a page doesn't
+       shrink it — it just pushes the whole block to the next page,
+       leaving a large blank gap on the page before it. Letting the
+       section itself break, while keeping each item/card/group intact,
+       is what actually prevents both the blank-page bug and a card
+       being cut mid-sentence. */
+    .exec-stat-card,.exec-done-item,.exec-doing-item,.exec-group{break-inside:avoid;}
+    .exec-section-head,.exec-priority-head{break-after:avoid;}
+    /* .exec-cols intentionally stacks to 1 column in print (its 820px
+       screen breakpoint doesn't apply at A4's ~718px printable width) —
+       forcing it side-by-side previously fed the same blank-gap bug,
+       since two independently-tall columns can't cleanly share one set
+       of page breaks. .exec-priority-groups2's own min-width:680px
+       breakpoint already kicks in at 718px on its own, so it still
+       shows multiple category groups per row without help here. */
   }
 </style>
 </head>
