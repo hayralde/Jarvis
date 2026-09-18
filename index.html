@@ -480,22 +480,9 @@
     /* .exec-priority-groups2's own min-width:680px breakpoint already
        kicks in at A4's ~718px printable width, auto-fitting however many
        category groups exist — no fixed column count to force here. */
-    /* Tighten vertical spacing (padding/gaps only, never font-size) so the
-       report fits one A4 sheet — screen view keeps the roomier mockup
-       spacing untouched. */
-    .exec-hero{padding:12px 26px 10px !important;}
-    .exec-body{padding:8px 26px 6px !important;}
-    .exec-cols{gap:8px !important;margin-top:8px !important;}
-    .exec-priority-block{margin-top:8px !important;}
-    .exec-section-head{padding:7px 14px !important;}
-    .exec-section-body{padding:9px !important;gap:5px !important;}
-    .exec-stat-card{padding:9px !important;}
-    .exec-priority-head{padding:7px 16px !important;}
-    .exec-priority-groups2{padding:9px !important;gap:7px !important;}
-    .exec-group{padding:7px 10px !important;}
-    .exec-group-head{margin-bottom:5px !important;}
-    .exec-group ul{gap:5px !important;}
-    .exec-footer{padding:6px 26px !important;}
+    /* No one-page requirement anymore (user explicitly dropped it) — print
+       spacing intentionally matches the on-screen mockup spacing 1:1, so
+       the report just flows onto as many pages as it needs. */
   }
 </style>
 </head>
@@ -1234,8 +1221,6 @@
   // list). completedAt is stamped the moment a card is moved to "done"
   // (see moveTaskStatus); older done cards from before that existed fall
   // back to their original `date` field.
-  var DOING_CAP = 4;
-
   function getTasksForReport(status){
     var list = tasks.filter(function(t){ return t.status === status; }).slice();
     if(status === "done"){
@@ -1268,8 +1253,9 @@
   // stays a separate, real signal the user already relies on (the red-flag
   // toggle predates categories) — it's not folded away by grouping, just
   // sorted first within each group and marked visually (see
-  // renderExecGroupItem) so urgency is still obvious at a glance.
-  var CATEGORY_GROUP_CAP = 3;
+  // renderExecGroupItem) so urgency is still obvious at a glance. No cap
+  // on items per group — the one-page print requirement was dropped, so
+  // there's no reason to hide anything here either.
   var CATEGORY_THEMES = ["orange", "blue", "purple", "green", "teal"];
   var UNCATEGORIZED_LABEL = "Sem categoria";
 
@@ -1289,13 +1275,12 @@
     });
     return order.map(function(cat, i){
       var items = map[cat];
-      var shown = items.slice(0, CATEGORY_GROUP_CAP);
       var theme = cat === UNCATEGORIZED_LABEL ? "gray" : CATEGORY_THEMES[i % CATEGORY_THEMES.length];
       return {
         name: cat,
         theme: theme,
-        items: shown,
-        remaining: items.length - shown.length,
+        items: items,
+        remaining: 0,
         total: items.length
       };
     });
@@ -1322,13 +1307,11 @@
     };
   }
 
-  // "Em andamento" also gets capped for the same one-page reason — the
-  // flagged-first ordering keeps whatever's most urgent visible, the rest
-  // are just counted.
+  // "Em andamento" — no cap, same reasoning as the done list: the
+  // one-page print requirement was dropped, so nothing needs hiding here.
   function getLimitedDoing(){
     var doing = getTasksForReport("doing");
-    var limited = doing.slice(0, DOING_CAP);
-    return { items: limited, remaining: doing.length - limited.length };
+    return { items: doing, remaining: 0 };
   }
 
   function buildExecutiveSummary(counts, urgentCount, concentration){
