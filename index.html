@@ -423,12 +423,12 @@
      spacing is tightened here. Scoped to #panel-onepage only, on screen
      and in print alike, so Acabativas itself keeps its roomier spacing
      and uncapped lists untouched. */
-  #panel-onepage .exec-hero{padding:10px 20px 8px;}
+  #panel-onepage .exec-hero{padding:8px 20px 6px;}
   #panel-onepage .exec-hero-top{gap:10px;}
-  #panel-onepage .exec-hero-title{margin-top:8px;font-size:16px;}
-  #panel-onepage .exec-hero-chips{margin-top:6px;}
-  #panel-onepage .exec-eff-card{padding:8px 10px;min-width:0;}
-  #panel-onepage .exec-body{padding:6px 20px 5px;}
+  #panel-onepage .exec-hero-title{margin-top:6px;font-size:18px;}
+  #panel-onepage .exec-hero-chips{margin-top:5px;}
+  #panel-onepage .exec-eff-card{padding:6px 10px;min-width:0;}
+  #panel-onepage .exec-body{padding:4px 20px 3px;}
   /* Grid rows stretch every item to the tallest sibling by default — a
      category with 1 pendência was rendering as tall as one with 4, all
      padded-out blank space below its single line. align-items:start lets
@@ -437,22 +437,33 @@
   #panel-onepage .exec-cols{gap:6px;margin-top:6px;grid-template-columns:1fr 1fr;align-items:start;}
   #panel-onepage .exec-priority-block{margin-top:6px;}
   #panel-onepage .exec-section-head{padding:5px 10px;}
+  #panel-onepage .exec-section-head h3{font-size:13px;}
   #panel-onepage .exec-section-body{padding:6px;gap:4px;}
-  /* Stat cards: drop the decorative icon and shrink the number — the
-     4-card row was the single biggest offender for "big card, little
-     content" (icon + big 26px number + two label lines, mostly padding). */
+  /* Stat cards: drop the decorative icon (the number is the useful part) —
+     but the number itself stays readable, just not the full 26px since
+     four cards share a row here. */
   #panel-onepage .exec-stat-card{padding:6px 8px;}
   #panel-onepage .exec-stat-icon{display:none;}
   #panel-onepage .exec-stat-top{gap:4px;}
+  #panel-onepage .exec-stat-label{font-size:10.5px;}
   #panel-onepage .exec-stat-num-row{margin-top:2px;}
-  #panel-onepage .exec-stat-num{font-size:17px;}
-  #panel-onepage .exec-stat-sub{font-size:9.5px;margin-top:1px;}
+  #panel-onepage .exec-stat-num{font-size:21px;}
+  #panel-onepage .exec-stat-sub{font-size:10.5px;margin-top:1px;}
+  /* Body content — the actual read text — bumped up from the shared
+     11-11.5px base. Readability wins over caps; if this doesn't fit one
+     page, the fix is fewer items (ONE_PAGE_*_CAP), never smaller text
+     again — see this session's own hard-learned lesson on that. */
+  #panel-onepage .exec-done-title,#panel-onepage .exec-doing-title,#panel-onepage .exec-group li{font-size:12.5px;line-height:1.45;}
+  #panel-onepage .exec-done-date,#panel-onepage .exec-doing-date{font-size:11px;}
   #panel-onepage .exec-priority-head{padding:5px 12px;}
+  #panel-onepage .exec-priority-head h3{font-size:13px;}
   #panel-onepage .exec-priority-groups2{padding:6px;gap:6px;align-items:start;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));}
   #panel-onepage .exec-group{padding:5px 8px;}
+  #panel-onepage .exec-group-head h4{font-size:12px;}
+  #panel-onepage .exec-group-count{font-size:11px;}
   #panel-onepage .exec-group-head{margin-bottom:4px;}
   #panel-onepage .exec-group ul{gap:4px;}
-  #panel-onepage .exec-footer{padding:5px 20px;}
+  #panel-onepage .exec-footer{padding:4px 20px;}
 
   footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text-dimmer);font-family:'IBM Plex Mono',monospace;}
   footer .prompt{color:var(--green);}
@@ -1501,8 +1512,8 @@
   // are separate getters, not a shared toggle, so tightening this tab
   // can never accidentally hide something on the other one.
   var ONE_PAGE_DONE_CAP = 5;
-  var ONE_PAGE_DOING_CAP = 8;
-  var ONE_PAGE_CATEGORY_CAP = 6;
+  var ONE_PAGE_DOING_CAP = 4;
+  var ONE_PAGE_CATEGORY_CAP = 5;
   var ONE_PAGE_SUMMARY_LEN = 120;
 
   function summarizeText(text, maxLen){
