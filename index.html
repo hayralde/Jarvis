@@ -418,6 +418,26 @@
   .exec-footer-link svg{width:13px;height:13px;}
   .exec-footer-link:hover{background:#EBF3FD;}
 
+  /* "One page" tab: same exec-* classes/visual language as Acabativas,
+     just tuned to guarantee a single printed sheet — content is capped
+     (see ONE_PAGE_* constants) and summarized (see summarizeText()), and
+     spacing is tightened here. Scoped to #panel-onepage only, on screen
+     and in print alike, so Acabativas itself keeps its roomier spacing
+     and uncapped lists untouched. */
+  #panel-onepage .exec-hero{padding:12px 26px 10px;}
+  #panel-onepage .exec-body{padding:8px 26px 6px;}
+  #panel-onepage .exec-cols{gap:8px;margin-top:8px;grid-template-columns:1.3fr 1fr;}
+  #panel-onepage .exec-priority-block{margin-top:8px;}
+  #panel-onepage .exec-section-head{padding:7px 14px;}
+  #panel-onepage .exec-section-body{padding:9px;gap:5px;}
+  #panel-onepage .exec-stat-card{padding:9px;}
+  #panel-onepage .exec-priority-head{padding:7px 16px;}
+  #panel-onepage .exec-priority-groups2{padding:9px;gap:7px;}
+  #panel-onepage .exec-group{padding:7px 10px;}
+  #panel-onepage .exec-group-head{margin-bottom:5px;}
+  #panel-onepage .exec-group ul{gap:5px;}
+  #panel-onepage .exec-footer{padding:6px 26px;}
+
   footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text-dimmer);font-family:'IBM Plex Mono',monospace;}
   footer .prompt{color:var(--green);}
 
@@ -488,6 +508,10 @@
        of page breaks. .exec-priority-groups2's own min-width:680px
        breakpoint already kicks in at 718px on its own, so it still
        shows multiple category groups per row without help here. */
+    /* Safe to avoid-break the whole section/block here (unlike above) —
+       the "One page" tab deliberately caps and summarizes everything so
+       these are always short, never taller than a page. */
+    #panel-onepage .exec-section,#panel-onepage .exec-priority-block{break-inside:avoid;}
   }
 </style>
 </head>
@@ -507,6 +531,7 @@
     <div class="tabbar mono" role="tablist">
       <button class="tab-btn active" type="button" data-tab="kanban" role="tab" aria-selected="true">kanban</button>
       <button class="tab-btn" type="button" data-tab="acabativas" role="tab" aria-selected="false">acabativas</button>
+      <button class="tab-btn" type="button" data-tab="onepage" role="tab" aria-selected="false">one page</button>
       <button class="tab-btn" type="button" data-tab="historico" role="tab" aria-selected="false">histórico</button>
     </div>
 
@@ -670,6 +695,144 @@
               <span class="exec-footer-author">Elaborado por José Cordeiro — PCM</span>
               <span class="exec-footer-dot"></span>
               <span class="exec-footer-summary" id="execFooterSummary"></span>
+            </div>
+            <a class="exec-footer-link" href="https://hayralde.github.io/Jarvis/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m9 15 2 2 4-4"/></svg>hayralde.github.io/Jarvis/</a>
+          </footer>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="panel-onepage" data-panel="onepage">
+      <div class="exec-outer">
+        <div class="exec-doc">
+          <header class="exec-hero">
+            <div class="exec-hero-circle"></div>
+            <div class="exec-hero-line"></div>
+            <div class="exec-hero-top">
+              <div>
+                <div class="exec-hero-brand">
+                  <div class="exec-hero-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></div>
+                  <div>
+                    <h1 class="exec-hero-company">RRP ENERGIA<span>| PCM</span></h1>
+                    <p class="exec-hero-dept">Planejamento e Controle de Manutenção</p>
+                  </div>
+                </div>
+                <h2 class="exec-hero-title">Relatório Executivo — Resumo (1 página)</h2>
+                <div class="exec-hero-chips">
+                  <span class="exec-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>José Cordeiro - PCM</span>
+                  <span class="exec-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16.5 12"/></svg><span id="opGenerated"></span></span>
+                </div>
+              </div>
+              <div class="exec-hero-right">
+                <span class="exec-hero-badge" id="opSyncBadge">Sincronizado</span>
+                <div class="exec-eff-card">
+                  <div class="exec-eff-row">
+                    <div>
+                      <p class="exec-eff-label">Eficiência</p>
+                      <p class="exec-eff-value" id="opEffValue">0%</p>
+                      <p class="exec-eff-sub" id="opEffSub"></p>
+                    </div>
+                    <div class="exec-eff-ring">
+                      <svg viewBox="0 0 44 44" class="exec-eff-svg">
+                        <circle cx="22" cy="22" r="16" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="5"/>
+                        <circle id="opEffCircle" class="exec-eff-seg" cx="22" cy="22" r="16" fill="none" stroke="#27AE60" stroke-width="5" stroke-linecap="round" stroke-dasharray="0 100.5"/>
+                      </svg>
+                      <div class="exec-eff-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></div>
+                    </div>
+                  </div>
+                  <div class="exec-eff-bar">
+                    <div class="exec-eff-bar-seg" id="opBarTodo" style="background:#E67E22;width:0%"></div>
+                    <div class="exec-eff-bar-seg" id="opBarDoing" style="background:#2E86DE;width:0%"></div>
+                    <div class="exec-eff-bar-seg" id="opBarDone" style="background:#27AE60;width:0%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <div class="exec-actions no-print">
+            <button type="button" class="primary" id="opCopyReportBtn">copiar relatório</button>
+            <button type="button" id="opPrintReportBtn">imprimir / salvar pdf</button>
+            <button type="button" id="opDownloadHtmlBtn">baixar html</button>
+            <span id="opCopyStatus" class="exec-copy-status"></span>
+          </div>
+
+          <div class="exec-body">
+            <div class="exec-stats">
+              <div class="exec-stat-card">
+                <div class="exec-stat-top">
+                  <span class="exec-stat-label">Total</span>
+                  <div class="exec-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg></div>
+                </div>
+                <p class="exec-stat-num" id="opStatTotal">0</p>
+                <p class="exec-stat-sub">atividades registradas</p>
+              </div>
+              <div class="exec-stat-card exec-stat-card-orange">
+                <div class="exec-stat-top">
+                  <span class="exec-stat-label">A Fazer</span>
+                  <div class="exec-stat-icon exec-stat-icon-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
+                </div>
+                <div class="exec-stat-num-row"><p class="exec-stat-num" id="opStatTodo">0</p><span class="exec-stat-pct exec-pct-orange" id="opStatTodoPct">0%</span></div>
+                <p class="exec-stat-sub">pendências</p>
+              </div>
+              <div class="exec-stat-card exec-stat-card-blue">
+                <div class="exec-stat-top">
+                  <span class="exec-stat-label">Em Andamento</span>
+                  <div class="exec-stat-icon exec-stat-icon-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16.5 12"/></svg></div>
+                </div>
+                <div class="exec-stat-num-row"><p class="exec-stat-num" id="opStatDoing">0</p><span class="exec-stat-pct exec-pct-blue" id="opStatDoingPct">0%</span></div>
+                <p class="exec-stat-sub">em execução agora</p>
+              </div>
+              <div class="exec-stat-card exec-stat-card-green">
+                <div class="exec-stat-top">
+                  <span class="exec-stat-label">Concluídas</span>
+                  <div class="exec-stat-icon exec-stat-icon-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+                </div>
+                <div class="exec-stat-num-row"><p class="exec-stat-num" id="opStatDone">0</p><span class="exec-stat-pct exec-pct-green" id="opStatDonePct">0%</span></div>
+                <p class="exec-stat-sub">tarefas finalizadas</p>
+              </div>
+            </div>
+
+            <div class="exec-cols">
+              <div class="exec-section exec-section-green">
+                <div class="exec-section-head">
+                  <div class="exec-section-head-left">
+                    <div class="exec-section-icon exec-icon-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+                    <h3>Concluídas (<span id="opDoneCount">0</span>) — Destaque</h3>
+                  </div>
+                  <span class="exec-section-badge" id="opDoneBadge">0% do total</span>
+                </div>
+                <div class="exec-section-body" id="opDoneList"></div>
+              </div>
+
+              <div class="exec-section exec-section-amber">
+                <div class="exec-section-head">
+                  <div class="exec-section-head-left">
+                    <div class="exec-section-icon exec-icon-amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16.5 12"/></svg></div>
+                    <h3>Em Andamento (<span id="opDoingCount">0</span>)</h3>
+                  </div>
+                </div>
+                <div class="exec-section-body" id="opDoingList"></div>
+              </div>
+            </div>
+
+            <div class="exec-priority-block">
+              <div class="exec-priority-head">
+                <div class="exec-section-head-left">
+                  <div class="exec-priority-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
+                  <h3>A Fazer (<span id="opTodoCount">0</span>) — Pendências Prioritárias</h3>
+                </div>
+                <span class="exec-priority-sub" id="opPrioritySub">grupos por categoria</span>
+              </div>
+              <div class="exec-priority-groups2" id="opPriorityGroups"></div>
+            </div>
+          </div>
+
+          <footer class="exec-footer">
+            <div class="exec-footer-left">
+              <span class="exec-footer-author">Elaborado por José Cordeiro — PCM</span>
+              <span class="exec-footer-dot"></span>
+              <span class="exec-footer-summary" id="opFooterSummary"></span>
             </div>
             <a class="exec-footer-link" href="https://hayralde.github.io/Jarvis/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m9 15 2 2 4-4"/></svg>hayralde.github.io/Jarvis/</a>
           </footer>
@@ -872,6 +1035,7 @@
 
     updateCategoryOptions();
     renderAcabativas();
+    renderOnePage();
     renderHistorico();
   }
 
@@ -914,18 +1078,22 @@
     var led = document.getElementById("syncLed");
     var label = document.getElementById("syncLabel");
     var execBadge = document.getElementById("execSyncBadge");
+    var opBadge = document.getElementById("opSyncBadge");
     if(state === "online"){
       led.className = "led led-green";
       label.textContent = "sincronizado";
       if(execBadge) execBadge.textContent = "Sincronizado";
+      if(opBadge) opBadge.textContent = "Sincronizado";
     } else if(state === "connecting"){
       led.className = "led led-amber";
       label.textContent = "conectando...";
       if(execBadge) execBadge.textContent = "Conectando...";
+      if(opBadge) opBadge.textContent = "Conectando...";
     } else {
       led.className = "led led-red";
       label.textContent = "offline";
       if(execBadge) execBadge.textContent = "Offline";
+      if(opBadge) opBadge.textContent = "Offline";
     }
   }
 
@@ -1320,6 +1488,45 @@
     return { items: doing, remaining: 0 };
   }
 
+  // "One page" tab: the same underlying data as Acabativas, but capped
+  // and text-summarized so the report is guaranteed to fit a single
+  // printed sheet (see the scoped #panel-onepage spacing in the
+  // stylesheet). Acabativas itself stays uncapped/unsummarized — these
+  // are separate getters, not a shared toggle, so tightening this tab
+  // can never accidentally hide something on the other one.
+  var ONE_PAGE_DONE_CAP = 3;
+  var ONE_PAGE_DOING_CAP = 3;
+  var ONE_PAGE_CATEGORY_CAP = 3;
+  var ONE_PAGE_SUMMARY_LEN = 100;
+
+  function summarizeText(text, maxLen){
+    var t = (text || "").trim().replace(/\s+/g, " ");
+    if(t.length <= maxLen) return t;
+    var cut = t.slice(0, maxLen);
+    var lastSpace = cut.lastIndexOf(" ");
+    if(lastSpace > maxLen * 0.6) cut = cut.slice(0, lastSpace);
+    return cut + "…";
+  }
+
+  function getOnePageDone(){
+    var all = getHighlightedDone().items;
+    var items = all.slice(0, ONE_PAGE_DONE_CAP);
+    return { items: items, remaining: all.length - items.length };
+  }
+
+  function getOnePageDoing(){
+    var doing = getTasksForReport("doing");
+    var items = doing.slice(0, ONE_PAGE_DOING_CAP);
+    return { items: items, remaining: doing.length - items.length };
+  }
+
+  function getOnePageCategoryGroups(){
+    return getCategoryGroups().map(function(g){
+      var shown = g.items.slice(0, ONE_PAGE_CATEGORY_CAP);
+      return { name: g.name, theme: g.theme, items: shown, remaining: g.items.length - shown.length, total: g.total };
+    });
+  }
+
   function buildExecutiveSummary(counts, urgentCount, concentration){
     var sentences = [];
     sentences.push(
@@ -1399,6 +1606,79 @@
         lines.push(g.name + ":");
         g.items.forEach(function(t, i){
           lines.push((i + 1) + ". " + t.title + " (" + reportDateLabel(t, "todo") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
+        });
+        if(g.remaining > 0){
+          lines.push("+ " + g.remaining + " outra(s) pendência(s) nesta categoria.");
+        }
+      });
+    }
+
+    return lines.join("\n").replace(/\n+$/, "\n");
+  }
+
+  // Plain-text export for the "One page" tab — same structure as
+  // buildReportText(), fed the capped/summarized getters instead.
+  function buildOnePageReportText(){
+    var counts = {};
+    STATUS_ORDER.forEach(function(s){ counts[s] = tasks.filter(function(t){ return t.status === s; }).length; });
+    var categoryGroups = getOnePageCategoryGroups();
+    var urgentCount = tasks.filter(function(t){ return t.status === "todo" && t.flagged; }).length;
+    var highlighted = getOnePageDone();
+    var doing = getOnePageDoing();
+
+    var lines = [];
+    lines.push("RELATÓRIO EXECUTIVO — RESUMO (1 PÁGINA) — RRP ENERGIA · PCM");
+    lines.push("Responsável: José Cordeiro");
+    lines.push("Gerado em " + formatDate(Date.now()));
+    lines.push("");
+
+    lines.push("RESUMO EXECUTIVO");
+    lines.push(buildExecutiveSummary(counts, urgentCount, getCategoryConcentration(categoryGroups)));
+    lines.push("");
+
+    lines.push("INDICADORES DE DESEMPENHO");
+    var total = counts.todo + counts.doing + counts.done;
+    STATUS_ORDER.forEach(function(s){
+      var pct = total > 0 ? Math.round(counts[s] / total * 100) : 0;
+      lines.push("- " + STATUSES[s].title + ": " + counts[s] + " (" + pct + "%)");
+    });
+    lines.push("Total geral: " + total);
+    lines.push("");
+
+    lines.push("PRINCIPAIS CONQUISTAS");
+    if(highlighted.items.length === 0){
+      lines.push("Nenhuma tarefa concluída no momento.");
+    } else {
+      highlighted.items.forEach(function(t, i){
+        lines.push((i + 1) + ". " + summarizeText(t.title, ONE_PAGE_SUMMARY_LEN) + " (" + reportDateLabel(t, "done") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
+      });
+      if(highlighted.remaining > 0){
+        lines.push("+ " + highlighted.remaining + " outra(s) tarefa(s) concluída(s).");
+      }
+    }
+    lines.push("");
+
+    lines.push("ATIVIDADES EM ANDAMENTO");
+    if(doing.items.length === 0){
+      lines.push("Nenhuma atividade em execução no momento.");
+    } else {
+      doing.items.forEach(function(t, i){
+        lines.push((i + 1) + ". " + summarizeText(t.title, ONE_PAGE_SUMMARY_LEN) + " (" + reportDateLabel(t, "doing") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
+      });
+      if(doing.remaining > 0){
+        lines.push("+ " + doing.remaining + " outra(s) atividade(s) em andamento.");
+      }
+    }
+    lines.push("");
+
+    lines.push("PENDÊNCIAS PRIORITÁRIAS (por categoria)");
+    if(categoryGroups.length === 0){
+      lines.push("Nenhuma pendência no momento.");
+    } else {
+      categoryGroups.forEach(function(g){
+        lines.push(g.name + ":");
+        g.items.forEach(function(t, i){
+          lines.push((i + 1) + ". " + summarizeText(t.title, ONE_PAGE_SUMMARY_LEN) + " (" + reportDateLabel(t, "todo") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
         });
         if(g.remaining > 0){
           lines.push("+ " + g.remaining + " outra(s) pendência(s) nesta categoria.");
@@ -1506,6 +1786,79 @@
     return div;
   }
 
+  // "One page" tab item renderers — identical structure to the exec-*
+  // ones above, just with summarizeText() applied to free-text fields so
+  // the long paragraph-style entries this board tends to have don't blow
+  // the page budget by themselves.
+  function renderOnePageDoneItem(t, index){
+    var item = document.createElement("div");
+    item.className = "exec-done-item";
+    var num = document.createElement("span");
+    num.className = "exec-done-num";
+    num.textContent = String(index + 1).padStart(2, "0");
+    item.appendChild(num);
+    var titleEl = document.createElement("p");
+    titleEl.className = "exec-done-title";
+    titleEl.textContent = summarizeText(t.title, ONE_PAGE_SUMMARY_LEN);
+    item.appendChild(titleEl);
+    var dateEl = document.createElement("span");
+    dateEl.className = "exec-done-date";
+    dateEl.textContent = reportDateLabel(t, "done");
+    item.appendChild(dateEl);
+    return item;
+  }
+
+  function renderOnePageDoingItem(t){
+    var item = document.createElement("div");
+    item.className = "exec-doing-item";
+    var titleEl = document.createElement("p");
+    titleEl.className = "exec-doing-title";
+    titleEl.textContent = summarizeText(t.title, ONE_PAGE_SUMMARY_LEN);
+    item.appendChild(titleEl);
+    var dateEl = document.createElement("p");
+    dateEl.className = "exec-doing-date";
+    dateEl.textContent = reportDateLabel(t, "doing");
+    item.appendChild(dateEl);
+    return item;
+  }
+
+  function renderOnePageGroupItem(t){
+    var li = document.createElement("li");
+    if(t.flagged) li.className = "exec-group-li-flagged";
+    li.textContent = summarizeText(t.title, ONE_PAGE_SUMMARY_LEN);
+    return li;
+  }
+
+  function renderOnePageCategoryGroup(group){
+    var div = document.createElement("div");
+    div.className = "exec-group exec-group-" + group.theme;
+    var head = document.createElement("div");
+    head.className = "exec-group-head";
+    head.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2.59 12.58a2 2 0 0 1 0-2.83l7.17-7.17a2 2 0 0 1 2.83 0l8 8a2 2 0 0 1 0 2.83Z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>';
+    var h4 = document.createElement("h4");
+    h4.textContent = group.name;
+    head.appendChild(h4);
+    var count = document.createElement("span");
+    count.className = "exec-group-count exec-count-" + group.theme;
+    count.textContent = group.total;
+    head.appendChild(count);
+    div.appendChild(head);
+    var ul = document.createElement("ul");
+    if(group.items.length === 0){
+      ul.appendChild(execEmpty("Nenhuma pendência nesta categoria."));
+    } else {
+      group.items.forEach(function(t){ ul.appendChild(renderOnePageGroupItem(t)); });
+    }
+    div.appendChild(ul);
+    if(group.remaining > 0){
+      var more = document.createElement("p");
+      more.className = "exec-group-remaining";
+      more.textContent = "+ " + group.remaining + " outra(s) pendência(s) nesta categoria.";
+      div.appendChild(more);
+    }
+    return div;
+  }
+
   // Renders the Acabativas executive report — visual design matched to a
   // reference mockup the user supplied, populated with only real task
   // data. Thematic grouping is now real (see getCategoryGroups, backed by
@@ -1601,6 +1954,92 @@
       counts.todo + " a fazer · " + counts.doing + " em andamento · " + counts.done + " concluídas";
   }
 
+  // "One page" tab — same layout/logic as renderAcabativas() above, but
+  // fed the capped+summarized getters (getOnePageDone/-Doing/-CategoryGroups)
+  // instead of the uncapped ones, and writing into the "op*" ids of
+  // #panel-onepage instead of the "exec*" ids of #panel-acabativas.
+  function renderOnePage(){
+    var counts = {};
+    STATUS_ORDER.forEach(function(s){ counts[s] = tasks.filter(function(t){ return t.status === s; }).length; });
+    var total = counts.todo + counts.doing + counts.done;
+    var categoryGroups = getOnePageCategoryGroups();
+    var highlighted = getOnePageDone();
+    var limitedDoing = getOnePageDoing();
+    var todoPct = total > 0 ? Math.round(counts.todo / total * 100) : 0;
+    var doingPct = total > 0 ? Math.round(counts.doing / total * 100) : 0;
+    var donePct = total > 0 ? Math.round(counts.done / total * 100) : 0;
+
+    document.getElementById("opGenerated").textContent = "Gerado em " + formatDate(Date.now());
+    document.getElementById("opEffValue").textContent = donePct + "%";
+    document.getElementById("opEffSub").textContent = counts.done + " de " + total + " concluídas";
+    var circumference = 2 * Math.PI * 16;
+    document.getElementById("opEffCircle").setAttribute("stroke-dasharray", (donePct / 100 * circumference) + " " + circumference);
+    document.getElementById("opBarTodo").style.width = todoPct + "%";
+    document.getElementById("opBarDoing").style.width = doingPct + "%";
+    document.getElementById("opBarDone").style.width = donePct + "%";
+
+    document.getElementById("opStatTotal").textContent = total;
+    document.getElementById("opStatTodo").textContent = counts.todo;
+    document.getElementById("opStatTodoPct").textContent = todoPct + "%";
+    document.getElementById("opStatDoing").textContent = counts.doing;
+    document.getElementById("opStatDoingPct").textContent = doingPct + "%";
+    document.getElementById("opStatDone").textContent = counts.done;
+    document.getElementById("opStatDonePct").textContent = donePct + "%";
+
+    document.getElementById("opDoneCount").textContent = counts.done;
+    document.getElementById("opDoneBadge").textContent = donePct + "% do total";
+    var doneList = document.getElementById("opDoneList");
+    doneList.innerHTML = "";
+    if(highlighted.items.length === 0){
+      doneList.appendChild(execEmpty(dataLoaded ? "Nenhuma tarefa concluída ainda." : "Carregando..."));
+    } else {
+      highlighted.items.forEach(function(t, i){ doneList.appendChild(renderOnePageDoneItem(t, i)); });
+      if(highlighted.remaining > 0){
+        var moreDone = document.createElement("p");
+        moreDone.className = "exec-group-remaining";
+        moreDone.textContent = "+ " + highlighted.remaining + " outra(s) tarefa(s) concluída(s).";
+        doneList.appendChild(moreDone);
+      }
+    }
+
+    document.getElementById("opDoingCount").textContent = counts.doing;
+    var doingList = document.getElementById("opDoingList");
+    doingList.innerHTML = "";
+    if(limitedDoing.items.length === 0){
+      doingList.appendChild(execEmpty(dataLoaded ? "Nenhuma atividade em execução." : "Carregando..."));
+    } else {
+      limitedDoing.items.forEach(function(t){ doingList.appendChild(renderOnePageDoingItem(t)); });
+      if(limitedDoing.remaining > 0){
+        var moreDoing = document.createElement("p");
+        moreDoing.className = "exec-group-remaining";
+        moreDoing.textContent = "+ " + limitedDoing.remaining + " outra(s) atividade(s) em andamento.";
+        doingList.appendChild(moreDoing);
+      }
+    }
+
+    document.getElementById("opTodoCount").textContent = counts.todo;
+    document.getElementById("opPrioritySub").textContent =
+      categoryGroups.length === 1 ? "1 grupo por categoria" : categoryGroups.length + " grupos por categoria";
+    var groupsWrap = document.getElementById("opPriorityGroups");
+    groupsWrap.innerHTML = "";
+    var concentration = getCategoryConcentration(categoryGroups);
+    if(concentration){
+      var insight = document.createElement("p");
+      insight.className = "exec-priority-insight";
+      insight.textContent = concentration.names[0] + " e " + concentration.names[1] + " concentram " +
+        concentration.pct + "% " + concentration.scopeLabel + ".";
+      groupsWrap.appendChild(insight);
+    }
+    if(categoryGroups.length === 0){
+      groupsWrap.appendChild(execEmpty("Nenhuma pendência no momento."));
+    } else {
+      categoryGroups.forEach(function(g){ groupsWrap.appendChild(renderOnePageCategoryGroup(g)); });
+    }
+
+    document.getElementById("opFooterSummary").textContent =
+      counts.todo + " a fazer · " + counts.doing + " em andamento · " + counts.done + " concluídas";
+  }
+
   // Groups archived ("history") tasks by the Sunday-to-Saturday week they
   // were completed in — same week boundary archiveOldDoneTasks() uses —
   // so the label matches the week the task actually lived in "Concluído".
@@ -1687,62 +2126,78 @@
     });
   }
 
+  // Shared copy/print/download wiring for both report tabs (Acabativas
+  // and One Page) — same behavior, different panel/build-function per tab.
   var copyStatusTimer = null;
-  document.getElementById("copyReportBtn").addEventListener("click", function(){
-    var text = buildReportText();
-    var statusEl = document.getElementById("copyStatus");
-    function showStatus(msg){
-      statusEl.textContent = msg;
-      clearTimeout(copyStatusTimer);
-      copyStatusTimer = setTimeout(function(){ statusEl.textContent = ""; }, 3000);
-    }
-    if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(text).then(function(){
-        showStatus("copiado!");
-      }).catch(function(){
-        showStatus("não foi possível copiar — selecione o texto manualmente");
-      });
-    } else {
-      showStatus("clipboard indisponível neste navegador");
-    }
-  });
-  document.getElementById("printReportBtn").addEventListener("click", function(){
-    window.print();
-  });
+  function wireReportActions(opts){
+    document.getElementById(opts.copyBtnId).addEventListener("click", function(){
+      var text = opts.buildText();
+      var statusEl = document.getElementById(opts.statusId);
+      function showStatus(msg){
+        statusEl.textContent = msg;
+        clearTimeout(copyStatusTimer);
+        copyStatusTimer = setTimeout(function(){ statusEl.textContent = ""; }, 3000);
+      }
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(function(){
+          showStatus("copiado!");
+        }).catch(function(){
+          showStatus("não foi possível copiar — selecione o texto manualmente");
+        });
+      } else {
+        showStatus("clipboard indisponível neste navegador");
+      }
+    });
+    document.getElementById(opts.printBtnId).addEventListener("click", function(){
+      window.print();
+    });
+    document.getElementById(opts.downloadBtnId).addEventListener("click", function(){
+      var html = buildStandaloneReportHtml(opts.panelSelector, opts.title);
+      var blob = new Blob([html], {type: "text/html;charset=utf-8"});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = opts.filenamePrefix + "-" + formatDate(Date.now()).split("/").join("-") + ".html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    });
+  }
 
-  // Standalone snapshot of just the Acabativas report — a self-contained
+  // Standalone snapshot of just one report panel — a self-contained
   // .html file (inline styles, Google Fonts link, no app JS/Supabase dep)
   // that opens correctly anywhere, for when the boss wants a file instead
   // of a pasted-text or printed report. It's a point-in-time snapshot of
   // whatever's on screen right now, not a live view.
-  function buildStandaloneReportHtml(){
+  function buildStandaloneReportHtml(panelSelector, title){
     var styleText = document.querySelector("style").textContent;
     var fontLink = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
-    var execOuter = document.querySelector("#panel-acabativas .exec-outer").cloneNode(true);
+    var execOuter = document.querySelector(panelSelector + " .exec-outer").cloneNode(true);
     var actions = execOuter.querySelector(".exec-actions");
     if(actions) actions.remove();
 
     return "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n" +
       "<meta charset=\"UTF-8\">\n" +
       "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
-      "<title>Relatório Executivo — RRP Energia · PCM</title>\n" +
+      "<title>" + title + "</title>\n" +
       (fontLink ? fontLink.outerHTML + "\n" : "") +
       "<style>" + styleText + "</style>\n" +
       "<style>body{background:#E9EEF5;padding:24px;margin:0;}</style>\n" +
       "</head>\n<body>\n" + execOuter.outerHTML + "\n</body>\n</html>";
   }
 
-  document.getElementById("downloadHtmlBtn").addEventListener("click", function(){
-    var html = buildStandaloneReportHtml();
-    var blob = new Blob([html], {type: "text/html;charset=utf-8"});
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement("a");
-    a.href = url;
-    a.download = "relatorio-executivo-" + formatDate(Date.now()).split("/").join("-") + ".html";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  wireReportActions({
+    copyBtnId: "copyReportBtn", printBtnId: "printReportBtn", downloadBtnId: "downloadHtmlBtn",
+    statusId: "copyStatus", buildText: buildReportText,
+    panelSelector: "#panel-acabativas", title: "Relatório Executivo — RRP Energia · PCM",
+    filenamePrefix: "relatorio-executivo"
+  });
+  wireReportActions({
+    copyBtnId: "opCopyReportBtn", printBtnId: "opPrintReportBtn", downloadBtnId: "opDownloadHtmlBtn",
+    statusId: "opCopyStatus", buildText: buildOnePageReportText,
+    panelSelector: "#panel-onepage", title: "Relatório Executivo — Resumo (1 página) — RRP Energia · PCM",
+    filenamePrefix: "relatorio-executivo-1pagina"
   });
 
   // drag & drop on kanban columns
