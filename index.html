@@ -424,19 +424,36 @@
      spacing is tightened here. Scoped to #panel-onepage only, on screen
      and in print alike, so Acabativas itself keeps its roomier spacing
      and uncapped lists untouched. */
-  #panel-onepage .exec-hero{padding:12px 26px 10px;}
-  #panel-onepage .exec-body{padding:8px 26px 6px;}
-  #panel-onepage .exec-cols{gap:8px;margin-top:8px;grid-template-columns:1.3fr 1fr;}
-  #panel-onepage .exec-priority-block{margin-top:8px;}
-  #panel-onepage .exec-section-head{padding:7px 14px;}
-  #panel-onepage .exec-section-body{padding:9px;gap:5px;}
-  #panel-onepage .exec-stat-card{padding:9px;}
-  #panel-onepage .exec-priority-head{padding:7px 16px;}
-  #panel-onepage .exec-priority-groups2{padding:9px;gap:7px;}
-  #panel-onepage .exec-group{padding:7px 10px;}
-  #panel-onepage .exec-group-head{margin-bottom:5px;}
-  #panel-onepage .exec-group ul{gap:5px;}
-  #panel-onepage .exec-footer{padding:6px 26px;}
+  #panel-onepage .exec-hero{padding:10px 20px 8px;}
+  #panel-onepage .exec-hero-top{gap:10px;}
+  #panel-onepage .exec-hero-title{margin-top:8px;font-size:16px;}
+  #panel-onepage .exec-hero-chips{margin-top:6px;}
+  #panel-onepage .exec-eff-card{padding:8px 10px;min-width:0;}
+  #panel-onepage .exec-body{padding:6px 20px 5px;}
+  /* Grid rows stretch every item to the tallest sibling by default — a
+     category with 1 pendência was rendering as tall as one with 4, all
+     padded-out blank space below its single line. align-items:start lets
+     each card be only as tall as its own content, which is what actually
+     frees up real space (as opposed to just shrinking padding further). */
+  #panel-onepage .exec-cols{gap:6px;margin-top:6px;grid-template-columns:1.3fr 1fr;align-items:start;}
+  #panel-onepage .exec-priority-block{margin-top:6px;}
+  #panel-onepage .exec-section-head{padding:5px 10px;}
+  #panel-onepage .exec-section-body{padding:6px;gap:4px;}
+  /* Stat cards: drop the decorative icon and shrink the number — the
+     4-card row was the single biggest offender for "big card, little
+     content" (icon + big 26px number + two label lines, mostly padding). */
+  #panel-onepage .exec-stat-card{padding:6px 8px;}
+  #panel-onepage .exec-stat-icon{display:none;}
+  #panel-onepage .exec-stat-top{gap:4px;}
+  #panel-onepage .exec-stat-num-row{margin-top:2px;}
+  #panel-onepage .exec-stat-num{font-size:17px;}
+  #panel-onepage .exec-stat-sub{font-size:9.5px;margin-top:1px;}
+  #panel-onepage .exec-priority-head{padding:5px 12px;}
+  #panel-onepage .exec-priority-groups2{padding:6px;gap:6px;align-items:start;}
+  #panel-onepage .exec-group{padding:5px 8px;}
+  #panel-onepage .exec-group-head{margin-bottom:4px;}
+  #panel-onepage .exec-group ul{gap:4px;}
+  #panel-onepage .exec-footer{padding:5px 20px;}
 
   footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text-dimmer);font-family:'IBM Plex Mono',monospace;}
   footer .prompt{color:var(--green);}
@@ -1494,9 +1511,9 @@
   // stylesheet). Acabativas itself stays uncapped/unsummarized — these
   // are separate getters, not a shared toggle, so tightening this tab
   // can never accidentally hide something on the other one.
-  var ONE_PAGE_DONE_CAP = 3;
-  var ONE_PAGE_DOING_CAP = 3;
-  var ONE_PAGE_CATEGORY_CAP = 3;
+  var ONE_PAGE_DONE_CAP = 5;
+  var ONE_PAGE_DOING_CAP = 4;
+  var ONE_PAGE_CATEGORY_CAP = 5;
   var ONE_PAGE_SUMMARY_LEN = 100;
 
   function summarizeText(text, maxLen){
