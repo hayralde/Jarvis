@@ -255,7 +255,6 @@
   .exec-chip svg{width:13px;height:13px;flex-shrink:0;}
 
   .exec-hero-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0;}
-  .exec-hero-badge{font-size:10px;font-weight:700;letter-spacing:.1em;background:#fff;color:#0E2342;border-radius:999px;padding:6px 12px;text-transform:uppercase;white-space:nowrap;}
   .exec-eff-card{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:12px 14px;min-width:160px;}
   .exec-eff-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
   .exec-eff-label{font-size:9px;letter-spacing:.12em;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;margin:0;}
@@ -435,7 +434,7 @@
      padded-out blank space below its single line. align-items:start lets
      each card be only as tall as its own content, which is what actually
      frees up real space (as opposed to just shrinking padding further). */
-  #panel-onepage .exec-cols{gap:6px;margin-top:6px;grid-template-columns:1.3fr 1fr;align-items:start;}
+  #panel-onepage .exec-cols{gap:6px;margin-top:6px;grid-template-columns:1fr 1fr;align-items:start;}
   #panel-onepage .exec-priority-block{margin-top:6px;}
   #panel-onepage .exec-section-head{padding:5px 10px;}
   #panel-onepage .exec-section-body{padding:6px;gap:4px;}
@@ -603,7 +602,6 @@
                 </div>
               </div>
               <div class="exec-hero-right">
-                <span class="exec-hero-badge" id="execSyncBadge">Sincronizado</span>
                 <div class="exec-eff-card">
                   <div class="exec-eff-row">
                     <div>
@@ -741,7 +739,6 @@
                 </div>
               </div>
               <div class="exec-hero-right">
-                <span class="exec-hero-badge" id="opSyncBadge">Sincronizado</span>
                 <div class="exec-eff-card">
                   <div class="exec-eff-row">
                     <div>
@@ -1094,23 +1091,15 @@
   function setSyncStatus(state){
     var led = document.getElementById("syncLed");
     var label = document.getElementById("syncLabel");
-    var execBadge = document.getElementById("execSyncBadge");
-    var opBadge = document.getElementById("opSyncBadge");
     if(state === "online"){
       led.className = "led led-green";
       label.textContent = "sincronizado";
-      if(execBadge) execBadge.textContent = "Sincronizado";
-      if(opBadge) opBadge.textContent = "Sincronizado";
     } else if(state === "connecting"){
       led.className = "led led-amber";
       label.textContent = "conectando...";
-      if(execBadge) execBadge.textContent = "Conectando...";
-      if(opBadge) opBadge.textContent = "Conectando...";
     } else {
       led.className = "led led-red";
       label.textContent = "offline";
-      if(execBadge) execBadge.textContent = "Offline";
-      if(opBadge) opBadge.textContent = "Offline";
     }
   }
 
@@ -1512,9 +1501,9 @@
   // are separate getters, not a shared toggle, so tightening this tab
   // can never accidentally hide something on the other one.
   var ONE_PAGE_DONE_CAP = 5;
-  var ONE_PAGE_DOING_CAP = 4;
-  var ONE_PAGE_CATEGORY_CAP = 5;
-  var ONE_PAGE_SUMMARY_LEN = 100;
+  var ONE_PAGE_DOING_CAP = 8;
+  var ONE_PAGE_CATEGORY_CAP = 6;
+  var ONE_PAGE_SUMMARY_LEN = 120;
 
   function summarizeText(text, maxLen){
     var t = (text || "").trim().replace(/\s+/g, " ");
