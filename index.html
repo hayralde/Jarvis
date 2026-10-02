@@ -88,6 +88,9 @@
   @media (prefers-reduced-motion: reduce){.caret,.led{animation:none;}}
 
   .wrap{max-width:980px;margin:0 auto;padding:44px 20px 80px;}
+  /* Kanban only: columns were too narrow to hold longer task text, so the
+     board gets 25% more room (980 -> 1225px). Other tabs keep 980px. */
+  .wrap:has(#panel-kanban.active){max-width:1225px;}
 
   /* tabs */
   .tabbar{display:flex;gap:24px;margin:0 0 32px 0;border-bottom:1px solid var(--border);}
