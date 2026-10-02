@@ -422,7 +422,7 @@
 
   /* "One page" tab: same exec-* classes/visual language as Acabativas,
      just tuned to guarantee a single printed sheet — content is capped
-     (see ONE_PAGE_* constants) and summarized (see summarizeText()), and
+     (item count, see ONE_PAGE_* constants; text is never truncated), and
      spacing is tightened here. Scoped to #panel-onepage only, on screen
      and in print alike, so Acabativas itself keeps its roomier spacing
      and uncapped lists untouched. */
@@ -437,7 +437,7 @@
      padded-out blank space below its single line. align-items:start lets
      each card be only as tall as its own content, which is what actually
      frees up real space (as opposed to just shrinking padding further). */
-  #panel-onepage .exec-cols{gap:6px;margin-top:6px;grid-template-columns:1fr 1fr;align-items:start;}
+  #panel-onepage .exec-cols{gap:6px;margin-top:6px;grid-template-columns:1fr 1.25fr;align-items:start;}
   #panel-onepage .exec-priority-block{margin-top:6px;}
   #panel-onepage .exec-section-head{padding:5px 10px;}
   #panel-onepage .exec-section-head h3{font-size:13px;}
@@ -458,6 +458,8 @@
      again — see this session's own hard-learned lesson on that. */
   #panel-onepage .exec-done-title,#panel-onepage .exec-doing-title,#panel-onepage .exec-group li{font-size:12.5px;line-height:1.45;}
   #panel-onepage .exec-done-date,#panel-onepage .exec-doing-date{font-size:11px;}
+  #panel-onepage .exec-done-item{padding:7px 10px;gap:8px;}
+  #panel-onepage .exec-doing-item{padding:7px 10px;}
   #panel-onepage .exec-priority-head{padding:5px 12px;}
   #panel-onepage .exec-priority-head h3{font-size:13px;}
   #panel-onepage .exec-priority-groups2{padding:6px;gap:6px;align-items:start;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));}
@@ -1508,25 +1510,16 @@
     return { items: doing, remaining: 0 };
   }
 
-  // "One page" tab: the same underlying data as Acabativas, but capped
-  // and text-summarized so the report is guaranteed to fit a single
-  // printed sheet (see the scoped #panel-onepage spacing in the
-  // stylesheet). Acabativas itself stays uncapped/unsummarized — these
-  // are separate getters, not a shared toggle, so tightening this tab
-  // can never accidentally hide something on the other one.
-  var ONE_PAGE_DONE_CAP = 5;
-  var ONE_PAGE_DOING_CAP = 4;
+  // "One page" tab: the same underlying data as Acabativas, but capped in
+  // item COUNT so the report fits a single printed sheet (see the scoped
+  // #panel-onepage spacing in the stylesheet). Item text is never cut —
+  // user explicitly asked for full text inside each card; page fit is
+  // handled by how many items show, with a "+N outras" note for the rest.
+  // Separate getters from Acabativas, not a shared toggle, so tightening
+  // this tab can never accidentally hide something on the other one.
+  var ONE_PAGE_DONE_CAP = 3;
+  var ONE_PAGE_DOING_CAP = 3;
   var ONE_PAGE_CATEGORY_CAP = 5;
-  var ONE_PAGE_SUMMARY_LEN = 120;
-
-  function summarizeText(text, maxLen){
-    var t = (text || "").trim().replace(/\s+/g, " ");
-    if(t.length <= maxLen) return t;
-    var cut = t.slice(0, maxLen);
-    var lastSpace = cut.lastIndexOf(" ");
-    if(lastSpace > maxLen * 0.6) cut = cut.slice(0, lastSpace);
-    return cut + "…";
-  }
 
   function getOnePageDone(){
     var all = getHighlightedDone().items;
@@ -1670,7 +1663,7 @@
       lines.push("Nenhuma tarefa concluída no momento.");
     } else {
       highlighted.items.forEach(function(t, i){
-        lines.push((i + 1) + ". " + summarizeText(t.title, ONE_PAGE_SUMMARY_LEN) + " (" + reportDateLabel(t, "done") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
+        lines.push((i + 1) + ". " + t.title + " (" + reportDateLabel(t, "done") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
       });
       if(highlighted.remaining > 0){
         lines.push("+ " + highlighted.remaining + " outra(s) tarefa(s) concluída(s).");
@@ -1683,7 +1676,7 @@
       lines.push("Nenhuma atividade em execução no momento.");
     } else {
       doing.items.forEach(function(t, i){
-        lines.push((i + 1) + ". " + summarizeText(t.title, ONE_PAGE_SUMMARY_LEN) + " (" + reportDateLabel(t, "doing") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
+        lines.push((i + 1) + ". " + t.title + " (" + reportDateLabel(t, "doing") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
       });
       if(doing.remaining > 0){
         lines.push("+ " + doing.remaining + " outra(s) atividade(s) em andamento.");
@@ -1698,7 +1691,7 @@
       categoryGroups.forEach(function(g){
         lines.push(g.name + ":");
         g.items.forEach(function(t, i){
-          lines.push((i + 1) + ". " + summarizeText(t.title, ONE_PAGE_SUMMARY_LEN) + " (" + reportDateLabel(t, "todo") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
+          lines.push((i + 1) + ". " + t.title + " (" + reportDateLabel(t, "todo") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
         });
         if(g.remaining > 0){
           lines.push("+ " + g.remaining + " outra(s) pendência(s) nesta categoria.");
@@ -1807,9 +1800,7 @@
   }
 
   // "One page" tab item renderers — identical structure to the exec-*
-  // ones above, just with summarizeText() applied to free-text fields so
-  // the long paragraph-style entries this board tends to have don't blow
-  // the page budget by themselves.
+  // ones above, kept as a separate set so One Page can evolve independently.
   function renderOnePageDoneItem(t, index){
     var item = document.createElement("div");
     item.className = "exec-done-item";
@@ -1819,7 +1810,7 @@
     item.appendChild(num);
     var titleEl = document.createElement("p");
     titleEl.className = "exec-done-title";
-    titleEl.textContent = summarizeText(t.title, ONE_PAGE_SUMMARY_LEN);
+    titleEl.textContent = t.title;
     item.appendChild(titleEl);
     var dateEl = document.createElement("span");
     dateEl.className = "exec-done-date";
@@ -1833,7 +1824,7 @@
     item.className = "exec-doing-item";
     var titleEl = document.createElement("p");
     titleEl.className = "exec-doing-title";
-    titleEl.textContent = summarizeText(t.title, ONE_PAGE_SUMMARY_LEN);
+    titleEl.textContent = t.title;
     item.appendChild(titleEl);
     var dateEl = document.createElement("p");
     dateEl.className = "exec-doing-date";
@@ -1845,7 +1836,7 @@
   function renderOnePageGroupItem(t){
     var li = document.createElement("li");
     if(t.flagged) li.className = "exec-group-li-flagged";
-    li.textContent = summarizeText(t.title, ONE_PAGE_SUMMARY_LEN);
+    li.textContent = t.title;
     return li;
   }
 
