@@ -432,10 +432,6 @@
      spacing is tightened here. Scoped to #panel-onepage only, on screen
      and in print alike, so Acabativas itself keeps its roomier spacing
      and uncapped lists untouched. */
-  /* Screen geometry = paper geometry: 750px outer minus 16px padding each
-     side = 718px doc, same as A4's printable width (190mm). Keeps what the
-     fit measures on screen identical to what prints. */
-  #panel-onepage .exec-outer{max-width:750px;margin:0 auto;}
   #panel-onepage .exec-hero{padding:6px 20px 5px;}
   #panel-onepage .exec-hero-top{gap:10px;}
   #panel-onepage .exec-hero-top > div:first-child{flex:1 1 0;min-width:0;}
@@ -1542,6 +1538,8 @@
   // = ~1047px, minus a few px of safety. (Earlier tuning in this file
   // compared against the full 1122px page height, which ignored margins.)
   var ONE_PAGE_BUDGET_PX = 1040;
+  // A4 printable width with 10mm margins: 190mm at 96dpi.
+  var ONE_PAGE_PRINT_W = 718;
   var onePageTotals = { done: 0, doing: 0 };
   var ONE_PAGE_CATEGORY_CAP = 5;
 
@@ -2135,6 +2133,12 @@
     var doneList = document.getElementById("opDoneList");
     var doingList = document.getElementById("opDoingList");
     var doneHTML = doneList.innerHTML, doingHTML = doingList.innerHTML;
+    // The screen view is as wide as Acabativas (user asked), but the page
+    // that prints is only ONE_PAGE_PRINT_W wide — so decide which items fit
+    // by measuring at the PRINT width, then restore the screen width. The
+    // screen just shows the same fitted content a little wider/shorter.
+    var doc = panel.querySelector(".exec-doc");
+    doc.style.width = ONE_PAGE_PRINT_W + "px";
     // Column width changes how much each card wraps, which changes how many
     // items fit — so try a few ratios and keep the one that shows the most
     // items (ties go to the first, the default). Item wrapping is discrete,
@@ -2152,6 +2156,7 @@
     doneList.innerHTML = doneHTML;
     doingList.innerHTML = doingHTML;
     trimOnePageOnce(panel, doneList, doingList);
+    doc.style.width = "";
   }
 
   function trimOnePageOnce(panel, doneList, doingList){
