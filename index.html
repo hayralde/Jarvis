@@ -280,6 +280,9 @@
   .exec-actions button.primary{border-color:#27AE60;color:#27AE60;}
   .exec-actions button.primary:hover{background:#27AE60;color:#fff;}
   .exec-copy-status{font-size:11px;color:#27AE60;}
+  .op-period{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:11.5px;color:#475569;}
+  .op-period select,.op-period input{font-family:inherit;font-size:11.5px;padding:6px 8px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#1e293b;}
+  .op-period-note{font-size:10.5px;color:#94a3b8;}
 
   .exec-body{padding:16px 26px 20px;}
 
@@ -784,7 +787,22 @@
             <button type="button" class="primary" id="opCopyReportBtn">copiar relatório</button>
             <button type="button" id="opPrintReportBtn">imprimir / salvar pdf</button>
             <button type="button" id="opDownloadHtmlBtn">baixar html</button>
+            <button type="button" id="opPeriodBtn">escolher período</button>
             <span id="opCopyStatus" class="exec-copy-status"></span>
+            <div class="op-period" id="opPeriodBox" hidden>
+              <select id="opPeriodPreset" aria-label="Período">
+                <option value="semana">semana atual</option>
+                <option value="semana-passada">semana passada</option>
+                <option value="7d">últimos 7 dias</option>
+                <option value="30d">últimos 30 dias</option>
+                <option value="mes">mês atual</option>
+                <option value="custom">personalizado</option>
+              </select>
+              <input type="date" id="opPeriodStart" aria-label="Data inicial">
+              <span>até</span>
+              <input type="date" id="opPeriodEnd" aria-label="Data final">
+              <span class="op-period-note">filtra as Concluídas (inclui o Histórico); A Fazer e Em Andamento são sempre o estado atual</span>
+            </div>
           </div>
 
           <div class="exec-body">
@@ -1521,8 +1539,38 @@
   var ONE_PAGE_DOING_CAP = 3;
   var ONE_PAGE_CATEGORY_CAP = 5;
 
+  // Optional period for the One Page report ({start, end} epoch ms, end
+  // inclusive). null = the default current-week view. When set, "Concluídas"
+  // lists every task COMPLETED inside the period — including ones already
+  // swept into Histórico — while A Fazer / Em Andamento stay a snapshot of
+  // right now (they have no completion date to filter on).
+  var onePagePeriod = null;
+
+  function getOnePageDoneAll(){
+    if(!onePagePeriod) return getHighlightedDone().items;
+    var list = tasks.filter(function(t){
+      return (t.status === "done" || t.status === "history") && t.completedAt &&
+        t.completedAt >= onePagePeriod.start && t.completedAt <= onePagePeriod.end;
+    });
+    list.sort(function(a, b){
+      return ((b.flagged ? 1 : 0) - (a.flagged ? 1 : 0)) || ((b.completedAt || 0) - (a.completedAt || 0));
+    });
+    return list;
+  }
+
+  function getOnePageCounts(){
+    var counts = {};
+    STATUS_ORDER.forEach(function(s){ counts[s] = tasks.filter(function(t){ return t.status === s; }).length; });
+    if(onePagePeriod) counts.done = getOnePageDoneAll().length;
+    return counts;
+  }
+
+  function onePagePeriodLabel(){
+    return onePagePeriod ? formatDate(onePagePeriod.start) + " a " + formatDate(onePagePeriod.end) : "";
+  }
+
   function getOnePageDone(){
-    var all = getHighlightedDone().items;
+    var all = getOnePageDoneAll();
     var items = all.slice(0, ONE_PAGE_DONE_CAP);
     return { items: items, remaining: all.length - items.length };
   }
@@ -1632,8 +1680,7 @@
   // Plain-text export for the "One page" tab — same structure as
   // buildReportText(), fed the capped/summarized getters instead.
   function buildOnePageReportText(){
-    var counts = {};
-    STATUS_ORDER.forEach(function(s){ counts[s] = tasks.filter(function(t){ return t.status === s; }).length; });
+    var counts = getOnePageCounts();
     var categoryGroups = getOnePageCategoryGroups();
     var urgentCount = tasks.filter(function(t){ return t.status === "todo" && t.flagged; }).length;
     var highlighted = getOnePageDone();
@@ -1643,6 +1690,7 @@
     lines.push("RELATÓRIO EXECUTIVO — RESUMO (1 PÁGINA) — RRP ENERGIA · PCM");
     lines.push("Responsável: José Cordeiro");
     lines.push("Gerado em " + formatDate(Date.now()));
+    if(onePagePeriod) lines.push("Período das concluídas: " + onePagePeriodLabel());
     lines.push("");
 
     lines.push("RESUMO EXECUTIVO");
@@ -1970,8 +2018,7 @@
   // instead of the uncapped ones, and writing into the "op*" ids of
   // #panel-onepage instead of the "exec*" ids of #panel-acabativas.
   function renderOnePage(){
-    var counts = {};
-    STATUS_ORDER.forEach(function(s){ counts[s] = tasks.filter(function(t){ return t.status === s; }).length; });
+    var counts = getOnePageCounts();
     var total = counts.todo + counts.doing + counts.done;
     var categoryGroups = getOnePageCategoryGroups();
     var highlighted = getOnePageDone();
@@ -1980,7 +2027,8 @@
     var doingPct = total > 0 ? Math.round(counts.doing / total * 100) : 0;
     var donePct = total > 0 ? Math.round(counts.done / total * 100) : 0;
 
-    document.getElementById("opGenerated").textContent = "Gerado em " + formatDate(Date.now());
+    document.getElementById("opGenerated").textContent = "Gerado em " + formatDate(Date.now()) +
+      (onePagePeriod ? " · Concluídas de " + onePagePeriodLabel() : "");
     document.getElementById("opEffValue").textContent = donePct + "%";
     document.getElementById("opEffSub").textContent = counts.done + " de " + total + " concluídas";
     var circumference = 2 * Math.PI * 16;
@@ -2210,6 +2258,67 @@
     panelSelector: "#panel-onepage", title: "Relatório Executivo — Resumo (1 página) — RRP Energia · PCM",
     filenamePrefix: "relatorio-executivo-1pagina"
   });
+
+  // One Page period picker. Presets fill the date inputs (so the exact
+  // range is always visible/editable); editing a date switches to
+  // "personalizado". "semana atual" clears the period (default view).
+  (function(){
+    var btn = document.getElementById("opPeriodBtn");
+    var box = document.getElementById("opPeriodBox");
+    var presetEl = document.getElementById("opPeriodPreset");
+    var startEl = document.getElementById("opPeriodStart");
+    var endEl = document.getElementById("opPeriodEnd");
+
+    function pad(n){ return String(n).padStart(2, "0"); }
+    function toInput(d){ return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+    function fromInput(v, endOfDay){
+      var p = v.split("-");
+      return endOfDay ? new Date(+p[0], +p[1] - 1, +p[2], 23, 59, 59, 999).getTime()
+                      : new Date(+p[0], +p[1] - 1, +p[2]).getTime();
+    }
+
+    function apply(){
+      if(presetEl.value === "semana"){
+        onePagePeriod = null;
+      } else if(startEl.value && endEl.value){
+        var s = fromInput(startEl.value, false), e = fromInput(endEl.value, true);
+        if(s > e){
+          var tmp = startEl.value; startEl.value = endEl.value; endEl.value = tmp;
+          s = fromInput(startEl.value, false); e = fromInput(endEl.value, true);
+        }
+        onePagePeriod = { start: s, end: e };
+      } else {
+        return;
+      }
+      btn.textContent = onePagePeriod ? "período: " + onePagePeriodLabel() : "escolher período";
+      renderOnePage();
+    }
+
+    presetEl.addEventListener("change", function(){
+      var v = presetEl.value;
+      var today = new Date(); today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      var wk = new Date(getCurrentWeekStartMs());
+      var s = null, e = null;
+      if(v === "semana"){ startEl.value = ""; endEl.value = ""; }
+      else if(v === "semana-passada"){
+        s = new Date(wk.getFullYear(), wk.getMonth(), wk.getDate() - 7);
+        e = new Date(wk.getFullYear(), wk.getMonth(), wk.getDate() - 1);
+      } else if(v === "7d"){
+        s = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6); e = today;
+      } else if(v === "30d"){
+        s = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 29); e = today;
+      } else if(v === "mes"){
+        s = new Date(today.getFullYear(), today.getMonth(), 1);
+        e = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      }
+      if(s){ startEl.value = toInput(s); endEl.value = toInput(e); }
+      apply();
+    });
+    [startEl, endEl].forEach(function(el){
+      el.addEventListener("change", function(){ presetEl.value = "custom"; apply(); });
+    });
+    btn.addEventListener("click", function(){ box.hidden = !box.hidden; });
+  })();
 
   // drag & drop on kanban columns
   document.querySelectorAll(".kanban-col").forEach(function(cEl){
