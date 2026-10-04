@@ -1541,10 +1541,9 @@
   // builds every item and trimOnePage() then measures the real layout and
   // drops items only while the page overflows, so the list fills whatever
   // space is available (user: "ocupar todo o espaço disponível; o limite
-  // é não passar de 1 página"). Doing keeps a starting cap of 3.
+  // é não passar de 1 página"). Same rule for Em andamento (no cap).
   // Separate getters from Acabativas, not a shared toggle, so tightening
   // this tab can never accidentally hide something on the other one.
-  var ONE_PAGE_DOING_CAP = 3;
   // Printable height of an A4 with @page margin 10mm: (297-20)mm at 96dpi
   // = ~1047px, minus a few px of safety. (Earlier tuning in this file
   // compared against the full 1122px page height, which ignored margins.)
@@ -1587,9 +1586,7 @@
   }
 
   function getOnePageDoing(){
-    var doing = getTasksForReport("doing");
-    var items = doing.slice(0, ONE_PAGE_DOING_CAP);
-    return { items: items, remaining: doing.length - items.length };
+    return { items: getTasksForReport("doing"), remaining: 0 };
   }
 
   function getOnePageCategoryGroups(){
@@ -2184,7 +2181,35 @@
         break;
       }
     }
-    return { done: doneShown, doing: doingShown };
+
+    // Gap fill: trimming only removes from the end, so one huge item (e.g.
+    // a pasted table) can block smaller items after it that would still
+    // fit. Try each later item in order and keep it only if the page still
+    // fits; order among shown items is preserved (indices only increase).
+    var doneNodes = Array.prototype.slice.call(doneItems);
+    var doingNodes = Array.prototype.slice.call(doingItems);
+    var done = { n: doneShown, next: doneShown }, doing = { n: doingShown, next: doingShown };
+    function tryNext(st, nodes, list, total, label){
+      if(st.next >= nodes.length) return false;
+      var node = nodes[st.next++];
+      var note = list.querySelector(".exec-group-remaining");
+      list.insertBefore(node, note || null);
+      setOnePageNote(list, st.n + 1, total, label);
+      if(onePagePrintHeight(panel) > ONE_PAGE_BUDGET_PX){
+        node.remove();
+        setOnePageNote(list, st.n, total, label);
+      } else {
+        st.n++;
+      }
+      return true;
+    }
+    var more = true;
+    while(more){
+      var ra = tryNext(done, doneNodes, doneList, onePageTotals.done, "outra(s) tarefa(s) concluída(s).");
+      var rb = tryNext(doing, doingNodes, doingList, onePageTotals.doing, "outra(s) atividade(s) em andamento.");
+      more = ra || rb;
+    }
+    return { done: done.n, doing: doing.n };
   }
 
   // Groups archived ("history") tasks by the Sunday-to-Saturday week they
