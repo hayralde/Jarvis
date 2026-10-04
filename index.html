@@ -429,8 +429,13 @@
      spacing is tightened here. Scoped to #panel-onepage only, on screen
      and in print alike, so Acabativas itself keeps its roomier spacing
      and uncapped lists untouched. */
-  #panel-onepage .exec-hero{padding:8px 20px 6px;}
+  /* Screen geometry = paper geometry: 750px outer minus 16px padding each
+     side = 718px doc, same as A4's printable width (190mm). Keeps what the
+     fit measures on screen identical to what prints. */
+  #panel-onepage .exec-outer{max-width:750px;margin:0 auto;}
+  #panel-onepage .exec-hero{padding:6px 20px 5px;}
   #panel-onepage .exec-hero-top{gap:10px;}
+  #panel-onepage .exec-hero-top > div:first-child{flex:1 1 0;min-width:0;}
   #panel-onepage .exec-hero-title{margin-top:6px;font-size:18px;}
   #panel-onepage .exec-hero-chips{margin-top:5px;}
   #panel-onepage .exec-eff-card{padding:6px 10px;min-width:0;}
@@ -442,13 +447,13 @@
      frees up real space (as opposed to just shrinking padding further). */
   #panel-onepage .exec-cols{gap:6px;margin-top:6px;grid-template-columns:1fr 1.25fr;align-items:start;}
   #panel-onepage .exec-priority-block{margin-top:6px;}
-  #panel-onepage .exec-section-head{padding:5px 10px;}
+  #panel-onepage .exec-section-head{padding:4px 10px;}
   #panel-onepage .exec-section-head h3{font-size:13px;}
   #panel-onepage .exec-section-body{padding:6px;gap:4px;}
   /* Stat cards: drop the decorative icon (the number is the useful part) —
      but the number itself stays readable, just not the full 26px since
      four cards share a row here. */
-  #panel-onepage .exec-stat-card{padding:6px 8px;}
+  #panel-onepage .exec-stat-card{padding:5px 8px;}
   #panel-onepage .exec-stat-icon{display:none;}
   #panel-onepage .exec-stat-top{gap:4px;}
   #panel-onepage .exec-stat-label{font-size:10.5px;}
@@ -463,7 +468,7 @@
   #panel-onepage .exec-done-date,#panel-onepage .exec-doing-date{font-size:11px;}
   #panel-onepage .exec-done-item{padding:7px 10px;gap:8px;}
   #panel-onepage .exec-doing-item{padding:7px 10px;}
-  #panel-onepage .exec-priority-head{padding:5px 12px;}
+  #panel-onepage .exec-priority-head{padding:4px 12px;}
   #panel-onepage .exec-priority-head h3{font-size:13px;}
   #panel-onepage .exec-priority-groups2{padding:6px;gap:6px;align-items:start;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));}
   #panel-onepage .exec-group{padding:5px 8px;}
@@ -471,7 +476,7 @@
   #panel-onepage .exec-group-count{font-size:11px;}
   #panel-onepage .exec-group-head{margin-bottom:4px;}
   #panel-onepage .exec-group ul{gap:4px;}
-  #panel-onepage .exec-footer{padding:4px 20px;}
+  #panel-onepage .exec-footer{padding:3px 20px;}
 
   footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text-dimmer);font-family:'IBM Plex Mono',monospace;}
   footer .prompt{color:var(--green);}
@@ -755,6 +760,7 @@
                 <div class="exec-hero-chips">
                   <span class="exec-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>José Cordeiro - PCM</span>
                   <span class="exec-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16.5 12"/></svg><span id="opGenerated"></span></span>
+                  <span class="exec-chip" id="opPeriodChip" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span id="opPeriodText"></span></span>
                 </div>
               </div>
               <div class="exec-hero-right">
@@ -1528,15 +1534,22 @@
     return { items: doing, remaining: 0 };
   }
 
-  // "One page" tab: the same underlying data as Acabativas, but capped in
-  // item COUNT so the report fits a single printed sheet (see the scoped
-  // #panel-onepage spacing in the stylesheet). Item text is never cut —
-  // user explicitly asked for full text inside each card; page fit is
-  // handled by how many items show, with a "+N outras" note for the rest.
+  // "One page" tab: the same underlying data as Acabativas, fitted to a
+  // single printed sheet (see the scoped #panel-onepage spacing in the
+  // stylesheet). Item text is never cut — user explicitly asked for full
+  // text inside each card. Concluídas has NO fixed cap: renderOnePage()
+  // builds every item and trimOnePage() then measures the real layout and
+  // drops items only while the page overflows, so the list fills whatever
+  // space is available (user: "ocupar todo o espaço disponível; o limite
+  // é não passar de 1 página"). Doing keeps a starting cap of 3.
   // Separate getters from Acabativas, not a shared toggle, so tightening
   // this tab can never accidentally hide something on the other one.
-  var ONE_PAGE_DONE_CAP = 3;
   var ONE_PAGE_DOING_CAP = 3;
+  // Printable height of an A4 with @page margin 10mm: (297-20)mm at 96dpi
+  // = ~1047px, minus a few px of safety. (Earlier tuning in this file
+  // compared against the full 1122px page height, which ignored margins.)
+  var ONE_PAGE_BUDGET_PX = 1040;
+  var onePageTotals = { done: 0, doing: 0 };
   var ONE_PAGE_CATEGORY_CAP = 5;
 
   // Optional period for the One Page report ({start, end} epoch ms, end
@@ -1570,9 +1583,7 @@
   }
 
   function getOnePageDone(){
-    var all = getOnePageDoneAll();
-    var items = all.slice(0, ONE_PAGE_DONE_CAP);
-    return { items: items, remaining: all.length - items.length };
+    return { items: getOnePageDoneAll(), remaining: 0 };
   }
 
   function getOnePageDoing(){
@@ -2027,8 +2038,9 @@
     var doingPct = total > 0 ? Math.round(counts.doing / total * 100) : 0;
     var donePct = total > 0 ? Math.round(counts.done / total * 100) : 0;
 
-    document.getElementById("opGenerated").textContent = "Gerado em " + formatDate(Date.now()) +
-      (onePagePeriod ? " · Concluídas de " + onePagePeriodLabel() : "");
+    document.getElementById("opGenerated").textContent = "Gerado em " + formatDate(Date.now());
+    document.getElementById("opPeriodChip").hidden = !onePagePeriod;
+    document.getElementById("opPeriodText").textContent = onePagePeriod ? "Concluídas de " + onePagePeriodLabel() : "";
     document.getElementById("opEffValue").textContent = donePct + "%";
     document.getElementById("opEffSub").textContent = counts.done + " de " + total + " concluídas";
     var circumference = 2 * Math.PI * 16;
@@ -2097,6 +2109,82 @@
 
     document.getElementById("opFooterSummary").textContent =
       counts.todo + " a fazer · " + counts.doing + " em andamento · " + counts.done + " concluídas";
+
+    onePageTotals.done = highlighted.items.length;
+    onePageTotals.doing = limitedDoing.items.length + limitedDoing.remaining;
+    trimOnePage();
+  }
+
+  // Height the One Page will have on paper: the on-screen doc minus the
+  // action bar (.no-print, hidden when printing).
+  function onePagePrintHeight(panel){
+    var doc = panel.querySelector(".exec-doc");
+    var actions = panel.querySelector(".exec-actions");
+    return doc.getBoundingClientRect().height - (actions ? actions.getBoundingClientRect().height : 0);
+  }
+
+  function setOnePageNote(list, shown, total, label){
+    var note = list.querySelector(".exec-group-remaining");
+    if(shown >= total){ if(note) note.remove(); return; }
+    if(!note){
+      note = document.createElement("p");
+      note.className = "exec-group-remaining";
+      list.appendChild(note);
+    }
+    note.textContent = "+ " + (total - shown) + " " + label;
+  }
+
+  // Drops items from the end of Concluídas/Em andamento only while the
+  // measured page overflows. Removing from the shorter column wouldn't
+  // change .exec-cols' height (it's max of the two), so it trims whichever
+  // column is currently taller. Needs a visible panel to measure; it's
+  // re-run on tab activation, resize and beforeprint.
+  var ONE_PAGE_COL_RATIOS = ["1fr 1.25fr", "1fr 1fr", "1.25fr 1fr", "1.5fr 1fr"];
+
+  function trimOnePage(){
+    var panel = document.getElementById("panel-onepage");
+    if(!panel || !panel.offsetParent) return;
+    var cols = panel.querySelector(".exec-cols");
+    var doneList = document.getElementById("opDoneList");
+    var doingList = document.getElementById("opDoingList");
+    var doneHTML = doneList.innerHTML, doingHTML = doingList.innerHTML;
+    // Column width changes how much each card wraps, which changes how many
+    // items fit — so try a few ratios and keep the one that shows the most
+    // items (ties go to the first, the default). Item wrapping is discrete,
+    // so which ratio wins depends on the data; measuring beats guessing.
+    var best = null;
+    ONE_PAGE_COL_RATIOS.forEach(function(ratio){
+      cols.style.gridTemplateColumns = ratio;
+      doneList.innerHTML = doneHTML;
+      doingList.innerHTML = doingHTML;
+      var res = trimOnePageOnce(panel, doneList, doingList);
+      var score = (res.done + res.doing) * 100 + res.done;
+      if(!best || score > best.score) best = { ratio: ratio, score: score };
+    });
+    cols.style.gridTemplateColumns = best.ratio;
+    doneList.innerHTML = doneHTML;
+    doingList.innerHTML = doingHTML;
+    trimOnePageOnce(panel, doneList, doingList);
+  }
+
+  function trimOnePageOnce(panel, doneList, doingList){
+    var doneItems = doneList.querySelectorAll(".exec-done-item");
+    var doingItems = doingList.querySelectorAll(".exec-doing-item");
+    var doneShown = doneItems.length, doingShown = doingItems.length;
+    var guard = 100;
+    while(guard-- > 0 && onePagePrintHeight(panel) > ONE_PAGE_BUDGET_PX){
+      var doneTaller = doneList.parentNode.getBoundingClientRect().height >= doingList.parentNode.getBoundingClientRect().height;
+      if((doneTaller && doneShown > 1) || (doingShown <= 1 && doneShown > 1)){
+        doneItems[--doneShown].remove();
+        setOnePageNote(doneList, doneShown, onePageTotals.done, "outra(s) tarefa(s) concluída(s).");
+      } else if(doingShown > 1){
+        doingItems[--doingShown].remove();
+        setOnePageNote(doingList, doingShown, onePageTotals.doing, "outra(s) atividade(s) em andamento.");
+      } else {
+        break;
+      }
+    }
+    return { done: doneShown, doing: doingShown };
   }
 
   // Groups archived ("history") tasks by the Sunday-to-Saturday week they
@@ -2352,7 +2440,16 @@
       p.classList.toggle("active", p.getAttribute("data-panel") === tabKey);
     });
     try{ localStorage.setItem(TAB_KEY, tabKey); }catch(e){}
+    if(tabKey === "onepage") renderOnePage();
   }
+  // Re-fit when the viewport width changes the wrapping, and right before
+  // printing so the paper copy is measured at its own layout.
+  var onePageResizeTimer = null;
+  window.addEventListener("resize", function(){
+    clearTimeout(onePageResizeTimer);
+    onePageResizeTimer = setTimeout(renderOnePage, 150);
+  });
+  window.addEventListener("beforeprint", renderOnePage);
   tabBtns.forEach(function(btn){
     btn.addEventListener("click", function(){ activateTab(btn.getAttribute("data-tab")); });
   });
