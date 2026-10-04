@@ -14,7 +14,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Barlow:wght@500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#f3f4ee;
@@ -429,53 +429,159 @@
   /* "One page" tab: same exec-* classes/visual language as Acabativas,
      just tuned to guarantee a single printed sheet — content is capped
      (item count, see ONE_PAGE_* constants; text is never truncated), and
-     spacing is tightened here. Scoped to #panel-onepage only, on screen
+     spacing is tightened here. Scoped to .op-panel only, on screen
      and in print alike, so Acabativas itself keeps its roomier spacing
      and uncapped lists untouched. */
-  #panel-onepage .exec-hero{padding:6px 20px 5px;}
-  #panel-onepage .exec-hero-top{gap:10px;}
-  #panel-onepage .exec-hero-top > div:first-child{flex:1 1 0;min-width:0;}
-  #panel-onepage .exec-hero-chips{margin-top:8px;}
-  #panel-onepage .exec-eff-card{padding:6px 10px;min-width:0;}
-  #panel-onepage .exec-body{padding:4px 20px 3px;}
+  .op-panel .exec-hero{padding:6px 20px 5px;}
+  .op-panel .exec-hero-top{gap:10px;}
+  .op-panel .exec-hero-top > div:first-child{flex:1 1 0;min-width:0;}
+  .op-panel .exec-hero-chips{margin-top:8px;}
+  .op-panel .exec-eff-card{padding:6px 10px;min-width:0;}
+  .op-panel .exec-body{padding:4px 20px 3px;}
   /* Grid rows stretch every item to the tallest sibling by default — a
      category with 1 pendência was rendering as tall as one with 4, all
      padded-out blank space below its single line. align-items:start lets
      each card be only as tall as its own content, which is what actually
      frees up real space (as opposed to just shrinking padding further). */
-  #panel-onepage .exec-cols{gap:6px;margin-top:6px;grid-template-columns:1fr 1.25fr;align-items:start;}
-  #panel-onepage .exec-priority-block{margin-top:6px;}
-  #panel-onepage .exec-section-head{padding:4px 10px;}
-  #panel-onepage .exec-section-head h3{font-size:13px;}
-  #panel-onepage .exec-section-body{padding:6px;gap:4px;}
+  .op-panel .exec-cols{gap:6px;margin-top:6px;grid-template-columns:1fr 1.25fr;align-items:start;}
+  .op-panel .exec-priority-block{margin-top:6px;}
+  .op-panel .exec-section-head{padding:4px 10px;}
+  .op-panel .exec-section-head h3{font-size:13px;}
+  .op-panel .exec-section-body{padding:6px;gap:4px;}
   /* Stat cards: drop the decorative icon (the number is the useful part) —
      but the number itself stays readable, just not the full 26px since
      four cards share a row here. */
-  #panel-onepage .exec-stat-card{padding:5px 8px;}
-  #panel-onepage .exec-stat-icon{display:none;}
-  #panel-onepage .exec-stat-top{gap:4px;}
-  #panel-onepage .exec-stat-label{font-size:10.5px;}
-  #panel-onepage .exec-stat-num-row{margin-top:2px;}
-  #panel-onepage .exec-stat-num{font-size:21px;}
-  #panel-onepage .exec-stat-sub{font-size:10.5px;margin-top:1px;}
+  .op-panel .exec-stat-card{padding:5px 8px;}
+  .op-panel .exec-stat-icon{display:none;}
+  .op-panel .exec-stat-top{gap:4px;}
+  .op-panel .exec-stat-label{font-size:10.5px;}
+  .op-panel .exec-stat-num-row{margin-top:2px;}
+  .op-panel .exec-stat-num{font-size:21px;}
+  .op-panel .exec-stat-sub{font-size:10.5px;margin-top:1px;}
   /* Body content — the actual read text — bumped up from the shared
      11-11.5px base. Readability wins over caps; if this doesn't fit one
      page, the fix is fewer items (ONE_PAGE_*_CAP), never smaller text
      again — see this session's own hard-learned lesson on that. */
-  #panel-onepage .exec-done-title,#panel-onepage .exec-doing-title,#panel-onepage .exec-group li{font-size:12.5px;line-height:1.45;}
-  #panel-onepage .exec-done-date,#panel-onepage .exec-doing-date{font-size:11px;}
-  #panel-onepage .exec-done-item{padding:7px 10px;gap:8px;}
-  #panel-onepage .exec-doing-item{padding:7px 10px;}
-  #panel-onepage .exec-priority-head{padding:4px 12px;}
-  #panel-onepage .exec-priority-head h3{font-size:13px;}
-  #panel-onepage .exec-priority-groups2{padding:6px;gap:6px;align-items:start;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));}
-  #panel-onepage .exec-group{padding:5px 8px;}
-  #panel-onepage .exec-group-head h4{font-size:12px;}
-  #panel-onepage .exec-group-count{font-size:11px;}
-  #panel-onepage .exec-group-head{margin-bottom:4px;}
-  #panel-onepage .exec-group ul{gap:4px;}
+  .op-panel .exec-done-title,.op-panel .exec-doing-title,.op-panel .exec-group li{font-size:12.5px;line-height:1.45;}
+  .op-panel .exec-done-date,.op-panel .exec-doing-date{font-size:11px;}
+  .op-panel .exec-done-item{padding:7px 10px;gap:8px;}
+  .op-panel .exec-doing-item{padding:7px 10px;}
+  .op-panel .exec-priority-head{padding:4px 12px;}
+  .op-panel .exec-priority-head h3{font-size:13px;}
+  .op-panel .exec-priority-groups2{padding:6px;gap:6px;align-items:start;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));}
+  .op-panel .exec-group{padding:5px 8px;}
+  .op-panel .exec-group-head h4{font-size:12px;}
+  .op-panel .exec-group-count{font-size:11px;}
+  .op-panel .exec-group-head{margin-bottom:4px;}
+  .op-panel .exec-group ul{gap:4px;}
   .exec-chip-link{color:inherit;text-decoration:none;}
   .exec-chip-link:hover{background:rgba(255,255,255,.18);}
+
+  /* ===== "One page RRP" tab: identical content/fit to One Page, restyled
+     with the identity of rrpbioenergia.com.br (read from the live site):
+     orange #E96524 (+ #FF4600 accent, amber #F7AB21), the logo's leaf green,
+     ink #313131, soft grey #F6F6F6, Montserrat body + Barlow headings,
+     outlined pill buttons, generous rounding. Only colors/type/borders
+     change here; every spacing rule stays the shared .op-panel one so the
+     page-fit math is identical. ===== */
+  #panel-onepagerrp{--rrp-orange:#E96524;--rrp-red:#FF4600;--rrp-amber:#F7AB21;--rrp-green:#4C9F38;--rrp-ink:#313131;--rrp-gray:#636363;--rrp-soft:#F6F6F6;}
+  @media screen{
+    #panel-onepagerrp .exec-outer{background:#EFEFEF;}
+    #panel-onepagerrp .exec-doc{border-radius:18px;}
+  }
+  #panel-onepagerrp .exec-doc{font-family:'Montserrat','Segoe UI',system-ui,sans-serif;color:var(--rrp-ink);border:none;border-bottom:5px solid var(--rrp-orange);}
+  #panel-onepagerrp .exec-hero-company,#panel-onepagerrp .exec-section-head h3,#panel-onepagerrp .exec-priority-head h3,
+  #panel-onepagerrp .exec-group-head h4,#panel-onepagerrp .exec-stat-num,#panel-onepagerrp .exec-eff-value,
+  #panel-onepagerrp .exec-stat-label,#panel-onepagerrp .exec-section-badge{font-family:'Barlow','Montserrat',sans-serif;}
+  #panel-onepagerrp .exec-hero{background:#fff;color:var(--rrp-ink);border-top:6px solid var(--rrp-orange);}
+  #panel-onepagerrp .exec-hero-circle{background:#FDE6D6;opacity:.8;}
+  #panel-onepagerrp .exec-hero-line{display:none;}
+  #panel-onepagerrp .exec-hero-logo{background:none;width:auto;height:46px;border-radius:0;}
+  #panel-onepagerrp .exec-hero-logo img{height:46px;width:auto;display:block;}
+  #panel-onepagerrp .exec-hero-company{color:var(--rrp-ink);font-size:18px;letter-spacing:.03em;}
+  #panel-onepagerrp .exec-hero-company span{color:var(--rrp-orange);}
+  #panel-onepagerrp .exec-hero-dept{color:var(--rrp-gray);}
+  #panel-onepagerrp .exec-chip{background:#fff;border:1.5px solid var(--rrp-orange);color:var(--rrp-orange);font-weight:600;}
+  #panel-onepagerrp .exec-eff-card{background:var(--rrp-soft);border:1px solid #E8E8E8;}
+  #panel-onepagerrp .exec-eff-label{color:var(--rrp-gray);}
+  #panel-onepagerrp .exec-eff-value{color:var(--rrp-orange);}
+  #panel-onepagerrp .exec-eff-sub{color:var(--rrp-gray);}
+  #panel-onepagerrp .exec-eff-svg circle:first-child{stroke:#E3E3E3;}
+  #panel-onepagerrp .exec-eff-seg{stroke:var(--rrp-green);}
+  #panel-onepagerrp .exec-eff-icon svg{color:var(--rrp-green);}
+  #panel-onepagerrp .exec-eff-bar{background:#E3E3E3;}
+  #panel-onepagerrp #orBarTodo{background:var(--rrp-orange) !important;}
+  #panel-onepagerrp #orBarDoing{background:var(--rrp-amber) !important;}
+  #panel-onepagerrp #orBarDone{background:var(--rrp-green) !important;}
+  #panel-onepagerrp .exec-actions{background:#FAFAFA;border-bottom:1px solid #EEE;}
+  #panel-onepagerrp .exec-actions button{border-radius:999px;border:1.5px solid var(--rrp-orange);color:var(--rrp-orange);background:#fff;font-family:'Montserrat',sans-serif;}
+  #panel-onepagerrp .exec-actions button:hover,#panel-onepagerrp .exec-actions button.primary{background:var(--rrp-orange);color:#fff;border-color:var(--rrp-orange);}
+  #panel-onepagerrp .exec-actions button.primary:hover{background:var(--rrp-red);border-color:var(--rrp-red);}
+  #panel-onepagerrp .exec-stat-card{background:#fff;border-color:#ECECEC;border-radius:16px;}
+  #panel-onepagerrp .exec-stat-label{color:var(--rrp-gray);}
+  #panel-onepagerrp .exec-stat-num{color:var(--rrp-ink);}
+  #panel-onepagerrp .exec-stat-sub{color:var(--rrp-gray);}
+  #panel-onepagerrp .exec-stat-card-orange::before{background:var(--rrp-orange);}
+  #panel-onepagerrp .exec-stat-card-blue::before{background:var(--rrp-amber);}
+  #panel-onepagerrp .exec-stat-card-green::before{background:var(--rrp-green);}
+  #panel-onepagerrp .exec-stat-card-orange{border-color:#F6CDB5;}
+  #panel-onepagerrp .exec-stat-card-blue{border-color:#F8DFA6;}
+  #panel-onepagerrp .exec-stat-card-green{background:#F5FAF2;border-color:#CFE5C6;}
+  #panel-onepagerrp .exec-stat-card-orange .exec-stat-label,#panel-onepagerrp .exec-stat-card-orange .exec-stat-num{color:#C4501A;}
+  #panel-onepagerrp .exec-stat-card-blue .exec-stat-label,#panel-onepagerrp .exec-stat-card-blue .exec-stat-num{color:#B77800;}
+  #panel-onepagerrp .exec-stat-card-green .exec-stat-label,#panel-onepagerrp .exec-stat-card-green .exec-stat-num{color:#3A7A2A;}
+  #panel-onepagerrp .exec-stat-card-green .exec-stat-sub{color:rgba(58,122,42,.85);}
+  #panel-onepagerrp .exec-pct-orange{color:var(--rrp-orange);background:#FDEADD;}
+  #panel-onepagerrp .exec-pct-blue{color:#B77800;background:#FDF0CB;}
+  #panel-onepagerrp .exec-pct-green{color:#fff;background:var(--rrp-green);}
+  #panel-onepagerrp .exec-section{border-radius:16px;}
+  #panel-onepagerrp .exec-section-green{background:#F5FAF2;border-color:#CFE5C6;}
+  #panel-onepagerrp .exec-section-green .exec-section-head{background:#E7F2E1;border-color:#CFE5C6;}
+  #panel-onepagerrp .exec-section-green h3{color:#2F6B1F;}
+  #panel-onepagerrp .exec-icon-green{background:var(--rrp-green);}
+  #panel-onepagerrp .exec-section-green .exec-section-badge{color:#2F6B1F;border-color:#CFE5C6;}
+  #panel-onepagerrp .exec-section-amber{background:#FFF7F0;border-color:#F7D3BB;}
+  #panel-onepagerrp .exec-section-amber .exec-section-head{background:#FDE9DB;border-color:#F7D3BB;}
+  #panel-onepagerrp .exec-section-amber h3{color:#B24A12;}
+  #panel-onepagerrp .exec-icon-amber{background:var(--rrp-orange);}
+  #panel-onepagerrp .exec-icon-amber svg{color:#fff;}
+  #panel-onepagerrp .exec-done-item{border-color:#D8EBD0;}
+  #panel-onepagerrp .exec-done-num{background:var(--rrp-green);}
+  #panel-onepagerrp .exec-done-title{color:#243D1C;}
+  #panel-onepagerrp .exec-done-date{color:#6B9A5A;}
+  #panel-onepagerrp .exec-doing-item{border-color:#F7D3BB;}
+  #panel-onepagerrp .exec-doing-title{color:#6B2F0E;}
+  #panel-onepagerrp .exec-doing-date,#panel-onepagerrp .exec-doing-meta{color:#B2602F;}
+  #panel-onepagerrp .exec-priority-block{border-color:#E8E8E8;border-radius:16px;}
+  #panel-onepagerrp .exec-priority-head{background:var(--rrp-soft);border-color:#E8E8E8;}
+  #panel-onepagerrp .exec-priority-head h3{color:var(--rrp-ink);}
+  #panel-onepagerrp .exec-priority-icon{background:var(--rrp-orange);}
+  #panel-onepagerrp .exec-priority-sub,#panel-onepagerrp .exec-priority-insight{color:var(--rrp-gray);}
+  #panel-onepagerrp .exec-group-orange{background:#FFF7F0;border-color:#F7D3BB;}
+  #panel-onepagerrp .exec-group-orange svg{color:var(--rrp-orange);}
+  #panel-onepagerrp .exec-group-orange h4{color:#B24A12;}
+  #panel-onepagerrp .exec-count-orange{background:#FDE9DB;color:var(--rrp-orange);}
+  #panel-onepagerrp .exec-group-orange li::before{background:var(--rrp-orange);}
+  #panel-onepagerrp .exec-group-blue{background:#FFFBF0;border-color:#F8E2AE;}
+  #panel-onepagerrp .exec-group-blue svg{color:#D98E04;}
+  #panel-onepagerrp .exec-group-blue h4{color:#7A5200;}
+  #panel-onepagerrp .exec-count-blue{background:#FDF0CB;color:#B77800;}
+  #panel-onepagerrp .exec-group-blue li::before{background:var(--rrp-amber);}
+  #panel-onepagerrp .exec-group-purple{background:#F8F8F8;border-color:#DEDEDE;}
+  #panel-onepagerrp .exec-group-purple svg{color:var(--rrp-gray);}
+  #panel-onepagerrp .exec-group-purple h4{color:var(--rrp-ink);}
+  #panel-onepagerrp .exec-count-purple{background:#EBEBEB;color:var(--rrp-gray);}
+  #panel-onepagerrp .exec-group-purple li::before{background:var(--rrp-gray);}
+  #panel-onepagerrp .exec-group-green{background:#F5FAF2;border-color:#CFE5C6;}
+  #panel-onepagerrp .exec-group-green svg{color:var(--rrp-green);}
+  #panel-onepagerrp .exec-group-green h4{color:#2F6B1F;}
+  #panel-onepagerrp .exec-count-green{background:#E3F1DC;color:#3A7A2A;}
+  #panel-onepagerrp .exec-group-green li::before{background:var(--rrp-green);}
+  #panel-onepagerrp .exec-group-teal{background:#FBF6F0;border-color:#EAD7C3;}
+  #panel-onepagerrp .exec-group-teal svg{color:#A8652A;}
+  #panel-onepagerrp .exec-group-teal h4{color:#6B3D14;}
+  #panel-onepagerrp .exec-count-teal{background:#F4E6D6;color:#A8652A;}
+  #panel-onepagerrp .exec-group-teal li::before{background:#A8652A;}
 
   footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text-dimmer);font-family:'IBM Plex Mono',monospace;}
   footer .prompt{color:var(--green);}
@@ -550,7 +656,7 @@
     /* Safe to avoid-break the whole section/block here (unlike above) —
        the "One page" tab deliberately caps and summarizes everything so
        these are always short, never taller than a page. */
-    #panel-onepage .exec-section,#panel-onepage .exec-priority-block{break-inside:avoid;}
+    .op-panel .exec-section,.op-panel .exec-priority-block{break-inside:avoid;}
   }
 </style>
 </head>
@@ -571,6 +677,7 @@
       <button class="tab-btn active" type="button" data-tab="kanban" role="tab" aria-selected="true">kanban</button>
       <button class="tab-btn" type="button" data-tab="acabativas" role="tab" aria-selected="false">acabativas</button>
       <button class="tab-btn" type="button" data-tab="onepage" role="tab" aria-selected="false">one page</button>
+      <button class="tab-btn" type="button" data-tab="onepagerrp" role="tab" aria-selected="false">one page rrp</button>
       <button class="tab-btn" type="button" data-tab="historico" role="tab" aria-selected="false">histórico</button>
     </div>
 
@@ -740,7 +847,7 @@
       </div>
     </div>
 
-    <div class="tab-panel" id="panel-onepage" data-panel="onepage">
+    <div class="tab-panel op-panel" id="panel-onepage" data-panel="onepage">
       <div class="exec-outer">
         <div class="exec-doc">
           <header class="exec-hero">
@@ -877,6 +984,150 @@
                 <span class="exec-priority-sub" id="opPrioritySub">grupos por categoria</span>
               </div>
               <div class="exec-priority-groups2" id="opPriorityGroups"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel op-panel" id="panel-onepagerrp" data-panel="onepagerrp">
+      <div class="exec-outer">
+        <div class="exec-doc">
+          <header class="exec-hero">
+            <div class="exec-hero-circle"></div>
+            <div class="exec-hero-line"></div>
+            <div class="exec-hero-top">
+              <div>
+                <div class="exec-hero-brand">
+                  <div class="exec-hero-logo"><img src="https://rrpbioenergia.com.br/site/assets/img/logo-bioenergia.png" alt="RRP Bioenergia" onerror="this.style.display='none'"></div>
+                  <div>
+                    <h1 class="exec-hero-company">RRP ENERGIA<span>| PCM</span></h1>
+                    <p class="exec-hero-dept">Planejamento e Controle de Manutenção</p>
+                  </div>
+                </div>
+                <div class="exec-hero-chips">
+                  <span class="exec-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>José Cordeiro - PCM</span>
+                  <span class="exec-chip" id="orPeriodChip" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span id="orPeriodText"></span></span>
+                  <a class="exec-chip exec-chip-link" href="https://hayralde.github.io/Jarvis/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m9 15 2 2 4-4"/></svg>hayralde.github.io/Jarvis/</a>
+                </div>
+              </div>
+              <div class="exec-hero-right">
+                <div class="exec-eff-card">
+                  <div class="exec-eff-row">
+                    <div>
+                      <p class="exec-eff-label">Eficiência</p>
+                      <p class="exec-eff-value" id="orEffValue">0%</p>
+                      <p class="exec-eff-sub" id="orEffSub"></p>
+                    </div>
+                    <div class="exec-eff-ring">
+                      <svg viewBox="0 0 44 44" class="exec-eff-svg">
+                        <circle cx="22" cy="22" r="16" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="5"/>
+                        <circle id="orEffCircle" class="exec-eff-seg" cx="22" cy="22" r="16" fill="none" stroke="#27AE60" stroke-width="5" stroke-linecap="round" stroke-dasharray="0 100.5"/>
+                      </svg>
+                      <div class="exec-eff-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></div>
+                    </div>
+                  </div>
+                  <div class="exec-eff-bar">
+                    <div class="exec-eff-bar-seg" id="orBarTodo" style="background:#E67E22;width:0%"></div>
+                    <div class="exec-eff-bar-seg" id="orBarDoing" style="background:#2E86DE;width:0%"></div>
+                    <div class="exec-eff-bar-seg" id="orBarDone" style="background:#27AE60;width:0%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <div class="exec-actions no-print">
+            <button type="button" class="primary" id="orCopyReportBtn">copiar relatório</button>
+            <button type="button" id="orPrintReportBtn">imprimir / salvar pdf</button>
+            <button type="button" id="orDownloadHtmlBtn">baixar html</button>
+            <button type="button" id="orPeriodBtn">escolher período</button>
+            <span id="orCopyStatus" class="exec-copy-status"></span>
+            <div class="op-period" id="orPeriodBox" hidden>
+              <select id="orPeriodPreset" aria-label="Período">
+                <option value="semana">semana atual</option>
+                <option value="semana-passada">semana passada</option>
+                <option value="7d">últimos 7 dias</option>
+                <option value="30d">últimos 30 dias</option>
+                <option value="mes">mês atual</option>
+                <option value="custom">personalizado</option>
+              </select>
+              <input type="date" id="orPeriodStart" aria-label="Data inicial">
+              <span>até</span>
+              <input type="date" id="orPeriodEnd" aria-label="Data final">
+              <span class="op-period-note">filtra as Concluídas (inclui o Histórico); A Fazer e Em Andamento são sempre o estado atual</span>
+            </div>
+          </div>
+
+          <div class="exec-body">
+            <div class="exec-stats">
+              <div class="exec-stat-card">
+                <div class="exec-stat-top">
+                  <span class="exec-stat-label">Total</span>
+                  <div class="exec-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg></div>
+                </div>
+                <p class="exec-stat-num" id="orStatTotal">0</p>
+                <p class="exec-stat-sub">atividades registradas</p>
+              </div>
+              <div class="exec-stat-card exec-stat-card-orange">
+                <div class="exec-stat-top">
+                  <span class="exec-stat-label">A Fazer</span>
+                  <div class="exec-stat-icon exec-stat-icon-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
+                </div>
+                <div class="exec-stat-num-row"><p class="exec-stat-num" id="orStatTodo">0</p><span class="exec-stat-pct exec-pct-orange" id="orStatTodoPct">0%</span></div>
+                <p class="exec-stat-sub">pendências</p>
+              </div>
+              <div class="exec-stat-card exec-stat-card-blue">
+                <div class="exec-stat-top">
+                  <span class="exec-stat-label">Em Andamento</span>
+                  <div class="exec-stat-icon exec-stat-icon-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16.5 12"/></svg></div>
+                </div>
+                <div class="exec-stat-num-row"><p class="exec-stat-num" id="orStatDoing">0</p><span class="exec-stat-pct exec-pct-blue" id="orStatDoingPct">0%</span></div>
+                <p class="exec-stat-sub">em execução agora</p>
+              </div>
+              <div class="exec-stat-card exec-stat-card-green">
+                <div class="exec-stat-top">
+                  <span class="exec-stat-label">Concluídas</span>
+                  <div class="exec-stat-icon exec-stat-icon-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+                </div>
+                <div class="exec-stat-num-row"><p class="exec-stat-num" id="orStatDone">0</p><span class="exec-stat-pct exec-pct-green" id="orStatDonePct">0%</span></div>
+                <p class="exec-stat-sub">tarefas finalizadas</p>
+              </div>
+            </div>
+
+            <div class="exec-cols">
+              <div class="exec-section exec-section-green">
+                <div class="exec-section-head">
+                  <div class="exec-section-head-left">
+                    <div class="exec-section-icon exec-icon-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+                    <h3>Concluídas (<span id="orDoneCount">0</span>) — Destaque</h3>
+                  </div>
+                  <span class="exec-section-badge" id="orDoneBadge">0% do total</span>
+                </div>
+                <div class="exec-section-body" id="orDoneList"></div>
+              </div>
+
+              <div class="exec-section exec-section-amber">
+                <div class="exec-section-head">
+                  <div class="exec-section-head-left">
+                    <div class="exec-section-icon exec-icon-amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16.5 12"/></svg></div>
+                    <h3>Em Andamento (<span id="orDoingCount">0</span>)</h3>
+                  </div>
+                </div>
+                <div class="exec-section-body" id="orDoingList"></div>
+              </div>
+            </div>
+
+            <div class="exec-priority-block">
+              <div class="exec-priority-head">
+                <div class="exec-section-head-left">
+                  <div class="exec-priority-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
+                  <h3>A Fazer (<span id="orTodoCount">0</span>) — Pendências Prioritárias</h3>
+                </div>
+                <span class="exec-priority-sub" id="orPrioritySub">grupos por categoria</span>
+              </div>
+              <div class="exec-priority-groups2" id="orPriorityGroups"></div>
             </div>
           </div>
 
@@ -1540,6 +1791,12 @@
   var ONE_PAGE_BUDGET_PX = 1040;
   // A4 printable width with 10mm margins: 190mm at 96dpi.
   var ONE_PAGE_PRINT_W = 718;
+  // One Page and "One page RRP" are the same report in two skins: same data,
+  // same fit, different ids (prefix) + CSS theme.
+  var ONE_PAGE_PANELS = [
+    { prefix: "op", panelId: "panel-onepage" },
+    { prefix: "or", panelId: "panel-onepagerrp" }
+  ];
   var onePageTotals = { done: 0, doing: 0 };
   var ONE_PAGE_CATEGORY_CAP = 5;
 
@@ -2018,6 +2275,10 @@
   // instead of the uncapped ones, and writing into the "op*" ids of
   // #panel-onepage instead of the "exec*" ids of #panel-acabativas.
   function renderOnePage(){
+    ONE_PAGE_PANELS.forEach(renderOnePageInto);
+  }
+
+  function renderOnePageInto(p){
     var counts = getOnePageCounts();
     var total = counts.todo + counts.doing + counts.done;
     var categoryGroups = getOnePageCategoryGroups();
@@ -2027,27 +2288,27 @@
     var doingPct = total > 0 ? Math.round(counts.doing / total * 100) : 0;
     var donePct = total > 0 ? Math.round(counts.done / total * 100) : 0;
 
-    document.getElementById("opPeriodChip").hidden = !onePagePeriod;
-    document.getElementById("opPeriodText").textContent = onePagePeriod ? "Concluídas de " + onePagePeriodLabel() : "";
-    document.getElementById("opEffValue").textContent = donePct + "%";
-    document.getElementById("opEffSub").textContent = counts.done + " de " + total + " concluídas";
+    document.getElementById(p.prefix + "PeriodChip").hidden = !onePagePeriod;
+    document.getElementById(p.prefix + "PeriodText").textContent = onePagePeriod ? "Concluídas de " + onePagePeriodLabel() : "";
+    document.getElementById(p.prefix + "EffValue").textContent = donePct + "%";
+    document.getElementById(p.prefix + "EffSub").textContent = counts.done + " de " + total + " concluídas";
     var circumference = 2 * Math.PI * 16;
-    document.getElementById("opEffCircle").setAttribute("stroke-dasharray", (donePct / 100 * circumference) + " " + circumference);
-    document.getElementById("opBarTodo").style.width = todoPct + "%";
-    document.getElementById("opBarDoing").style.width = doingPct + "%";
-    document.getElementById("opBarDone").style.width = donePct + "%";
+    document.getElementById(p.prefix + "EffCircle").setAttribute("stroke-dasharray", (donePct / 100 * circumference) + " " + circumference);
+    document.getElementById(p.prefix + "BarTodo").style.width = todoPct + "%";
+    document.getElementById(p.prefix + "BarDoing").style.width = doingPct + "%";
+    document.getElementById(p.prefix + "BarDone").style.width = donePct + "%";
 
-    document.getElementById("opStatTotal").textContent = total;
-    document.getElementById("opStatTodo").textContent = counts.todo;
-    document.getElementById("opStatTodoPct").textContent = todoPct + "%";
-    document.getElementById("opStatDoing").textContent = counts.doing;
-    document.getElementById("opStatDoingPct").textContent = doingPct + "%";
-    document.getElementById("opStatDone").textContent = counts.done;
-    document.getElementById("opStatDonePct").textContent = donePct + "%";
+    document.getElementById(p.prefix + "StatTotal").textContent = total;
+    document.getElementById(p.prefix + "StatTodo").textContent = counts.todo;
+    document.getElementById(p.prefix + "StatTodoPct").textContent = todoPct + "%";
+    document.getElementById(p.prefix + "StatDoing").textContent = counts.doing;
+    document.getElementById(p.prefix + "StatDoingPct").textContent = doingPct + "%";
+    document.getElementById(p.prefix + "StatDone").textContent = counts.done;
+    document.getElementById(p.prefix + "StatDonePct").textContent = donePct + "%";
 
-    document.getElementById("opDoneCount").textContent = counts.done;
-    document.getElementById("opDoneBadge").textContent = donePct + "% do total";
-    var doneList = document.getElementById("opDoneList");
+    document.getElementById(p.prefix + "DoneCount").textContent = counts.done;
+    document.getElementById(p.prefix + "DoneBadge").textContent = donePct + "% do total";
+    var doneList = document.getElementById(p.prefix + "DoneList");
     doneList.innerHTML = "";
     if(highlighted.items.length === 0){
       doneList.appendChild(execEmpty(dataLoaded ? "Nenhuma tarefa concluída ainda." : "Carregando..."));
@@ -2061,8 +2322,8 @@
       }
     }
 
-    document.getElementById("opDoingCount").textContent = counts.doing;
-    var doingList = document.getElementById("opDoingList");
+    document.getElementById(p.prefix + "DoingCount").textContent = counts.doing;
+    var doingList = document.getElementById(p.prefix + "DoingList");
     doingList.innerHTML = "";
     if(limitedDoing.items.length === 0){
       doingList.appendChild(execEmpty(dataLoaded ? "Nenhuma atividade em execução." : "Carregando..."));
@@ -2076,10 +2337,10 @@
       }
     }
 
-    document.getElementById("opTodoCount").textContent = counts.todo;
-    document.getElementById("opPrioritySub").textContent =
+    document.getElementById(p.prefix + "TodoCount").textContent = counts.todo;
+    document.getElementById(p.prefix + "PrioritySub").textContent =
       categoryGroups.length === 1 ? "1 grupo por categoria" : categoryGroups.length + " grupos por categoria";
-    var groupsWrap = document.getElementById("opPriorityGroups");
+    var groupsWrap = document.getElementById(p.prefix + "PriorityGroups");
     groupsWrap.innerHTML = "";
     var concentration = getCategoryConcentration(categoryGroups);
     if(concentration){
@@ -2097,7 +2358,7 @@
 
     onePageTotals.done = highlighted.items.length;
     onePageTotals.doing = limitedDoing.items.length + limitedDoing.remaining;
-    trimOnePage();
+    trimOnePage(p);
   }
 
   // Height the One Page will have on paper: the on-screen doc minus the
@@ -2126,12 +2387,12 @@
   // re-run on tab activation, resize and beforeprint.
   var ONE_PAGE_COL_RATIOS = ["1fr 1.25fr", "1fr 1fr", "1.25fr 1fr", "1.5fr 1fr"];
 
-  function trimOnePage(){
-    var panel = document.getElementById("panel-onepage");
+  function trimOnePage(p){
+    var panel = document.getElementById(p.panelId);
     if(!panel || !panel.offsetParent) return;
     var cols = panel.querySelector(".exec-cols");
-    var doneList = document.getElementById("opDoneList");
-    var doingList = document.getElementById("opDoingList");
+    var doneList = document.getElementById(p.prefix + "DoneList");
+    var doingList = document.getElementById(p.prefix + "DoingList");
     var doneHTML = doneList.innerHTML, doingHTML = doingList.innerHTML;
     // The screen view is as wide as Acabativas (user asked), but the page
     // that prints is only ONE_PAGE_PRINT_W wide — so decide which items fit
@@ -2351,7 +2612,7 @@
       (fontLink ? fontLink.outerHTML + "\n" : "") +
       "<style>" + styleText + "</style>\n" +
       "<style>body{background:#E9EEF5;padding:24px;margin:0;}</style>\n" +
-      "</head>\n<body>\n" + execOuter.outerHTML + "\n</body>\n</html>";
+      "</head>\n<body>\n<div id=\"" + panelSelector.replace("#", "") + "\" class=\"tab-panel op-panel active\">" + execOuter.outerHTML + "</div>\n</body>\n</html>";
   }
 
   wireReportActions({
@@ -2366,16 +2627,26 @@
     panelSelector: "#panel-onepage", title: "Relatório Executivo — Resumo (1 página) — RRP Energia · PCM",
     filenamePrefix: "relatorio-executivo-1pagina"
   });
+  wireReportActions({
+    copyBtnId: "orCopyReportBtn", printBtnId: "orPrintReportBtn", downloadBtnId: "orDownloadHtmlBtn",
+    statusId: "orCopyStatus", buildText: buildOnePageReportText,
+    panelSelector: "#panel-onepagerrp", title: "Relatório Executivo — Resumo (1 página) — RRP Bioenergia · PCM",
+    filenamePrefix: "relatorio-executivo-1pagina-rrp"
+  });
 
   // One Page period picker. Presets fill the date inputs (so the exact
   // range is always visible/editable); editing a date switches to
   // "personalizado". "semana atual" clears the period (default view).
-  (function(){
-    var btn = document.getElementById("opPeriodBtn");
-    var box = document.getElementById("opPeriodBox");
-    var presetEl = document.getElementById("opPeriodPreset");
-    var startEl = document.getElementById("opPeriodStart");
-    var endEl = document.getElementById("opPeriodEnd");
+  var periodUIs = [];
+  function wirePeriodUI(prefix){
+    var ui = {
+      btn: document.getElementById(prefix + "PeriodBtn"),
+      box: document.getElementById(prefix + "PeriodBox"),
+      presetEl: document.getElementById(prefix + "PeriodPreset"),
+      startEl: document.getElementById(prefix + "PeriodStart"),
+      endEl: document.getElementById(prefix + "PeriodEnd")
+    };
+    periodUIs.push(ui);
 
     function pad(n){ return String(n).padStart(2, "0"); }
     function toInput(d){ return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
@@ -2385,29 +2656,34 @@
                       : new Date(+p[0], +p[1] - 1, +p[2]).getTime();
     }
 
+    // The period is ONE shared state for both report tabs; whichever tab
+    // you change, the other tab's controls follow.
     function apply(){
-      if(presetEl.value === "semana"){
+      if(ui.presetEl.value === "semana"){
         onePagePeriod = null;
-      } else if(startEl.value && endEl.value){
-        var s = fromInput(startEl.value, false), e = fromInput(endEl.value, true);
+      } else if(ui.startEl.value && ui.endEl.value){
+        var s = fromInput(ui.startEl.value, false), e = fromInput(ui.endEl.value, true);
         if(s > e){
-          var tmp = startEl.value; startEl.value = endEl.value; endEl.value = tmp;
-          s = fromInput(startEl.value, false); e = fromInput(endEl.value, true);
+          var tmp = ui.startEl.value; ui.startEl.value = ui.endEl.value; ui.endEl.value = tmp;
+          s = fromInput(ui.startEl.value, false); e = fromInput(ui.endEl.value, true);
         }
         onePagePeriod = { start: s, end: e };
       } else {
         return;
       }
-      btn.textContent = onePagePeriod ? "período: " + onePagePeriodLabel() : "escolher período";
+      periodUIs.forEach(function(o){
+        if(o !== ui){ o.presetEl.value = ui.presetEl.value; o.startEl.value = ui.startEl.value; o.endEl.value = ui.endEl.value; }
+        o.btn.textContent = onePagePeriod ? "período: " + onePagePeriodLabel() : "escolher período";
+      });
       renderOnePage();
     }
 
-    presetEl.addEventListener("change", function(){
-      var v = presetEl.value;
+    ui.presetEl.addEventListener("change", function(){
+      var v = ui.presetEl.value;
       var today = new Date(); today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
       var wk = new Date(getCurrentWeekStartMs());
       var s = null, e = null;
-      if(v === "semana"){ startEl.value = ""; endEl.value = ""; }
+      if(v === "semana"){ ui.startEl.value = ""; ui.endEl.value = ""; }
       else if(v === "semana-passada"){
         s = new Date(wk.getFullYear(), wk.getMonth(), wk.getDate() - 7);
         e = new Date(wk.getFullYear(), wk.getMonth(), wk.getDate() - 1);
@@ -2419,14 +2695,19 @@
         s = new Date(today.getFullYear(), today.getMonth(), 1);
         e = new Date(today.getFullYear(), today.getMonth() + 1, 0);
       }
-      if(s){ startEl.value = toInput(s); endEl.value = toInput(e); }
+      if(s){ ui.startEl.value = toInput(s); ui.endEl.value = toInput(e); }
       apply();
     });
-    [startEl, endEl].forEach(function(el){
-      el.addEventListener("change", function(){ presetEl.value = "custom"; apply(); });
+    [ui.startEl, ui.endEl].forEach(function(el){
+      el.addEventListener("change", function(){ ui.presetEl.value = "custom"; apply(); });
     });
-    btn.addEventListener("click", function(){ box.hidden = !box.hidden; });
-  })();
+    ui.btn.addEventListener("click", function(){ ui.box.hidden = !ui.box.hidden; });
+  }
+  ONE_PAGE_PANELS.forEach(function(p){ wirePeriodUI(p.prefix); });
+
+  // Web fonts (Montserrat/Barlow) change text metrics once loaded, which
+  // changes how many items fit — re-fit when they're ready.
+  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(renderOnePage); }
 
   // drag & drop on kanban columns
   document.querySelectorAll(".kanban-col").forEach(function(cEl){
@@ -2460,7 +2741,7 @@
       p.classList.toggle("active", p.getAttribute("data-panel") === tabKey);
     });
     try{ localStorage.setItem(TAB_KEY, tabKey); }catch(e){}
-    if(tabKey === "onepage") renderOnePage();
+    if(tabKey === "onepage" || tabKey === "onepagerrp") renderOnePage();
   }
   // Re-fit when the viewport width changes the wrapping, and right before
   // printing so the paper copy is measured at its own layout.
