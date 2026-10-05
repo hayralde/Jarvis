@@ -478,52 +478,49 @@
   .exec-chip-link:hover{background:rgba(255,255,255,.18);}
 
   /* ===== "One page RRP" tab: same content/fit as One Page, skinned with the
-     RRP Bioenergia identity (orange #E96524, flame gradient to amber
-     #F7AB21, leaf green, Montserrat body + Barlow headings — read from
-     rrpbioenergia.com.br).
-     Design reasoning (v3). v1 (white + pastel per section) was tiring;
-     v2 (sand + charcoal) read as brown and "nothing to do with the
-     company's orange". So the BRAND ORANGE is now the protagonist:
-     - hero = the brand's flame gradient (orange -> amber), logo on a white
-       pill (orange-on-orange would vanish);
-     - canvas = a pale peach TINT OF THE SAME ORANGE (not a neutral), cards
-       a warm near-white, so the page is orange-family top to bottom but
-       the large reading area stays soft;
-     - section bars = solid brand orange with white type; status lives in
-       the 4px left rule on each card (green done / orange doing);
-     - text is warm dark brown, never pure black, for gentler contrast.
+     RRP Bioenergia identity (orange #E96524, leaf green, Montserrat body +
+     Barlow headings — read from rrpbioenergia.com.br).
+     Direction "C — topo laranja, corpo cinza claro" (picked by the user from
+     three previewed options after v1 white, v2 sand/charcoal and v3
+     all-orange-peach were each rejected):
+     - header band = flat brand orange (no gradient), white type, logo on a
+       white pill;
+     - body = light neutral grey #F1F1F1 (the same grey the site uses for its
+       "Números" section) with plain white cards — calm reading surface;
+     - orange is used for the band, the action buttons and small marks only;
+       status colors live in the KPI numbers and the small section dots.
      Only color/type/border rules live here; spacing stays in .op-panel so
      the page-fit math is identical to One Page. ===== */
   #panel-onepagerrp{
     --orange:#E96524;--orange-dk:#C4501A;--amber:#F7AB21;--green:#4C9F38;--green-dk:#2F7A22;
-    --canvas:#FFF1E6;--card:#FFFCF8;--line:#F4D5BE;
-    --text:#3B2F28;--muted:#7A5F4D;
+    --canvas:#F1F1F1;--card:#FFFFFF;--line:#E2E2E2;
+    --text:#2B2B2B;--muted:#6B6B6B;
   }
   @media screen{
-    #panel-onepagerrp .exec-outer{background:#FAE3D2;}
-    #panel-onepagerrp .exec-doc{border-radius:18px;}
+    #panel-onepagerrp .exec-outer{background:#E3E3E3;}
+    #panel-onepagerrp .exec-doc{border-radius:16px;}
   }
-  #panel-onepagerrp .exec-doc{font-family:'Montserrat','Segoe UI',system-ui,sans-serif;color:var(--text);background:var(--canvas);border:none;border-bottom:5px solid var(--orange);}
+  #panel-onepagerrp .exec-doc{font-family:'Montserrat','Segoe UI',system-ui,sans-serif;color:var(--text);background:var(--canvas);border:none;}
   #panel-onepagerrp .exec-hero-company,#panel-onepagerrp .exec-section-head h3,#panel-onepagerrp .exec-priority-head h3,
   #panel-onepagerrp .exec-group-head h4,#panel-onepagerrp .exec-stat-num,#panel-onepagerrp .exec-eff-value,
   #panel-onepagerrp .exec-stat-label,#panel-onepagerrp .exec-section-badge{font-family:'Barlow','Montserrat',sans-serif;}
 
-  /* hero: the brand flame gradient */
-  #panel-onepagerrp .exec-hero{background:linear-gradient(120deg,#E4561B 0%,#EE7A27 55%,#F7AB21 125%);color:#fff;}
-  #panel-onepagerrp .exec-hero-circle{background:#fff;opacity:.13;}
+  /* header band: flat brand orange */
+  #panel-onepagerrp .exec-hero{background:var(--orange);color:#fff;}
+  #panel-onepagerrp .exec-hero-circle{background:#fff;opacity:.12;}
   #panel-onepagerrp .exec-hero-line{display:none;}
-  #panel-onepagerrp .exec-hero-logo{background:#fff;width:auto;height:46px;border-radius:12px;padding:4px 8px;box-shadow:0 2px 8px rgba(120,40,0,.25);}
+  #panel-onepagerrp .exec-hero-logo{background:#fff;width:auto;height:46px;border-radius:12px;padding:4px 8px;}
   #panel-onepagerrp .exec-hero-logo img{height:38px;width:auto;display:block;}
   #panel-onepagerrp .exec-hero-company{color:#fff;font-size:18px;letter-spacing:.04em;}
   #panel-onepagerrp .exec-hero-company span{color:#FFE3B3;}
-  #panel-onepagerrp .exec-hero-dept{color:rgba(255,255,255,.88);}
+  #panel-onepagerrp .exec-hero-dept{color:rgba(255,255,255,.9);}
   #panel-onepagerrp .exec-chip{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.5);color:#fff;font-weight:500;}
   #panel-onepagerrp .exec-chip svg{color:#fff;}
   #panel-onepagerrp .exec-chip-link:hover{background:rgba(255,255,255,.3);}
   #panel-onepagerrp .exec-eff-card{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.45);}
-  #panel-onepagerrp .exec-eff-label{color:rgba(255,255,255,.9);}
+  #panel-onepagerrp .exec-eff-label{color:rgba(255,255,255,.92);}
   #panel-onepagerrp .exec-eff-value{color:#fff;}
-  #panel-onepagerrp .exec-eff-sub{color:rgba(255,255,255,.9);}
+  #panel-onepagerrp .exec-eff-sub{color:rgba(255,255,255,.92);}
   #panel-onepagerrp .exec-eff-svg circle:first-child{stroke:rgba(255,255,255,.32);}
   #panel-onepagerrp .exec-eff-seg{stroke:#fff;}
   #panel-onepagerrp .exec-eff-icon svg{color:#fff;}
@@ -532,8 +529,8 @@
   #panel-onepagerrp #orBarDoing{background:#FFD27A !important;}
   #panel-onepagerrp #orBarDone{background:#fff !important;}
 
-  /* screen-only action bar: a light peach strip under the hero */
-  #panel-onepagerrp .exec-actions{background:#FFE5D3;border-bottom:1px solid var(--line);}
+  /* screen-only action strip */
+  #panel-onepagerrp .exec-actions{background:#E8E8E8;border-bottom:1px solid var(--line);}
   #panel-onepagerrp .exec-actions button{border-radius:999px;border:1.5px solid var(--orange-dk);color:var(--orange-dk);background:#fff;font-family:'Montserrat',sans-serif;}
   #panel-onepagerrp .exec-actions button:hover{background:var(--orange);color:#fff;border-color:var(--orange);}
   #panel-onepagerrp .exec-actions button.primary{background:var(--orange);color:#fff;border-color:var(--orange);}
@@ -543,45 +540,42 @@
   #panel-onepagerrp .op-period select,#panel-onepagerrp .op-period input{background:#fff;color:var(--text);border:1px solid var(--line);}
   #panel-onepagerrp .op-period-note{color:var(--muted);}
 
-  /* KPI cards: warm near-white, color only in the top rule + number */
+  /* KPI cards: plain white, color only in the number */
   #panel-onepagerrp .exec-stat-card,#panel-onepagerrp .exec-stat-card-orange,
-  #panel-onepagerrp .exec-stat-card-blue,#panel-onepagerrp .exec-stat-card-green{background:var(--card);border:1px solid var(--line);border-radius:14px;}
+  #panel-onepagerrp .exec-stat-card-blue,#panel-onepagerrp .exec-stat-card-green{background:var(--card);border:1px solid var(--line);border-radius:12px;}
+  #panel-onepagerrp .exec-stat-card::before{background:transparent;}
   #panel-onepagerrp .exec-stat-label{color:var(--muted);}
   #panel-onepagerrp .exec-stat-num{color:var(--text);}
   #panel-onepagerrp .exec-stat-sub,#panel-onepagerrp .exec-stat-card-green .exec-stat-sub{color:var(--muted);}
-  #panel-onepagerrp .exec-stat-card-orange::before{background:var(--orange);}
-  #panel-onepagerrp .exec-stat-card-blue::before{background:var(--amber);}
-  #panel-onepagerrp .exec-stat-card-green::before{background:var(--green);}
-  #panel-onepagerrp .exec-stat-card-orange .exec-stat-label,#panel-onepagerrp .exec-stat-card-orange .exec-stat-num{color:var(--orange-dk);}
-  #panel-onepagerrp .exec-stat-card-blue .exec-stat-label,#panel-onepagerrp .exec-stat-card-blue .exec-stat-num{color:#946000;}
-  #panel-onepagerrp .exec-stat-card-green .exec-stat-label,#panel-onepagerrp .exec-stat-card-green .exec-stat-num{color:var(--green-dk);}
-  #panel-onepagerrp .exec-pct-orange{color:#B24A12;background:#FADCC8;}
-  #panel-onepagerrp .exec-pct-blue{color:#7A5200;background:#FBE8BE;}
+  #panel-onepagerrp .exec-stat-card-orange .exec-stat-num{color:var(--orange);}
+  #panel-onepagerrp .exec-stat-card-blue .exec-stat-num{color:#B77800;}
+  #panel-onepagerrp .exec-stat-card-green .exec-stat-num{color:var(--green-dk);}
+  #panel-onepagerrp .exec-stat-card-orange .exec-stat-label,#panel-onepagerrp .exec-stat-card-blue .exec-stat-label,
+  #panel-onepagerrp .exec-stat-card-green .exec-stat-label{color:var(--muted);}
+  #panel-onepagerrp .exec-pct-orange{color:#B24A12;background:#FBE3D5;}
+  #panel-onepagerrp .exec-pct-blue{color:#7A5200;background:#FBEBC6;}
   #panel-onepagerrp .exec-pct-green{color:#fff;background:var(--green);}
 
-  /* section bars: solid brand orange, white type */
-  #panel-onepagerrp .exec-section,#panel-onepagerrp .exec-section-green,#panel-onepagerrp .exec-section-amber{background:transparent;border:1px solid var(--line);border-radius:14px;}
-  #panel-onepagerrp .exec-section-head{background:var(--orange);border-color:var(--orange);}
-  #panel-onepagerrp .exec-section-head h3{color:#fff;}
-  #panel-onepagerrp .exec-section-badge{background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.55);color:#fff;}
-  #panel-onepagerrp .exec-section-icon{background:#fff;}
-  #panel-onepagerrp .exec-section-icon svg{color:var(--orange);}
-  #panel-onepagerrp .exec-done-item{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--green);}
+  /* sections: no colored bars — a dark title with a status mark, items as
+     plain white cards straight on the grey body */
+  #panel-onepagerrp .exec-section,#panel-onepagerrp .exec-section-green,#panel-onepagerrp .exec-section-amber{background:transparent;border:none;border-radius:0;}
+  #panel-onepagerrp .exec-section-head,#panel-onepagerrp .exec-priority-head{background:transparent;border:none;}
+  #panel-onepagerrp .exec-section-head h3,#panel-onepagerrp .exec-priority-head h3{color:var(--text);}
+  #panel-onepagerrp .exec-section-badge{background:#fff;border:1px solid var(--line);color:var(--muted);}
+  #panel-onepagerrp .exec-icon-green{background:var(--green);}
+  #panel-onepagerrp .exec-icon-amber{background:var(--orange);}
+  #panel-onepagerrp .exec-icon-amber svg{color:#fff;}
+  #panel-onepagerrp .exec-done-item,#panel-onepagerrp .exec-doing-item{background:var(--card);border:1px solid var(--line);}
   #panel-onepagerrp .exec-done-num{background:var(--green);}
-  #panel-onepagerrp .exec-done-title{color:var(--text);}
-  #panel-onepagerrp .exec-done-date{color:var(--muted);}
-  #panel-onepagerrp .exec-doing-item{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--orange);}
-  #panel-onepagerrp .exec-doing-title{color:var(--text);}
-  #panel-onepagerrp .exec-doing-date,#panel-onepagerrp .exec-doing-meta{color:var(--muted);}
+  #panel-onepagerrp .exec-done-title,#panel-onepagerrp .exec-doing-title{color:var(--text);}
+  #panel-onepagerrp .exec-done-date,#panel-onepagerrp .exec-doing-date,#panel-onepagerrp .exec-doing-meta{color:var(--muted);}
   #panel-onepagerrp .exec-group-remaining,#panel-onepagerrp .exec-empty{color:var(--muted);}
 
-  /* pending block */
-  #panel-onepagerrp .exec-priority-block{background:transparent;border:1px solid var(--line);border-radius:14px;}
-  #panel-onepagerrp .exec-priority-head{background:var(--orange-dk);border-color:var(--orange-dk);}
-  #panel-onepagerrp .exec-priority-head h3{color:#fff;}
-  #panel-onepagerrp .exec-priority-icon{background:#fff;}
-  #panel-onepagerrp .exec-priority-icon svg{color:var(--orange-dk);}
-  #panel-onepagerrp .exec-priority-sub{color:rgba(255,255,255,.9);}
+  /* pending block: same treatment; category groups keep a color rule so
+     categories stay distinguishable */
+  #panel-onepagerrp .exec-priority-block{background:transparent;border:none;border-radius:0;}
+  #panel-onepagerrp .exec-priority-icon{background:var(--orange);}
+  #panel-onepagerrp .exec-priority-sub{color:var(--muted);}
   #panel-onepagerrp .exec-priority-groups2{background:transparent;}
   #panel-onepagerrp .exec-priority-insight{color:var(--muted);}
   #panel-onepagerrp .exec-group{background:var(--card);border:1px solid var(--line);border-left-width:4px;}
@@ -589,28 +583,28 @@
   #panel-onepagerrp .exec-group li{color:var(--text);}
   #panel-onepagerrp .exec-group-orange{border-left-color:var(--orange);}
   #panel-onepagerrp .exec-group-orange svg{color:var(--orange);}
-  #panel-onepagerrp .exec-count-orange{background:#FADCC8;color:#B24A12;}
+  #panel-onepagerrp .exec-count-orange{background:#FBE3D5;color:#B24A12;}
   #panel-onepagerrp .exec-group-orange li::before{background:var(--orange);}
   #panel-onepagerrp .exec-group-blue{border-left-color:var(--amber);}
   #panel-onepagerrp .exec-group-blue svg{color:#C98A00;}
-  #panel-onepagerrp .exec-count-blue{background:#FBE8BE;color:#7A5200;}
+  #panel-onepagerrp .exec-count-blue{background:#FBEBC6;color:#7A5200;}
   #panel-onepagerrp .exec-group-blue li::before{background:var(--amber);}
-  #panel-onepagerrp .exec-group-purple{border-left-color:#8A6A55;}
-  #panel-onepagerrp .exec-group-purple svg{color:#8A6A55;}
-  #panel-onepagerrp .exec-count-purple{background:#EFDFD2;color:#5E4536;}
-  #panel-onepagerrp .exec-group-purple li::before{background:#8A6A55;}
+  #panel-onepagerrp .exec-group-purple{border-left-color:#7A7A7A;}
+  #panel-onepagerrp .exec-group-purple svg{color:#7A7A7A;}
+  #panel-onepagerrp .exec-count-purple{background:#E8E8E8;color:#444;}
+  #panel-onepagerrp .exec-group-purple li::before{background:#7A7A7A;}
   #panel-onepagerrp .exec-group-green{border-left-color:var(--green);}
   #panel-onepagerrp .exec-group-green svg{color:var(--green);}
-  #panel-onepagerrp .exec-count-green{background:#D8ECCF;color:#1F5E15;}
+  #panel-onepagerrp .exec-count-green{background:#DCEFD3;color:#1F5E15;}
   #panel-onepagerrp .exec-group-green li::before{background:var(--green);}
   #panel-onepagerrp .exec-group-teal{border-left-color:#D9822B;}
   #panel-onepagerrp .exec-group-teal svg{color:#C26E14;}
   #panel-onepagerrp .exec-count-teal{background:#F8E0C2;color:#7A4A12;}
   #panel-onepagerrp .exec-group-teal li::before{background:#D9822B;}
-  #panel-onepagerrp .exec-group-gray{border-left-color:#B7A394;}
+  #panel-onepagerrp .exec-group-gray{border-left-color:#B5B5B5;}
   #panel-onepagerrp .exec-group-gray svg{color:var(--muted);}
-  #panel-onepagerrp .exec-count-gray{background:#EFDFD2;color:#5E4536;}
-  #panel-onepagerrp .exec-group-gray li::before{background:#B7A394;}
+  #panel-onepagerrp .exec-count-gray{background:#E8E8E8;color:#444;}
+  #panel-onepagerrp .exec-group-gray li::before{background:#B5B5B5;}
   #panel-onepagerrp .exec-group-li-flagged{color:#B3261E;}
 
   footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text-dimmer);font-family:'IBM Plex Mono',monospace;}
