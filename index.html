@@ -152,6 +152,10 @@
   .log-row[data-status="todo"] .status-tag{color:var(--grey);background:var(--grey-dim);}
   .log-row[data-status="doing"] .status-tag{color:var(--amber);background:var(--amber-dim);}
   .log-row[data-status="done"] .status-tag{color:var(--green);background:var(--green-dim);}
+  .card-id{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:700;color:var(--text-dim);letter-spacing:0.02em;white-space:nowrap;}
+  .log-row-head-tags .card-id{padding:2px 0;}
+  .exec-done-title .card-id,.exec-doing-title .card-id,.exec-group ul li .card-id{font-size:0.78em;opacity:.7;margin-right:5px;}
+  .history-item-meta .card-id{font-size:inherit;}
   .log-time{font-size:10.5px;color:var(--text-dimmer);font-family:'IBM Plex Mono',monospace;}
 
   .log-title{font-size:13.5px;color:var(--text);line-height:1.5;margin:0 0 4px 0;white-space:pre-wrap;word-break:break-word;}
@@ -1208,7 +1212,8 @@
       flagged: !!row.flagged,
       completedAt: row.completed_at || null,
       category: row.category || "",
-      archivedAt: row.archived_at || null
+      archivedAt: row.archived_at || null,
+      seq: row.seq || null
     };
   }
   function taskToRow(t){
@@ -1408,6 +1413,23 @@
     }
   }
 
+  // Card number: jarvis_tasks.seq, assigned by the database sequence on
+  // insert — unique, never reused, same on every device.
+  function cardNum(t){ return t && t.seq ? "#" + t.seq : ""; }
+  function cardIdEl(t){
+    var n = cardNum(t);
+    if(!n) return null;
+    var el = document.createElement("span");
+    el.className = "card-id";
+    el.textContent = n;
+    el.title = "Card " + n;
+    return el;
+  }
+  function prependCardId(parent, t){
+    var el = cardIdEl(t);
+    if(el) parent.insertBefore(el, parent.firstChild);
+  }
+
   function renderCard(t){
     var row = document.createElement("div");
     row.className = "log-row" + (t.flagged ? " flagged" : "");
@@ -1427,6 +1449,9 @@
 
     var tags = document.createElement("div");
     tags.className = "log-row-head-tags";
+
+    var idEl = cardIdEl(t);
+    if(idEl) tags.appendChild(idEl);
 
     var tag = document.createElement("span");
     tag.className = "log-tag status-tag";
@@ -1651,8 +1676,9 @@
       };
       tasks.push(newTask);
       render();
-      db.from(TABLE).insert(taskToRow(newTask)).then(function(res){
-        if(res.error) console.error("adicionar tarefa falhou", res.error);
+      db.from(TABLE).insert(taskToRow(newTask)).select("seq").then(function(res){
+        if(res.error){ console.error("adicionar tarefa falhou", res.error); return; }
+        if(res.data && res.data[0]){ newTask.seq = res.data[0].seq; render(); }
       });
     }
     confirmBtn.addEventListener("click", submit);
@@ -1921,7 +1947,7 @@
       lines.push("Nenhuma tarefa concluída no momento.");
     } else {
       highlighted.items.forEach(function(t, i){
-        lines.push((i + 1) + ". " + t.title + " (" + reportDateLabel(t, "done") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
+        lines.push((i + 1) + ". " + (t.seq ? cardNum(t) + " " : "") + t.title + " (" + reportDateLabel(t, "done") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
       });
       if(highlighted.remaining > 0){
         lines.push("+ " + highlighted.remaining + " outra(s) tarefa(s) concluída(s).");
@@ -1934,7 +1960,7 @@
       lines.push("Nenhuma atividade em execução no momento.");
     } else {
       doing.forEach(function(t, i){
-        lines.push((i + 1) + ". " + t.title + " (" + reportDateLabel(t, "doing") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
+        lines.push((i + 1) + ". " + (t.seq ? cardNum(t) + " " : "") + t.title + " (" + reportDateLabel(t, "doing") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
         if(t.meta){ lines.push("   " + t.meta); }
       });
     }
@@ -1947,7 +1973,7 @@
       categoryGroups.forEach(function(g){
         lines.push(g.name + ":");
         g.items.forEach(function(t, i){
-          lines.push((i + 1) + ". " + t.title + " (" + reportDateLabel(t, "todo") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
+          lines.push((i + 1) + ". " + (t.seq ? cardNum(t) + " " : "") + t.title + " (" + reportDateLabel(t, "todo") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
         });
         if(g.remaining > 0){
           lines.push("+ " + g.remaining + " outra(s) pendência(s) nesta categoria.");
@@ -1992,7 +2018,7 @@
       lines.push("Nenhuma tarefa concluída no momento.");
     } else {
       highlighted.items.forEach(function(t, i){
-        lines.push((i + 1) + ". " + t.title + " (" + reportDateLabel(t, "done") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
+        lines.push((i + 1) + ". " + (t.seq ? cardNum(t) + " " : "") + t.title + " (" + reportDateLabel(t, "done") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
       });
       if(highlighted.remaining > 0){
         lines.push("+ " + highlighted.remaining + " outra(s) tarefa(s) concluída(s).");
@@ -2005,7 +2031,7 @@
       lines.push("Nenhuma atividade em execução no momento.");
     } else {
       doing.items.forEach(function(t, i){
-        lines.push((i + 1) + ". " + t.title + " (" + reportDateLabel(t, "doing") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
+        lines.push((i + 1) + ". " + (t.seq ? cardNum(t) + " " : "") + t.title + " (" + reportDateLabel(t, "doing") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
       });
       if(doing.remaining > 0){
         lines.push("+ " + doing.remaining + " outra(s) atividade(s) em andamento.");
@@ -2020,7 +2046,7 @@
       categoryGroups.forEach(function(g){
         lines.push(g.name + ":");
         g.items.forEach(function(t, i){
-          lines.push((i + 1) + ". " + t.title + " (" + reportDateLabel(t, "todo") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
+          lines.push((i + 1) + ". " + (t.seq ? cardNum(t) + " " : "") + t.title + " (" + reportDateLabel(t, "todo") + ")" + (t.flagged ? " [ALTA PRIORIDADE]" : ""));
         });
         if(g.remaining > 0){
           lines.push("+ " + g.remaining + " outra(s) pendência(s) nesta categoria.");
@@ -2050,6 +2076,7 @@
     var titleEl = document.createElement("p");
     titleEl.className = "exec-done-title";
     titleEl.textContent = t.title;
+    prependCardId(titleEl, t);
     item.appendChild(titleEl);
 
     var dateEl = document.createElement("span");
@@ -2067,6 +2094,7 @@
     var titleEl = document.createElement("p");
     titleEl.className = "exec-doing-title";
     titleEl.textContent = t.title;
+    prependCardId(titleEl, t);
     item.appendChild(titleEl);
 
     var dateEl = document.createElement("p");
@@ -2088,6 +2116,7 @@
     var li = document.createElement("li");
     if(t.flagged) li.className = "exec-group-li-flagged";
     li.textContent = t.title;
+    prependCardId(li, t);
     return li;
   }
 
@@ -2140,6 +2169,7 @@
     var titleEl = document.createElement("p");
     titleEl.className = "exec-done-title";
     titleEl.textContent = t.title;
+    prependCardId(titleEl, t);
     item.appendChild(titleEl);
     var dateEl = document.createElement("span");
     dateEl.className = "exec-done-date";
@@ -2154,6 +2184,7 @@
     var titleEl = document.createElement("p");
     titleEl.className = "exec-doing-title";
     titleEl.textContent = t.title;
+    prependCardId(titleEl, t);
     item.appendChild(titleEl);
     var dateEl = document.createElement("p");
     dateEl.className = "exec-doing-date";
@@ -2166,6 +2197,7 @@
     var li = document.createElement("li");
     if(t.flagged) li.className = "exec-group-li-flagged";
     li.textContent = t.title;
+    prependCardId(li, t);
     return li;
   }
 
@@ -2516,6 +2548,7 @@
     body.appendChild(title);
 
     var metaBits = [];
+    if(t.seq) metaBits.push(cardNum(t));
     if(t.category) metaBits.push(t.category);
     metaBits.push("concluída em " + formatDate(t.completedAt || t.archivedAt));
     var metaLine = document.createElement("p");
