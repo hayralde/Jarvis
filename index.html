@@ -208,6 +208,28 @@
   }
   .history-item-del:hover{border-color:var(--red);color:var(--red);}
 
+  /* Follow-up tab: spreadsheet-style table, every cell is an input */
+  .fu-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:14px;}
+  .fu-tools{display:flex;gap:8px;align-items:center;}
+  .fu-search{background:var(--panel);border:1px solid var(--border-bright);color:var(--text);padding:7px 10px;font-size:12px;font-family:'IBM Plex Mono',monospace;width:170px;}
+  .fu-search:focus{outline:none;border-color:var(--focus);}
+  .fu-add{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:8px 14px;cursor:pointer;border:1px solid var(--border-bright);background:transparent;color:var(--text-dim);}
+  .fu-add:hover{color:var(--text);border-color:var(--text-dim);}
+  .fu-wrap{overflow-x:auto;border:1px solid var(--border);background:var(--panel);}
+  .fu-table{border-collapse:collapse;width:100%;min-width:1500px;font-size:12.5px;}
+  .fu-table th{position:sticky;top:0;background:var(--bg);text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);padding:8px 6px;border-bottom:1px solid var(--border-bright);border-right:1px solid var(--border);white-space:nowrap;}
+  .fu-table td{padding:0;border-bottom:1px solid var(--border);border-right:1px solid var(--border);vertical-align:top;}
+  .fu-table tr:hover td{background:rgba(0,0,0,.02);}
+  .fu-table .fu-num{width:44px;text-align:center;color:var(--text-dimmer);font-family:'IBM Plex Mono',monospace;font-size:10.5px;padding:8px 4px;}
+  .fu-table .fu-act{width:34px;text-align:center;border-right:0;}
+  .fu-cell{display:block;width:100%;box-sizing:border-box;border:0;background:transparent;color:var(--text);font:inherit;padding:8px 6px;margin:0;resize:none;overflow:hidden;line-height:1.4;min-height:34px;}
+  .fu-cell:focus{outline:2px solid var(--focus);outline-offset:-2px;background:var(--bg);}
+  .fu-saving{box-shadow:inset 0 -2px 0 var(--amber);}
+  .fu-del{width:22px;height:22px;border:1px solid var(--border-bright);background:transparent;color:var(--text-dim);cursor:pointer;padding:0;margin-top:5px;display:inline-flex;align-items:center;justify-content:center;}
+  .fu-del:hover{border-color:var(--red);color:var(--red);}
+  .fu-table td[data-col="aprovado"] .fu-cell{font-weight:700;}
+  .fu-table td.fu-yes .fu-cell{color:var(--green);}
+  .fu-table td.fu-no .fu-cell{color:var(--red);}
   .add-row{margin-bottom:2px;}
   .add-trigger{
     width:100%;background:transparent;border:1px dashed var(--border-bright);color:var(--text-dimmer);
@@ -706,6 +728,7 @@
       <button class="tab-btn" type="button" data-tab="acabativas" role="tab" aria-selected="false">acabativas</button>
       <button class="tab-btn" type="button" data-tab="onepage" role="tab" aria-selected="false">one page</button>
       <button class="tab-btn" type="button" data-tab="onepagerrp" role="tab" aria-selected="false">one page rrp</button>
+      <button class="tab-btn" type="button" data-tab="followup" role="tab" aria-selected="false">follow-up</button>
       <button class="tab-btn" type="button" data-tab="historico" role="tab" aria-selected="false">histórico</button>
     </div>
 
@@ -1163,6 +1186,21 @@
       </div>
     </div>
 
+    <div class="tab-panel" id="panel-followup" data-panel="followup">
+      <div class="fu-head no-print">
+        <div>
+          <p class="history-head-title">Follow-up</p>
+          <p class="history-head-desc">Acompanhamento de consertos, compras e pedidos. Clique em qualquer célula para editar — salva sozinho e sincroniza entre dispositivos.</p>
+        </div>
+        <div class="fu-tools">
+          <input id="fuSearch" class="fu-search" type="search" placeholder="filtrar..." aria-label="Filtrar follow-up">
+          <button id="fuAdd" class="fu-add" type="button">+ novo item</button>
+        </div>
+      </div>
+      <div class="fu-wrap"><div id="followupBody"></div></div>
+      <datalist id="fuStatusOptions"></datalist>
+    </div>
+
     <div class="tab-panel" id="panel-historico" data-panel="historico">
       <div class="history-head">
         <p class="history-head-title">Histórico</p>
@@ -1335,7 +1373,7 @@
   }
 
   function hasOpenForm(){
-    return !!document.querySelector(".add-form.open") || Object.keys(editingIds).length > 0;
+    return !!document.querySelector(".add-form.open") || Object.keys(editingIds).length > 0 || fuFocusInside();
   }
 
   function render(){
@@ -2781,6 +2819,213 @@
     });
   });
 
+  // ---- Follow-up tab: editable table backed by jarvis_followup ----
+  var FU_TABLE = "jarvis_followup";
+  var FU_COLS = [
+    {key:"empresa",    label:"Empresa",     w:110},
+    {key:"descricao",  label:"Descrição",   w:210},
+    {key:"nf_saida",   label:"NF saída",    w:90},
+    {key:"cc",         label:"C/C",         w:70},
+    {key:"tag",        label:"TAG",         w:90},
+    {key:"n_serie",    label:"Nº série",    w:100},
+    {key:"orcamento",  label:"Orçamento",   w:120},
+    {key:"aprovado",   label:"Aprovado",    w:90, select:["","SIM","NÃO"]},
+    {key:"rc_sl",      label:"RC/SL",       w:100},
+    {key:"status",     label:"Status",      w:100, list:"fuStatusOptions"},
+    {key:"pedido_rrp", label:"Pedido RRP",  w:100},
+    {key:"prazo",      label:"Prazo",       w:90},
+    {key:"frete",      label:"Frete",       w:80},
+    {key:"nf_retorno", label:"NF retorno",  w:100},
+    {key:"observacao", label:"Observação",  w:180}
+  ];
+  var fuRows = [];
+  var fuFilter = "";
+  var fuSaveTimers = {};
+
+  function fuRowFromDb(r){
+    var o = {id: r.id, seq: r.seq};
+    FU_COLS.forEach(function(c){ o[c.key] = r[c.key] || ""; });
+    return o;
+  }
+  function fuFocusInside(){
+    var a = document.activeElement;
+    return !!(a && a.classList && a.classList.contains("fu-cell"));
+  }
+  function fuAutosize(el){
+    if(el.tagName !== "TEXTAREA") return;
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
+  }
+  function fuColorApproved(td, val){
+    td.classList.toggle("fu-yes", val === "SIM");
+    td.classList.toggle("fu-no", val === "NÃO");
+  }
+
+  function fuSave(row, key, el){
+    var patch = {}; patch[key] = row[key];
+    el.classList.add("fu-saving");
+    db.from(FU_TABLE).update(patch).eq("id", row.id).then(function(res){
+      el.classList.remove("fu-saving");
+      if(res.error){ console.error("salvar follow-up falhou", res.error); setSyncStatus("offline"); }
+    });
+  }
+
+  function fuMatches(row){
+    if(!fuFilter) return true;
+    return FU_COLS.some(function(c){ return (row[c.key] || "").toLowerCase().indexOf(fuFilter) !== -1; });
+  }
+
+  function renderFollowup(){
+    var body = document.getElementById("followupBody");
+    if(!body) return;
+    body.innerHTML = "";
+
+    var table = document.createElement("table");
+    table.className = "fu-table";
+    var thead = document.createElement("thead");
+    var hr = document.createElement("tr");
+    var th0 = document.createElement("th"); th0.textContent = "#"; th0.className = "fu-num"; hr.appendChild(th0);
+    FU_COLS.forEach(function(c){
+      var th = document.createElement("th"); th.textContent = c.label; th.style.minWidth = c.w + "px"; hr.appendChild(th);
+    });
+    var thA = document.createElement("th"); thA.className = "fu-act no-print"; hr.appendChild(thA);
+    thead.appendChild(hr); table.appendChild(thead);
+
+    var tbody = document.createElement("tbody");
+    var shown = fuRows.filter(fuMatches);
+    shown.forEach(function(row){ tbody.appendChild(fuRenderRow(row)); });
+    table.appendChild(tbody);
+    body.appendChild(table);
+
+    if(shown.length === 0){
+      body.appendChild(emptyState(!dataLoaded ? "— carregando... —" : (fuRows.length ? "— nenhum item no filtro —" : "— nenhum item — clique em \"+ novo item\" —")));
+    }
+
+    var dl = document.getElementById("fuStatusOptions");
+    var seen = {}; dl.innerHTML = "";
+    fuRows.forEach(function(r){
+      var v = (r.status || "").trim();
+      if(v && !seen[v]){ seen[v] = true; var o = document.createElement("option"); o.value = v; dl.appendChild(o); }
+    });
+    table.querySelectorAll("textarea.fu-cell").forEach(fuAutosize);
+  }
+
+  function fuRenderRow(row){
+    var tr = document.createElement("tr");
+    tr.setAttribute("data-fu-id", row.id);
+    var n = document.createElement("td"); n.className = "fu-num"; n.textContent = row.seq || ""; tr.appendChild(n);
+
+    FU_COLS.forEach(function(c){
+      var td = document.createElement("td");
+      td.setAttribute("data-col", c.key);
+      var el;
+      if(c.select){
+        el = document.createElement("select");
+        c.select.forEach(function(v){
+          var o = document.createElement("option"); o.value = v; o.textContent = v; el.appendChild(o);
+        });
+        if(c.select.indexOf(row[c.key]) === -1){
+          var extra = document.createElement("option"); extra.value = row[c.key]; extra.textContent = row[c.key]; el.appendChild(extra);
+        }
+        el.value = row[c.key];
+        fuColorApproved(td, row[c.key]);
+        el.addEventListener("change", function(){
+          row[c.key] = el.value; fuColorApproved(td, el.value); fuSave(row, c.key, el);
+        });
+      } else {
+        el = document.createElement("textarea");
+        el.rows = 1;
+        el.value = row[c.key];
+        if(c.list){ el.setAttribute("list", c.list); }
+        el.addEventListener("input", function(){
+          fuAutosize(el);
+          row[c.key] = el.value;
+          clearTimeout(fuSaveTimers[row.id + c.key]);
+          fuSaveTimers[row.id + c.key] = setTimeout(function(){ fuSave(row, c.key, el); }, 500);
+        });
+        el.addEventListener("blur", function(){
+          var k = row.id + c.key;
+          if(fuSaveTimers[k]){ clearTimeout(fuSaveTimers[k]); delete fuSaveTimers[k]; fuSave(row, c.key, el); }
+        });
+        el.addEventListener("keydown", function(e){
+          if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); el.blur(); }
+        });
+      }
+      el.className = "fu-cell";
+      el.setAttribute("aria-label", c.label);
+      td.appendChild(el);
+      tr.appendChild(td);
+    });
+
+    var act = document.createElement("td"); act.className = "fu-act no-print";
+    var del = document.createElement("button");
+    del.className = "fu-del"; del.type = "button"; del.setAttribute("aria-label", "Excluir item");
+    del.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+    del.addEventListener("click", function(){
+      var label = (row.descricao || row.rc_sl || "este item");
+      if(!window.confirm("Excluir \"" + label + "\" do follow-up?")) return;
+      fuRows = fuRows.filter(function(r){ return r.id !== row.id; });
+      renderFollowup();
+      db.from(FU_TABLE).delete().eq("id", row.id).then(function(res){
+        if(res.error) console.error("excluir follow-up falhou", res.error);
+      });
+    });
+    act.appendChild(del); tr.appendChild(act);
+    return tr;
+  }
+
+  function fuAddRow(){
+    var id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : "f" + Date.now() + Math.random().toString(16).slice(2);
+    var row = {id: id, seq: null};
+    FU_COLS.forEach(function(c){ row[c.key] = ""; });
+    fuRows.push(row);
+    fuFilter = ""; document.getElementById("fuSearch").value = "";
+    renderFollowup();
+    var first = document.querySelector('[data-fu-id="' + id + '"] .fu-cell');
+    if(first){ first.focus(); first.scrollIntoView({block:"center"}); }
+    db.from(FU_TABLE).insert({id: id}).select("seq").then(function(res){
+      if(res.error){ console.error("adicionar follow-up falhou", res.error); return; }
+      if(res.data && res.data[0]){
+        row.seq = res.data[0].seq;
+        var numEl = document.querySelector('[data-fu-id="' + id + '"] .fu-num');
+        if(numEl) numEl.textContent = row.seq;
+      }
+    });
+  }
+
+  function fetchFollowup(){
+    return db.from(FU_TABLE).select("*").order("seq", {ascending: true}).then(function(res){
+      if(res.error) throw res.error;
+      return res.data.map(fuRowFromDb);
+    });
+  }
+  // Remote change: only redraw if the data really differs from memory (our
+  // own saves echo back identical) and nobody is typing in a cell.
+  function refreshFollowup(){
+    return fetchFollowup().then(function(list){
+      if(JSON.stringify(list) === JSON.stringify(fuRows)) return;
+      if(fuFocusInside()){ return; }
+      fuRows = list;
+      renderFollowup();
+    }).catch(function(err){ console.error("atualizar follow-up falhou", err); });
+  }
+  function initFollowup(){
+    document.getElementById("fuAdd").addEventListener("click", fuAddRow);
+    document.getElementById("fuSearch").addEventListener("input", function(e){
+      fuFilter = e.target.value.trim().toLowerCase();
+      renderFollowup();
+    });
+    fetchFollowup().then(function(list){
+      fuRows = list; renderFollowup();
+    }).catch(function(err){
+      console.error("carregar follow-up falhou", err);
+      renderFollowup();
+    });
+    db.channel("jarvis-followup-changes")
+      .on("postgres_changes", { event: "*", schema: "public", table: FU_TABLE }, function(){ refreshFollowup(); })
+      .subscribe();
+  }
+
   // tab switching
   var tabBtns = document.querySelectorAll(".tab-btn");
   var tabPanels = document.querySelectorAll(".tab-panel");
@@ -2812,7 +3057,7 @@
   });
   var savedTab = null;
   try{ savedTab = localStorage.getItem(TAB_KEY); }catch(e){}
-  if(savedTab === "kanban" || savedTab === "acabativas"){ activateTab(savedTab); }
+  if(savedTab === "kanban" || savedTab === "acabativas" || savedTab === "followup"){ activateTab(savedTab); }
 
   function tickClock(){
     var d = new Date();
@@ -2885,6 +3130,7 @@
   }
 
   setSyncStatus("connecting");
+  initFollowup();
   migrateLocalOnce().then(function(){
     return fetchTasks();
   }).then(function(list){
