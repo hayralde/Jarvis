@@ -96,11 +96,12 @@
   .wrap:has(#panel-kanban.active){max-width:1225px;}
 
   /* tabs */
-  .tabbar{display:flex;gap:24px;margin:0 0 32px 0;border-bottom:1px solid var(--border);}
+  .tabbar{display:flex;gap:24px;margin:0 0 32px 0;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;}
+  .tabbar::-webkit-scrollbar{display:none;}
   .tab-btn{
     background:transparent;border:none;border-bottom:2px solid transparent;
     color:var(--text-dimmer);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
-    padding:0 0 10px 0;margin-bottom:-1px;cursor:pointer;font-family:'IBM Plex Mono',monospace;
+    padding:0 0 10px 0;margin-bottom:-1px;cursor:pointer;font-family:'IBM Plex Mono',monospace;white-space:nowrap;flex:0 0 auto;
   }
   .tab-btn:hover{color:var(--text-dim);}
   .tab-btn.active{color:var(--text);border-bottom-color:var(--focus);}
@@ -208,28 +209,73 @@
   }
   .history-item-del:hover{border-color:var(--red);color:var(--red);}
 
-  /* Follow-up tab: spreadsheet-style table, every cell is an input */
-  .fu-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:14px;}
+  /* Follow-up tab: purchase-monitoring cards, every field editable */
+  .wrap:has(#panel-followup.active){max-width:1225px;}
+  .fu-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:16px;}
   .fu-tools{display:flex;gap:8px;align-items:center;}
   .fu-search{background:var(--panel);border:1px solid var(--border-bright);color:var(--text);padding:7px 10px;font-size:12px;font-family:'IBM Plex Mono',monospace;width:170px;}
   .fu-search:focus{outline:none;border-color:var(--focus);}
   .fu-add{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:8px 14px;cursor:pointer;border:1px solid var(--border-bright);background:transparent;color:var(--text-dim);}
   .fu-add:hover{color:var(--text);border-color:var(--text-dim);}
-  .fu-wrap{overflow-x:auto;border:1px solid var(--border);background:var(--panel);}
-  .fu-table{border-collapse:collapse;width:100%;min-width:1500px;font-size:12.5px;}
-  .fu-table th{position:sticky;top:0;background:var(--bg);text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);padding:8px 6px;border-bottom:1px solid var(--border-bright);border-right:1px solid var(--border);white-space:nowrap;}
-  .fu-table td{padding:0;border-bottom:1px solid var(--border);border-right:1px solid var(--border);vertical-align:top;}
-  .fu-table tr:hover td{background:rgba(0,0,0,.02);}
-  .fu-table .fu-num{width:44px;text-align:center;color:var(--text-dimmer);font-family:'IBM Plex Mono',monospace;font-size:10.5px;padding:8px 4px;}
-  .fu-table .fu-act{width:34px;text-align:center;border-right:0;}
-  .fu-cell{display:block;width:100%;box-sizing:border-box;border:0;background:transparent;color:var(--text);font:inherit;padding:8px 6px;margin:0;resize:none;overflow:hidden;line-height:1.4;min-height:34px;}
-  .fu-cell:focus{outline:2px solid var(--focus);outline-offset:-2px;background:var(--bg);}
+
+  .fu-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:8px;margin-bottom:16px;}
+  .fu-kpi{background:var(--panel);border:1px solid var(--border);border-top:3px solid var(--border-bright);padding:9px 11px;text-align:left;cursor:pointer;font:inherit;color:var(--text);}
+  .fu-kpi:hover{border-color:var(--border-bright);}
+  .fu-kpi.active{background:var(--panel-hi);border-color:var(--text-dim);}
+  .fu-kpi-n{display:block;font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;line-height:1.1;}
+  .fu-kpi-l{display:block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-top:3px;}
+  .fu-kpi[data-k="none"]{border-top-color:var(--grey);}
+  .fu-kpi[data-k="APROVAÇÃO"]{border-top-color:var(--amber);}
+  .fu-kpi[data-k="PEDIDO"],.fu-kpi[data-k="EM TRÂNSITO"]{border-top-color:#2f6b8a;}
+  .fu-kpi[data-k="RECEBIDO"]{border-top-color:var(--green);}
+  .fu-kpi[data-k="late"]{border-top-color:var(--red);}
+  .fu-kpi[data-k="late"] .fu-kpi-n{color:var(--red);}
+  .fu-kpi.zero .fu-kpi-n{color:var(--text-dimmer);}
+
+  .fu-card{background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--border-bright);padding:10px 14px 12px;margin-bottom:8px;}
+  .fu-card[data-st="none"]{border-left-color:var(--grey);}
+  .fu-card[data-st="APROVAÇÃO"]{border-left-color:var(--amber);}
+  .fu-card[data-st="PEDIDO"],.fu-card[data-st="EM TRÂNSITO"]{border-left-color:#2f6b8a;}
+  .fu-card[data-st="RECEBIDO"]{border-left-color:var(--green);}
+  .fu-card.late{background:var(--red-dim);}
+  .fu-top{display:grid;grid-template-columns:auto minmax(0,1fr) 190px 150px auto;gap:10px;align-items:center;}
+  .fu-seq{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:var(--text-dimmer);min-width:28px;}
+  .fu-fields{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px 14px;margin-top:8px;}
+  .fu-fields.fu-extra{grid-template-columns:repeat(7,minmax(0,1fr));padding-top:8px;border-top:1px dashed var(--border);}
+  .fu-field{min-width:0;}
+  .fu-field.span2{grid-column:span 2;}
+  .fu-field label{display:block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dimmer);margin-bottom:1px;}
+  .fu-cell{display:block;width:100%;border:0;border-bottom:1px solid transparent;background:transparent;color:var(--text);font:inherit;font-size:13px;padding:3px 2px;margin:0;resize:none;overflow:hidden;line-height:1.4;border-radius:0;}
+  .fu-field .fu-cell{border-bottom-color:var(--border);}
+  .fu-cell::placeholder{color:var(--text-dimmer);opacity:.7;}
+  .fu-cell:hover{background:rgba(0,0,0,.025);}
+  .fu-cell:focus{outline:none;border-bottom-color:var(--focus);background:var(--bg);}
+  .fu-desc{font-size:14.5px;font-weight:600;}
+  .fu-emp{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--text-dim);}
+  select.fu-cell{cursor:pointer;}
+  select.fu-status{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 6px;border:1px solid var(--border-bright);background:var(--grey-dim);color:var(--grey);}
+  .fu-card[data-st="APROVAÇÃO"] select.fu-status{background:var(--amber-dim);color:var(--amber);border-color:var(--amber);}
+  .fu-card[data-st="PEDIDO"] select.fu-status,.fu-card[data-st="EM TRÂNSITO"] select.fu-status{background:#e1edf3;color:#2f6b8a;border-color:#2f6b8a;}
+  .fu-card[data-st="RECEBIDO"] select.fu-status{background:var(--green-dim);color:var(--green);border-color:var(--green);}
+  .fu-field.fu-yes .fu-cell{color:var(--green);font-weight:700;}
+  .fu-field.fu-no .fu-cell{color:var(--red);font-weight:700;}
+  .fu-field.fu-late .fu-cell{color:var(--red);font-weight:700;}
   .fu-saving{box-shadow:inset 0 -2px 0 var(--amber);}
-  .fu-del{width:22px;height:22px;border:1px solid var(--border-bright);background:transparent;color:var(--text-dim);cursor:pointer;padding:0;margin-top:5px;display:inline-flex;align-items:center;justify-content:center;}
-  .fu-del:hover{border-color:var(--red);color:var(--red);}
-  .fu-table td[data-col="aprovado"] .fu-cell{font-weight:700;}
-  .fu-table td.fu-yes .fu-cell{color:var(--green);}
-  .fu-table td.fu-no .fu-cell{color:var(--red);}
+  .fu-actions{display:flex;gap:5px;}
+  .fu-icon{width:24px;height:24px;border:1px solid var(--border-bright);background:transparent;color:var(--text-dim);cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1;}
+  .fu-icon:hover{color:var(--text);border-color:var(--text-dim);}
+  .fu-icon.fu-del:hover{border-color:var(--red);color:var(--red);}
+  @media (max-width:900px){
+    .fu-top{grid-template-columns:auto minmax(0,1fr) auto;}
+    .fu-top .fu-status-wrap{order:1;}
+    .fu-top .fu-actions{order:2;}
+    .fu-top .fu-desc{order:3;grid-column:1 / -1;}
+    .fu-top .fu-emp-wrap{order:4;grid-column:1 / -1;}
+    .fu-fields,.fu-fields.fu-extra{grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+  @media (max-width:560px){
+    .fu-fields,.fu-fields.fu-extra{grid-template-columns:repeat(2,minmax(0,1fr));}
+  }
   .add-row{margin-bottom:2px;}
   .add-trigger{
     width:100%;background:transparent;border:1px dashed var(--border-bright);color:var(--text-dimmer);
@@ -1189,16 +1235,16 @@
     <div class="tab-panel" id="panel-followup" data-panel="followup">
       <div class="fu-head no-print">
         <div>
-          <p class="history-head-title">Follow-up</p>
-          <p class="history-head-desc">Acompanhamento de consertos, compras e pedidos. Clique em qualquer célula para editar — salva sozinho e sincroniza entre dispositivos.</p>
+          <p class="history-head-title">Follow-up de compras</p>
+          <p class="history-head-desc">Acompanhamento de consertos, compras e pedidos. Clique em qualquer campo para editar — salva sozinho e sincroniza entre dispositivos.</p>
         </div>
         <div class="fu-tools">
-          <input id="fuSearch" class="fu-search" type="search" placeholder="filtrar..." aria-label="Filtrar follow-up">
+          <input id="fuSearch" class="fu-search" type="search" placeholder="buscar..." aria-label="Buscar no follow-up">
           <button id="fuAdd" class="fu-add" type="button">+ novo item</button>
         </div>
       </div>
-      <div class="fu-wrap"><div id="followupBody"></div></div>
-      <datalist id="fuStatusOptions"></datalist>
+      <div id="fuKpis" class="fu-kpis no-print"></div>
+      <div id="followupBody"></div>
     </div>
 
     <div class="tab-panel" id="panel-historico" data-panel="historico">
@@ -2819,32 +2865,36 @@
     });
   });
 
-  // ---- Follow-up tab: editable table backed by jarvis_followup ----
+  // ---- Follow-up tab: purchase-monitoring cards backed by jarvis_followup ----
   var FU_TABLE = "jarvis_followup";
-  var FU_COLS = [
-    {key:"empresa",    label:"Empresa",     w:110},
-    {key:"descricao",  label:"Descrição",   w:210},
-    {key:"nf_saida",   label:"NF saída",    w:90},
-    {key:"cc",         label:"C/C",         w:70},
-    {key:"tag",        label:"TAG",         w:90},
-    {key:"n_serie",    label:"Nº série",    w:100},
-    {key:"orcamento",  label:"Orçamento",   w:120},
-    {key:"aprovado",   label:"Aprovado",    w:90, select:["","SIM","NÃO"]},
-    {key:"rc_sl",      label:"RC/SL",       w:100},
-    {key:"status",     label:"Status",      w:100, list:"fuStatusOptions"},
-    {key:"pedido_rrp", label:"Pedido RRP",  w:100},
-    {key:"prazo",      label:"Prazo",       w:90},
-    {key:"frete",      label:"Frete",       w:80},
-    {key:"nf_retorno", label:"NF retorno",  w:100},
-    {key:"observacao", label:"Observação",  w:180}
+  var FU_STATUSES = ["COTAÇÃO","APROVAÇÃO","PEDIDO","EM TRÂNSITO","RECEBIDO"];
+  var FU_KEYS = ["empresa","descricao","nf_saida","cc","tag","n_serie","orcamento","aprovado","rc_sl","status","pedido_rrp","prazo","frete","nf_retorno","observacao"];
+  // detail fields shown on every card; the rest sit behind the "+" toggle
+  var FU_MAIN = [
+    {key:"rc_sl",      label:"RC/SL"},
+    {key:"orcamento",  label:"Orçamento"},
+    {key:"aprovado",   label:"Aprovado", select:["","SIM","NÃO"]},
+    {key:"pedido_rrp", label:"Pedido RRP"},
+    {key:"prazo",      label:"Prazo", date:true},
+    {key:"observacao", label:"Observação", span2:true}
+  ];
+  var FU_EXTRA = [
+    {key:"nf_saida",   label:"NF saída"},
+    {key:"cc",         label:"C/C"},
+    {key:"tag",        label:"TAG"},
+    {key:"n_serie",    label:"Nº série"},
+    {key:"frete",      label:"Frete"},
+    {key:"nf_retorno", label:"NF retorno"}
   ];
   var fuRows = [];
   var fuFilter = "";
+  var fuStatusFilter = "";
+  var fuOpenExtra = {};
   var fuSaveTimers = {};
 
   function fuRowFromDb(r){
     var o = {id: r.id, seq: r.seq};
-    FU_COLS.forEach(function(c){ o[c.key] = r[c.key] || ""; });
+    FU_KEYS.forEach(function(k){ o[k] = r[k] || ""; });
     return o;
   }
   function fuFocusInside(){
@@ -2854,115 +2904,196 @@
   function fuAutosize(el){
     if(el.tagName !== "TEXTAREA") return;
     el.style.height = "auto";
-    el.style.height = el.scrollHeight + "px";
+    // hidden tab => scrollHeight is 0; keep auto and re-measure on tab show
+    if(el.scrollHeight > 0) el.style.height = el.scrollHeight + "px";
   }
-  function fuColorApproved(td, val){
-    td.classList.toggle("fu-yes", val === "SIM");
-    td.classList.toggle("fu-no", val === "NÃO");
+  function fuStKey(row){ return (row.status || "").trim().toUpperCase() || "none"; }
+  function fuToday(){
+    var d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
   }
-
+  function fuIsLate(row){
+    return !!row.prazo && row.prazo < fuToday() && fuStKey(row) !== "RECEBIDO";
+  }
   function fuSave(row, key, el){
     var patch = {}; patch[key] = row[key];
-    el.classList.add("fu-saving");
+    if(el) el.classList.add("fu-saving");
     db.from(FU_TABLE).update(patch).eq("id", row.id).then(function(res){
-      el.classList.remove("fu-saving");
+      if(el) el.classList.remove("fu-saving");
       if(res.error){ console.error("salvar follow-up falhou", res.error); setSyncStatus("offline"); }
     });
   }
-
-  function fuMatches(row){
+  function fuMatchesText(row){
     if(!fuFilter) return true;
-    return FU_COLS.some(function(c){ return (row[c.key] || "").toLowerCase().indexOf(fuFilter) !== -1; });
+    return FU_KEYS.some(function(k){ return (row[k] || "").toLowerCase().indexOf(fuFilter) !== -1; });
+  }
+  function fuMatchesStatus(row){
+    if(!fuStatusFilter) return true;
+    if(fuStatusFilter === "late") return fuIsLate(row);
+    return fuStKey(row) === fuStatusFilter;
+  }
+
+  function renderFuKpis(){
+    var box = document.getElementById("fuKpis");
+    if(!box) return;
+    var counts = {all: fuRows.length, none: 0, late: 0};
+    FU_STATUSES.forEach(function(k){ counts[k] = 0; });
+    fuRows.forEach(function(r){
+      var k = fuStKey(r);
+      counts[k] = (counts[k] || 0) + 1;
+      if(fuIsLate(r)) counts.late++;
+    });
+    var defs = [{k:"", l:"Todos", n:counts.all}, {k:"none", l:"Sem status", n:counts.none}];
+    FU_STATUSES.forEach(function(k){ defs.push({k:k, l:k.charAt(0) + k.slice(1).toLowerCase(), n:counts[k]}); });
+    defs.push({k:"late", l:"Atrasados", n:counts.late});
+    box.innerHTML = "";
+    defs.forEach(function(d){
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "fu-kpi" + (fuStatusFilter === d.k ? " active" : "") + (d.n === 0 ? " zero" : "");
+      b.setAttribute("data-k", d.k || "all");
+      b.innerHTML = '<span class="fu-kpi-n"></span><span class="fu-kpi-l"></span>';
+      b.firstChild.textContent = d.n;
+      b.lastChild.textContent = d.l;
+      b.addEventListener("click", function(){
+        fuStatusFilter = (fuStatusFilter === d.k) ? "" : d.k;
+        renderFollowup();
+      });
+      box.appendChild(b);
+    });
   }
 
   function renderFollowup(){
     var body = document.getElementById("followupBody");
     if(!body) return;
     body.innerHTML = "";
-
-    var table = document.createElement("table");
-    table.className = "fu-table";
-    var thead = document.createElement("thead");
-    var hr = document.createElement("tr");
-    var th0 = document.createElement("th"); th0.textContent = "#"; th0.className = "fu-num"; hr.appendChild(th0);
-    FU_COLS.forEach(function(c){
-      var th = document.createElement("th"); th.textContent = c.label; th.style.minWidth = c.w + "px"; hr.appendChild(th);
-    });
-    var thA = document.createElement("th"); thA.className = "fu-act no-print"; hr.appendChild(thA);
-    thead.appendChild(hr); table.appendChild(thead);
-
-    var tbody = document.createElement("tbody");
-    var shown = fuRows.filter(fuMatches);
-    shown.forEach(function(row){ tbody.appendChild(fuRenderRow(row)); });
-    table.appendChild(tbody);
-    body.appendChild(table);
-
+    renderFuKpis();
+    var shown = fuRows.filter(function(r){ return fuMatchesText(r) && fuMatchesStatus(r); });
+    shown.forEach(function(row){ body.appendChild(fuRenderCard(row)); });
     if(shown.length === 0){
-      body.appendChild(emptyState(!dataLoaded ? "— carregando... —" : (fuRows.length ? "— nenhum item no filtro —" : "— nenhum item — clique em \"+ novo item\" —")));
+      body.appendChild(emptyState(!dataLoaded && fuRows.length === 0 ? "— carregando... —" :
+        (fuRows.length ? "— nenhum item neste filtro —" : "— nenhum item — clique em \"+ novo item\" —")));
     }
-
-    var dl = document.getElementById("fuStatusOptions");
-    var seen = {}; dl.innerHTML = "";
-    fuRows.forEach(function(r){
-      var v = (r.status || "").trim();
-      if(v && !seen[v]){ seen[v] = true; var o = document.createElement("option"); o.value = v; dl.appendChild(o); }
-    });
-    table.querySelectorAll("textarea.fu-cell").forEach(fuAutosize);
+    body.querySelectorAll("textarea.fu-cell").forEach(fuAutosize);
   }
 
-  function fuRenderRow(row){
-    var tr = document.createElement("tr");
-    tr.setAttribute("data-fu-id", row.id);
-    var n = document.createElement("td"); n.className = "fu-num"; n.textContent = row.seq || ""; tr.appendChild(n);
-
-    FU_COLS.forEach(function(c){
-      var td = document.createElement("td");
-      td.setAttribute("data-col", c.key);
-      var el;
-      if(c.select){
-        el = document.createElement("select");
-        c.select.forEach(function(v){
-          var o = document.createElement("option"); o.value = v; o.textContent = v; el.appendChild(o);
-        });
-        if(c.select.indexOf(row[c.key]) === -1){
-          var extra = document.createElement("option"); extra.value = row[c.key]; extra.textContent = row[c.key]; el.appendChild(extra);
-        }
-        el.value = row[c.key];
-        fuColorApproved(td, row[c.key]);
-        el.addEventListener("change", function(){
-          row[c.key] = el.value; fuColorApproved(td, el.value); fuSave(row, c.key, el);
-        });
-      } else {
-        el = document.createElement("textarea");
-        el.rows = 1;
-        el.value = row[c.key];
-        if(c.list){ el.setAttribute("list", c.list); }
-        el.addEventListener("input", function(){
-          fuAutosize(el);
-          row[c.key] = el.value;
-          clearTimeout(fuSaveTimers[row.id + c.key]);
-          fuSaveTimers[row.id + c.key] = setTimeout(function(){ fuSave(row, c.key, el); }, 500);
-        });
-        el.addEventListener("blur", function(){
-          var k = row.id + c.key;
-          if(fuSaveTimers[k]){ clearTimeout(fuSaveTimers[k]); delete fuSaveTimers[k]; fuSave(row, c.key, el); }
-        });
-        el.addEventListener("keydown", function(e){
-          if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); el.blur(); }
-        });
+  function fuField(row, def, card){
+    var wrap = document.createElement("div");
+    wrap.className = "fu-field" + (def.span2 ? " span2" : "");
+    var lab = document.createElement("label");
+    lab.textContent = def.label;
+    wrap.appendChild(lab);
+    var el;
+    function paint(){
+      wrap.classList.toggle("fu-yes", def.key === "aprovado" && row.aprovado === "SIM");
+      wrap.classList.toggle("fu-no", def.key === "aprovado" && row.aprovado === "NÃO");
+      if(def.date) wrap.classList.toggle("fu-late", fuIsLate(row));
+    }
+    if(def.select){
+      el = document.createElement("select");
+      def.select.forEach(function(v){
+        var o = document.createElement("option"); o.value = v; o.textContent = v || "—"; el.appendChild(o);
+      });
+      if(def.select.indexOf(row[def.key]) === -1){
+        var extra = document.createElement("option"); extra.value = row[def.key]; extra.textContent = row[def.key]; el.appendChild(extra);
       }
-      el.className = "fu-cell";
-      el.setAttribute("aria-label", c.label);
-      td.appendChild(el);
-      tr.appendChild(td);
-    });
+      el.value = row[def.key];
+      el.addEventListener("change", function(){ row[def.key] = el.value; paint(); fuSave(row, def.key, el); });
+    } else if(def.date){
+      el = document.createElement("input");
+      el.type = "date";
+      el.value = row[def.key];
+      el.addEventListener("change", function(){
+        row[def.key] = el.value; paint(); card.classList.toggle("late", fuIsLate(row));
+        fuSave(row, def.key, el); renderFuKpis();
+      });
+    } else {
+      el = document.createElement("textarea");
+      el.rows = 1;
+      el.value = row[def.key];
+      el.placeholder = "—";
+      fuWireText(el, row, def.key);
+    }
+    el.className = "fu-cell";
+    el.setAttribute("aria-label", def.label);
+    wrap.appendChild(el);
+    paint();
+    return wrap;
+  }
 
-    var act = document.createElement("td"); act.className = "fu-act no-print";
+  function fuWireText(el, row, key){
+    el.addEventListener("input", function(){
+      fuAutosize(el);
+      row[key] = el.value;
+      clearTimeout(fuSaveTimers[row.id + key]);
+      fuSaveTimers[row.id + key] = setTimeout(function(){ fuSave(row, key, el); }, 500);
+    });
+    el.addEventListener("blur", function(){
+      var k = row.id + key;
+      if(fuSaveTimers[k]){ clearTimeout(fuSaveTimers[k]); delete fuSaveTimers[k]; fuSave(row, key, el); }
+    });
+    el.addEventListener("keydown", function(e){
+      if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); el.blur(); }
+    });
+  }
+
+  function fuRenderCard(row){
+    var card = document.createElement("div");
+    card.className = "fu-card" + (fuIsLate(row) ? " late" : "");
+    card.setAttribute("data-fu-id", row.id);
+    card.setAttribute("data-st", fuStKey(row));
+
+    var top = document.createElement("div");
+    top.className = "fu-top";
+
+    var seq = document.createElement("span");
+    seq.className = "fu-seq";
+    seq.textContent = row.seq ? "#" + row.seq : "";
+    top.appendChild(seq);
+
+    var desc = document.createElement("textarea");
+    desc.rows = 1; desc.value = row.descricao; desc.placeholder = "descrição do item";
+    desc.className = "fu-cell fu-desc"; desc.setAttribute("aria-label", "Descrição");
+    fuWireText(desc, row, "descricao");
+    top.appendChild(desc);
+
+    var emp = document.createElement("textarea");
+    emp.rows = 1; emp.value = row.empresa; emp.placeholder = "empresa / fornecedor";
+    emp.className = "fu-cell fu-emp"; emp.setAttribute("aria-label", "Empresa");
+    fuWireText(emp, row, "empresa");
+    var empWrap = document.createElement("div"); empWrap.className = "fu-emp-wrap"; empWrap.appendChild(emp);
+    top.appendChild(empWrap);
+
+    var st = document.createElement("select");
+    st.className = "fu-cell fu-status"; st.setAttribute("aria-label", "Status");
+    var blank = document.createElement("option"); blank.value = ""; blank.textContent = "SEM STATUS"; st.appendChild(blank);
+    FU_STATUSES.forEach(function(v){ var o = document.createElement("option"); o.value = v; o.textContent = v; st.appendChild(o); });
+    var cur = (row.status || "").trim();
+    if(cur && FU_STATUSES.indexOf(cur.toUpperCase()) === -1){
+      var ex = document.createElement("option"); ex.value = row.status; ex.textContent = row.status; st.appendChild(ex);
+    }
+    st.value = FU_STATUSES.indexOf(cur.toUpperCase()) !== -1 ? cur.toUpperCase() : row.status;
+    st.addEventListener("change", function(){
+      row.status = st.value;
+      card.setAttribute("data-st", fuStKey(row));
+      card.classList.toggle("late", fuIsLate(row));
+      fuSave(row, "status", st);
+      renderFuKpis();
+    });
+    var stWrap = document.createElement("div"); stWrap.className = "fu-status-wrap"; stWrap.appendChild(st);
+    top.appendChild(stWrap);
+
+    var act = document.createElement("div"); act.className = "fu-actions no-print";
+    var tog = document.createElement("button");
+    tog.type = "button"; tog.className = "fu-icon";
+    tog.title = "Mais campos (NF, C/C, TAG, nº série, frete)";
+    tog.setAttribute("aria-label", "Mais campos");
+    act.appendChild(tog);
     var del = document.createElement("button");
-    del.className = "fu-del"; del.type = "button"; del.setAttribute("aria-label", "Excluir item");
+    del.className = "fu-icon fu-del"; del.type = "button"; del.setAttribute("aria-label", "Excluir item");
     del.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
     del.addEventListener("click", function(){
-      var label = (row.descricao || row.rc_sl || "este item");
+      var label = row.descricao || row.rc_sl || "este item";
       if(!window.confirm("Excluir \"" + label + "\" do follow-up?")) return;
       fuRows = fuRows.filter(function(r){ return r.id !== row.id; });
       renderFollowup();
@@ -2970,25 +3101,51 @@
         if(res.error) console.error("excluir follow-up falhou", res.error);
       });
     });
-    act.appendChild(del); tr.appendChild(act);
-    return tr;
+    act.appendChild(del);
+    top.appendChild(act);
+    card.appendChild(top);
+
+    var main = document.createElement("div");
+    main.className = "fu-fields";
+    FU_MAIN.forEach(function(d){ main.appendChild(fuField(row, d, card)); });
+    card.appendChild(main);
+
+    var extra = document.createElement("div");
+    extra.className = "fu-fields fu-extra";
+    FU_EXTRA.forEach(function(d){ extra.appendChild(fuField(row, d, card)); });
+    card.appendChild(extra);
+
+    function syncExtra(){
+      var hasValue = FU_EXTRA.some(function(d){ return !!row[d.key]; });
+      var open = fuOpenExtra[row.id] !== undefined ? fuOpenExtra[row.id] : hasValue;
+      extra.hidden = !open;
+      tog.textContent = open ? "−" : "+";
+    }
+    tog.addEventListener("click", function(){
+      var open = extra.hidden;
+      fuOpenExtra[row.id] = open;
+      syncExtra();
+    });
+    syncExtra();
+    return card;
   }
 
   function fuAddRow(){
     var id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : "f" + Date.now() + Math.random().toString(16).slice(2);
     var row = {id: id, seq: null};
-    FU_COLS.forEach(function(c){ row[c.key] = ""; });
+    FU_KEYS.forEach(function(k){ row[k] = ""; });
     fuRows.push(row);
-    fuFilter = ""; document.getElementById("fuSearch").value = "";
+    fuFilter = ""; fuStatusFilter = "";
+    document.getElementById("fuSearch").value = "";
     renderFollowup();
-    var first = document.querySelector('[data-fu-id="' + id + '"] .fu-cell');
+    var first = document.querySelector('[data-fu-id="' + id + '"] .fu-desc');
     if(first){ first.focus(); first.scrollIntoView({block:"center"}); }
     db.from(FU_TABLE).insert({id: id}).select("seq").then(function(res){
       if(res.error){ console.error("adicionar follow-up falhou", res.error); return; }
       if(res.data && res.data[0]){
         row.seq = res.data[0].seq;
-        var numEl = document.querySelector('[data-fu-id="' + id + '"] .fu-num');
-        if(numEl) numEl.textContent = row.seq;
+        var n = document.querySelector('[data-fu-id="' + id + '"] .fu-seq');
+        if(n) n.textContent = "#" + row.seq;
       }
     });
   }
@@ -3000,7 +3157,7 @@
     });
   }
   // Remote change: only redraw if the data really differs from memory (our
-  // own saves echo back identical) and nobody is typing in a cell.
+  // own saves echo back identical) and nobody is typing in a field.
   function refreshFollowup(){
     return fetchFollowup().then(function(list){
       if(JSON.stringify(list) === JSON.stringify(fuRows)) return;
@@ -3015,11 +3172,11 @@
       fuFilter = e.target.value.trim().toLowerCase();
       renderFollowup();
     });
+    renderFollowup();
     fetchFollowup().then(function(list){
       fuRows = list; renderFollowup();
     }).catch(function(err){
       console.error("carregar follow-up falhou", err);
-      renderFollowup();
     });
     db.channel("jarvis-followup-changes")
       .on("postgres_changes", { event: "*", schema: "public", table: FU_TABLE }, function(){ refreshFollowup(); })
@@ -3043,6 +3200,7 @@
     });
     try{ localStorage.setItem(TAB_KEY, tabKey); }catch(e){}
     if(tabKey === "onepage" || tabKey === "onepagerrp") renderOnePage();
+    if(tabKey === "followup"){ document.querySelectorAll("#followupBody textarea.fu-cell").forEach(fuAutosize); }
   }
   // Re-fit when the viewport width changes the wrapping, and right before
   // printing so the paper copy is measured at its own layout.
