@@ -228,6 +228,7 @@
   .fu-kpi[data-k="APROVAÇÃO"]{border-top-color:var(--amber);}
   .fu-kpi[data-k="PEDIDO"],.fu-kpi[data-k="EM TRÂNSITO"]{border-top-color:#2f6b8a;}
   .fu-kpi[data-k="RECEBIDO"]{border-top-color:var(--green);}
+  .fu-kpi[data-k="PARADO NO COMPRAS"]{border-top-color:var(--red);}
   .fu-kpi[data-k="late"]{border-top-color:var(--red);}
   .fu-kpi[data-k="late"] .fu-kpi-n{color:var(--red);}
   .fu-kpi.zero .fu-kpi-n{color:var(--text-dimmer);}
@@ -236,6 +237,7 @@
   .fu-card[data-st="none"]{border-left-color:var(--grey);}
   .fu-card[data-st="APROVAÇÃO"]{border-left-color:var(--amber);}
   .fu-card[data-st="PEDIDO"],.fu-card[data-st="EM TRÂNSITO"]{border-left-color:#2f6b8a;}
+  .fu-card[data-st="PARADO NO COMPRAS"]{border-left-color:var(--red);}
   .fu-card[data-st="RECEBIDO"]{border-left-color:var(--green);}
   .fu-card.late{background:var(--red-dim);}
   .fu-top{display:grid;grid-template-columns:auto minmax(0,1fr) 190px 150px auto;gap:10px;align-items:center;}
@@ -256,6 +258,7 @@
   select.fu-status{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 6px;border:1px solid var(--border-bright);background:var(--grey-dim);color:var(--grey);}
   .fu-card[data-st="APROVAÇÃO"] select.fu-status{background:var(--amber-dim);color:var(--amber);border-color:var(--amber);}
   .fu-card[data-st="PEDIDO"] select.fu-status,.fu-card[data-st="EM TRÂNSITO"] select.fu-status{background:#e1edf3;color:#2f6b8a;border-color:#2f6b8a;}
+  .fu-card[data-st="PARADO NO COMPRAS"] select.fu-status{background:var(--red-dim);color:var(--red);border-color:var(--red);}
   .fu-card[data-st="RECEBIDO"] select.fu-status{background:var(--green-dim);color:var(--green);border-color:var(--green);}
   .fu-field.fu-yes .fu-cell{color:var(--green);font-weight:700;}
   .fu-field.fu-no .fu-cell{color:var(--red);font-weight:700;}
@@ -2867,7 +2870,7 @@
 
   // ---- Follow-up tab: purchase-monitoring cards backed by jarvis_followup ----
   var FU_TABLE = "jarvis_followup";
-  var FU_STATUSES = ["COTAÇÃO","APROVAÇÃO","PEDIDO","EM TRÂNSITO","RECEBIDO"];
+  var FU_STATUSES = ["COTAÇÃO","APROVAÇÃO","PARADO NO COMPRAS","PEDIDO","EM TRÂNSITO","RECEBIDO"];
   var FU_KEYS = ["empresa","descricao","nf_saida","cc","tag","n_serie","orcamento","aprovado","rc_sl","status","pedido_rrp","prazo","frete","nf_retorno","observacao"];
   // detail fields shown on every card; the rest sit behind the "+" toggle
   var FU_MAIN = [
