@@ -2871,12 +2871,12 @@
   // ---- Follow-up tab: purchase-monitoring cards backed by jarvis_followup ----
   var FU_TABLE = "jarvis_followup";
   var FU_STATUSES = ["COTAÇÃO","APROVAÇÃO","PARADO NO COMPRAS","PEDIDO","EM TRÂNSITO","RECEBIDO"];
-  var FU_KEYS = ["empresa","descricao","nf_saida","cc","tag","n_serie","orcamento","aprovado","rc_sl","status","pedido_rrp","prazo","frete","nf_retorno","observacao"];
+  var FU_KEYS = ["empresa","descricao","nf_saida","cc","tag","n_serie","orcamento","pedido","rc_sl","status","pedido_rrp","prazo","frete","nf_retorno","observacao"];
   // detail fields shown on every card; the rest sit behind the "+" toggle
   var FU_MAIN = [
     {key:"rc_sl",      label:"RC/SL"},
     {key:"orcamento",  label:"Orçamento"},
-    {key:"aprovado",   label:"Aprovado", select:["","SIM","NÃO"]},
+    {key:"pedido",     label:"Pedido"},
     {key:"pedido_rrp", label:"Pedido RRP"},
     {key:"prazo",      label:"Prazo", date:true},
     {key:"observacao", label:"Observação", span2:true}
@@ -2988,8 +2988,6 @@
     wrap.appendChild(lab);
     var el;
     function paint(){
-      wrap.classList.toggle("fu-yes", def.key === "aprovado" && row.aprovado === "SIM");
-      wrap.classList.toggle("fu-no", def.key === "aprovado" && row.aprovado === "NÃO");
       if(def.date) wrap.classList.toggle("fu-late", fuIsLate(row));
     }
     if(def.select){
