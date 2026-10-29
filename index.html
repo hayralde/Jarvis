@@ -235,6 +235,8 @@
   .fu-kpi[data-k="late"] .fu-kpi-n{color:var(--red);}
   .fu-kpi.zero .fu-kpi-n{color:var(--text-dimmer);}
 
+  .fu-note{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--text-dim);background:var(--panel-hi);border:1px solid var(--border);padding:7px 10px;margin:-6px 0 12px 0;}
+  .fu-hist-head{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--green);margin:0 0 10px 0;padding-bottom:6px;border-bottom:1px solid var(--border);}
   .fu-card{background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--border-bright);padding:10px 14px 12px;margin-bottom:8px;}
   /* whole card is tinted with its status colour */
   .fu-card[data-st="none"]{border-left-color:var(--grey);background:var(--grey-dim);}
@@ -1255,6 +1257,7 @@
         </div>
       </div>
       <div id="fuKpis" class="fu-kpis no-print"></div>
+      <p id="fuNote" class="fu-note no-print" hidden></p>
       <div id="followupBody"></div>
     </div>
 
@@ -2917,6 +2920,14 @@
     // hidden tab => scrollHeight is 0; keep auto and re-measure on tab show
     if(el.scrollHeight > 0) el.style.height = el.scrollHeight + "px";
   }
+  var fuNoteTimer = null;
+  function fuNote(msg){
+    var el = document.getElementById("fuNote");
+    if(!el) return;
+    el.textContent = msg; el.hidden = false;
+    clearTimeout(fuNoteTimer);
+    fuNoteTimer = setTimeout(function(){ el.hidden = true; }, 5000);
+  }
   function fuAutosizeAll(){
     document.querySelectorAll("#followupBody textarea.fu-cell").forEach(fuAutosize);
   }
@@ -2941,7 +2952,9 @@
     return FU_KEYS.some(function(k){ return (row[k] || "").toLowerCase().indexOf(fuFilter) !== -1; });
   }
   function fuMatchesStatus(row){
-    if(!fuStatusFilter) return true;
+    // RECEBIDO items live in the history: hidden from the active list and
+    // shown only when the "Recebido" counter is selected
+    if(!fuStatusFilter) return fuStKey(row) !== "RECEBIDO";
     if(fuStatusFilter === "late") return fuIsLate(row);
     return fuStKey(row) === fuStatusFilter;
   }
@@ -2949,11 +2962,12 @@
   function renderFuKpis(){
     var box = document.getElementById("fuKpis");
     if(!box) return;
-    var counts = {all: fuRows.length, none: 0, late: 0};
+    var counts = {all: 0, none: 0, late: 0};
     FU_STATUSES.forEach(function(k){ counts[k] = 0; });
     fuRows.forEach(function(r){
       var k = fuStKey(r);
       counts[k] = (counts[k] || 0) + 1;
+      if(k !== "RECEBIDO") counts.all++;
       if(fuIsLate(r)) counts.late++;
     });
     var defs = [{k:"", l:"Todos", n:counts.all}, {k:"none", l:"Sem status", n:counts.none}];
@@ -2982,10 +2996,16 @@
     body.innerHTML = "";
     renderFuKpis();
     var shown = fuRows.filter(function(r){ return fuMatchesText(r) && fuMatchesStatus(r); });
+    if(fuStatusFilter === "RECEBIDO"){
+      var hh = document.createElement("p");
+      hh.className = "fu-hist-head";
+      hh.textContent = "Histórico de follow-up — itens recebidos (" + shown.length + ")";
+      body.appendChild(hh);
+    }
     shown.forEach(function(row){ body.appendChild(fuRenderCard(row)); });
     if(shown.length === 0){
       body.appendChild(emptyState(!dataLoaded && fuRows.length === 0 ? "— carregando... —" :
-        (fuRows.length ? "— nenhum item neste filtro —" : "— nenhum item — clique em \"+ novo item\" —")));
+        (fuStatusFilter === "RECEBIDO" ? "— nenhum item recebido ainda —" : fuRows.length ? "— nenhum item neste filtro —" : "— nenhum item — clique em \"+ novo item\" —")));
     }
     body.querySelectorAll("textarea.fu-cell").forEach(fuAutosize);
   }
@@ -3089,7 +3109,16 @@
       card.setAttribute("data-st", fuStKey(row));
       card.classList.toggle("late", fuIsLate(row));
       fuSave(row, "status", st);
-      renderFuKpis();
+      if(!fuMatchesStatus(row)){
+        // moved to / out of the history: take it off this view
+        var wasReceived = fuStKey(row) === "RECEBIDO";
+        renderFollowup();
+        fuNote("Item " + (row.seq ? "#" + row.seq : "") + (wasReceived
+          ? " recebido — movido para o histórico (selecione \"Recebido\" para ver)."
+          : " voltou para a lista ativa."));
+      } else {
+        renderFuKpis();
+      }
     });
     var stWrap = document.createElement("div"); stWrap.className = "fu-status-wrap"; stWrap.appendChild(st);
     top.appendChild(stWrap);
