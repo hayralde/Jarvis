@@ -225,6 +225,7 @@
   .fu-kpi-n{display:block;font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;line-height:1.1;}
   .fu-kpi-l{display:block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-top:3px;}
   .fu-kpi[data-k="none"]{border-top-color:var(--grey);}
+  .fu-kpi[data-k="COTAÇÃO"]{border-top-color:#6b5b95;}
   .fu-kpi[data-k="APROVAÇÃO"]{border-top-color:var(--amber);}
   .fu-kpi[data-k="PEDIDO"],.fu-kpi[data-k="EM TRÂNSITO"]{border-top-color:#2f6b8a;}
   .fu-kpi[data-k="RECEBIDO"]{border-top-color:var(--green);}
@@ -234,12 +235,14 @@
   .fu-kpi.zero .fu-kpi-n{color:var(--text-dimmer);}
 
   .fu-card{background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--border-bright);padding:10px 14px 12px;margin-bottom:8px;}
-  .fu-card[data-st="none"]{border-left-color:var(--grey);}
-  .fu-card[data-st="APROVAÇÃO"]{border-left-color:var(--amber);}
-  .fu-card[data-st="PEDIDO"],.fu-card[data-st="EM TRÂNSITO"]{border-left-color:#2f6b8a;}
-  .fu-card[data-st="PARADO NO COMPRAS"]{border-left-color:var(--red);}
-  .fu-card[data-st="RECEBIDO"]{border-left-color:var(--green);}
-  .fu-card.late{background:var(--red-dim);}
+  /* whole card is tinted with its status colour */
+  .fu-card[data-st="none"]{border-left-color:var(--grey);background:var(--grey-dim);}
+  .fu-card[data-st="COTAÇÃO"]{border-left-color:#6b5b95;background:#ece8f4;}
+  .fu-card[data-st="APROVAÇÃO"]{border-left-color:var(--amber);background:var(--amber-dim);}
+  .fu-card[data-st="PEDIDO"],.fu-card[data-st="EM TRÂNSITO"]{border-left-color:#2f6b8a;background:#e1edf3;}
+  .fu-card[data-st="PARADO NO COMPRAS"]{border-left-color:var(--red);background:var(--red-dim);}
+  .fu-card[data-st="RECEBIDO"]{border-left-color:var(--green);background:var(--green-dim);}
+  .fu-card.late{box-shadow:inset 0 0 0 1px var(--red);}
   .fu-top{display:grid;grid-template-columns:auto minmax(0,1fr) 190px 150px auto;gap:10px;align-items:center;}
   .fu-seq{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:var(--text-dimmer);min-width:28px;}
   .fu-fields{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px 14px;margin-top:8px;}
@@ -255,11 +258,12 @@
   .fu-desc{font-size:14.5px;font-weight:600;}
   .fu-emp{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--text-dim);}
   select.fu-cell{cursor:pointer;}
-  select.fu-status{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 6px;border:1px solid var(--border-bright);background:var(--grey-dim);color:var(--grey);}
-  .fu-card[data-st="APROVAÇÃO"] select.fu-status{background:var(--amber-dim);color:var(--amber);border-color:var(--amber);}
-  .fu-card[data-st="PEDIDO"] select.fu-status,.fu-card[data-st="EM TRÂNSITO"] select.fu-status{background:#e1edf3;color:#2f6b8a;border-color:#2f6b8a;}
-  .fu-card[data-st="PARADO NO COMPRAS"] select.fu-status{background:var(--red-dim);color:var(--red);border-color:var(--red);}
-  .fu-card[data-st="RECEBIDO"] select.fu-status{background:var(--green-dim);color:var(--green);border-color:var(--green);}
+  select.fu-status{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 6px;border:1px solid var(--border-bright);background:var(--panel);color:var(--grey);}
+  .fu-card[data-st="COTAÇÃO"] select.fu-status{background:var(--panel);color:#6b5b95;border-color:#6b5b95;}
+  .fu-card[data-st="APROVAÇÃO"] select.fu-status{background:var(--panel);color:var(--amber);border-color:var(--amber);}
+  .fu-card[data-st="PEDIDO"] select.fu-status,.fu-card[data-st="EM TRÂNSITO"] select.fu-status{background:var(--panel);color:#2f6b8a;border-color:#2f6b8a;}
+  .fu-card[data-st="PARADO NO COMPRAS"] select.fu-status{background:var(--panel);color:var(--red);border-color:var(--red);}
+  .fu-card[data-st="RECEBIDO"] select.fu-status{background:var(--panel);color:var(--green);border-color:var(--green);}
   .fu-field.fu-yes .fu-cell{color:var(--green);font-weight:700;}
   .fu-field.fu-no .fu-cell{color:var(--red);font-weight:700;}
   .fu-field.fu-late .fu-cell{color:var(--red);font-weight:700;}
