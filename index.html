@@ -253,6 +253,11 @@
   .fu-fields.fu-extra{grid-template-columns:repeat(7,minmax(0,1fr));padding-top:8px;border-top:1px dashed var(--border);}
   .fu-field{min-width:0;}
   .fu-field.span3{grid-column:span 3;}
+  .fu-labrow{display:flex;align-items:center;justify-content:space-between;gap:4px;min-height:16px;}
+  .fu-tags{display:inline-flex;gap:2px;}
+  .fu-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.06em;padding:1px 5px;border:1px solid var(--border-bright);background:transparent;color:var(--text-dimmer);cursor:pointer;line-height:1.3;}
+  .fu-tag:hover{color:var(--text);border-color:var(--text-dim);}
+  .fu-tag.on{background:var(--text);border-color:var(--text);color:var(--bg);}
   .fu-field label{display:block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dimmer);margin-bottom:1px;}
   .fu-cell{display:block;width:100%;border:0;border-bottom:1px solid transparent;background:transparent;color:var(--text);font:inherit;font-size:13px;padding:3px 2px;margin:0;resize:none;overflow:hidden;line-height:1.4;border-radius:0;}
   .fu-field .fu-cell{border-bottom-color:var(--border);}
@@ -3010,12 +3015,47 @@
     body.querySelectorAll("textarea.fu-cell").forEach(fuAutosize);
   }
 
+  // RC / SL quick buttons: set (or switch) the prefix of the code; clicking
+  // the active one clears it. Keeps the number the user already typed.
+  function fuAddRcSlButtons(labRow, el, row){
+    var box = document.createElement("span");
+    box.className = "fu-tags no-print";
+    var btns = {};
+    ["RC","SL"].forEach(function(kind){
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "fu-tag"; b.textContent = kind;
+      b.title = "Marcar como " + kind;
+      b.addEventListener("mousedown", function(e){ e.preventDefault(); });
+      b.addEventListener("click", function(){
+        var cur = fuRcSlKind(el.value);
+        var rest = el.value.replace(/^\s*(rc|sl)(?![a-z])[\s\-:._]*/i, "").trim();
+        var next = (cur === kind) ? rest : kind + " " + rest;
+        el.value = next; row.rc_sl = next; fuAutosize(el); sync();
+        fuSave(row, "rc_sl", el);
+        el.focus(); el.setSelectionRange(next.length, next.length);
+      });
+      btns[kind] = b; box.appendChild(b);
+    });
+    function sync(){
+      var kind = fuRcSlKind(el.value);
+      btns.RC.classList.toggle("on", kind === "RC");
+      btns.SL.classList.toggle("on", kind === "SL");
+    }
+    el.fuSync = sync;
+    el.addEventListener("input", sync);
+    sync();
+    labRow.appendChild(box);
+  }
+
   function fuField(row, def, card){
     var wrap = document.createElement("div");
     wrap.className = "fu-field" + (def.span3 ? " span3" : "");
     var lab = document.createElement("label");
     lab.textContent = def.label;
-    wrap.appendChild(lab);
+    var labRow = document.createElement("div");
+    labRow.className = "fu-labrow";
+    labRow.appendChild(lab);
+    wrap.appendChild(labRow);
     var el;
     function paint(){
       if(def.date) wrap.classList.toggle("fu-late", fuIsLate(row));
@@ -3043,16 +3083,30 @@
       el.rows = 1;
       el.value = row[def.key];
       el.placeholder = "—";
-      fuWireText(el, row, def.key);
+      fuWireText(el, row, def.key, def.key === "rc_sl" ? fuNormRcSl : null);
     }
     el.className = "fu-cell";
     el.setAttribute("aria-label", def.label);
     wrap.appendChild(el);
+    if(def.key === "rc_sl"){ fuAddRcSlButtons(labRow, el, row); }
     paint();
     return wrap;
   }
 
-  function fuWireText(el, row, key){
+  // RC/SL codes are kept as "RC 123456" / "SL 123456": "rc123", "RC-123"
+  // and " sl 123" are all tidied into that shape. Bare numbers stay bare.
+  function fuNormRcSl(v){
+    var m = /^\s*(rc|sl)(?![a-z])[\s\-:._]*(.*)$/i.exec(v || "");
+    if(!m) return (v || "").trim();
+    var rest = m[2].trim();
+    return m[1].toUpperCase() + (rest ? " " + rest : " ");
+  }
+  function fuRcSlKind(v){
+    var m = /^\s*(rc|sl)(?![a-z])/i.exec(v || "");
+    return m ? m[1].toUpperCase() : "";
+  }
+
+  function fuWireText(el, row, key, normalize){
     el.addEventListener("input", function(){
       fuAutosize(el);
       row[key] = el.value;
@@ -3061,7 +3115,14 @@
     });
     el.addEventListener("blur", function(){
       var k = row.id + key;
-      if(fuSaveTimers[k]){ clearTimeout(fuSaveTimers[k]); delete fuSaveTimers[k]; fuSave(row, key, el); }
+      var pending = !!fuSaveTimers[k];
+      if(pending){ clearTimeout(fuSaveTimers[k]); delete fuSaveTimers[k]; }
+      if(normalize){
+        var n = normalize(el.value);
+        if(n !== el.value){ el.value = n; row[key] = n; fuAutosize(el); pending = true; }
+        if(el.fuSync) el.fuSync();
+      }
+      if(pending) fuSave(row, key, el);
     });
     el.addEventListener("keydown", function(e){
       if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); el.blur(); }
