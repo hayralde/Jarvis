@@ -245,7 +245,7 @@
   .fu-fields{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px 14px;margin-top:8px;}
   .fu-fields.fu-extra{grid-template-columns:repeat(7,minmax(0,1fr));padding-top:8px;border-top:1px dashed var(--border);}
   .fu-field{min-width:0;}
-  .fu-field.span2{grid-column:span 2;}
+  .fu-field.span3{grid-column:span 3;}
   .fu-field label{display:block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dimmer);margin-bottom:1px;}
   .fu-cell{display:block;width:100%;border:0;border-bottom:1px solid transparent;background:transparent;color:var(--text);font:inherit;font-size:13px;padding:3px 2px;margin:0;resize:none;overflow:hidden;line-height:1.4;border-radius:0;}
   .fu-field .fu-cell{border-bottom-color:var(--border);}
@@ -278,6 +278,7 @@
   }
   @media (max-width:560px){
     .fu-fields,.fu-fields.fu-extra{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .fu-field.span3{grid-column:1 / -1;}
   }
   .add-row{margin-bottom:2px;}
   .add-trigger{
@@ -2871,15 +2872,14 @@
   // ---- Follow-up tab: purchase-monitoring cards backed by jarvis_followup ----
   var FU_TABLE = "jarvis_followup";
   var FU_STATUSES = ["COTAÇÃO","APROVAÇÃO","PARADO NO COMPRAS","PEDIDO","EM TRÂNSITO","RECEBIDO"];
-  var FU_KEYS = ["empresa","descricao","nf_saida","cc","tag","n_serie","orcamento","pedido","rc_sl","status","pedido_rrp","prazo","frete","nf_retorno","observacao"];
+  var FU_KEYS = ["empresa","descricao","nf_saida","cc","tag","n_serie","orcamento","rc_sl","status","pedido_rrp","prazo","frete","nf_retorno","observacao"];
   // detail fields shown on every card; the rest sit behind the "+" toggle
   var FU_MAIN = [
     {key:"rc_sl",      label:"RC/SL"},
     {key:"orcamento",  label:"Orçamento"},
-    {key:"pedido",     label:"Pedido"},
     {key:"pedido_rrp", label:"Pedido RRP"},
     {key:"prazo",      label:"Prazo", date:true},
-    {key:"observacao", label:"Observação", span2:true}
+    {key:"observacao", label:"Observação", span3:true}
   ];
   var FU_EXTRA = [
     {key:"nf_saida",   label:"NF saída"},
@@ -2909,6 +2909,9 @@
     el.style.height = "auto";
     // hidden tab => scrollHeight is 0; keep auto and re-measure on tab show
     if(el.scrollHeight > 0) el.style.height = el.scrollHeight + "px";
+  }
+  function fuAutosizeAll(){
+    document.querySelectorAll("#followupBody textarea.fu-cell").forEach(fuAutosize);
   }
   function fuStKey(row){ return (row.status || "").trim().toUpperCase() || "none"; }
   function fuToday(){
@@ -2982,7 +2985,7 @@
 
   function fuField(row, def, card){
     var wrap = document.createElement("div");
-    wrap.className = "fu-field" + (def.span2 ? " span2" : "");
+    wrap.className = "fu-field" + (def.span3 ? " span3" : "");
     var lab = document.createElement("label");
     lab.textContent = def.label;
     wrap.appendChild(lab);
@@ -3201,14 +3204,19 @@
     });
     try{ localStorage.setItem(TAB_KEY, tabKey); }catch(e){}
     if(tabKey === "onepage" || tabKey === "onepagerrp") renderOnePage();
-    if(tabKey === "followup"){ document.querySelectorAll("#followupBody textarea.fu-cell").forEach(fuAutosize); }
+    if(tabKey === "followup"){
+      // measure again once the panel has really been laid out (the first
+      // pass can see a stale narrow width and leave tall, empty cards)
+      fuAutosizeAll();
+      requestAnimationFrame(function(){ requestAnimationFrame(fuAutosizeAll); });
+    }
   }
   // Re-fit when the viewport width changes the wrapping, and right before
   // printing so the paper copy is measured at its own layout.
   var onePageResizeTimer = null;
   window.addEventListener("resize", function(){
     clearTimeout(onePageResizeTimer);
-    onePageResizeTimer = setTimeout(renderOnePage, 150);
+    onePageResizeTimer = setTimeout(function(){ renderOnePage(); fuAutosizeAll(); }, 150);
   });
   window.addEventListener("beforeprint", renderOnePage);
   tabBtns.forEach(function(btn){
